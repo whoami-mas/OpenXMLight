@@ -91,8 +91,10 @@ namespace OpenXMLight
         public void BuildChart(charts.ChartBuilder chartBuilder)
         {
             chartBuilder.GeneratedTitle();
+            chartBuilder.GeneratedAutoTitleDeleted();
             chartBuilder.GeneratedPlotArea();
             chartBuilder.GeneratedLegend();
+            chartBuilder.GeneratedPlotVisibleOnly();
 
             ChartPart chartPart = Doc.MainDocumentPart.AddNewPart<ChartPart>();
             chartPart.ChartSpace = chartBuilder.Chart.ChartSpaceXml;

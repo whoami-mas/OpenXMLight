@@ -16,6 +16,11 @@ namespace OpenXMLight.Configurations.Elements.Charts
     {
         internal int[] axisID;
 
+        public ColumnChart()
+        {
+            axisID = new int[2] { };
+        }
+
         internal override void GeneratedPlotArea()
         {
             OpenXmlChart.PlotArea plotAreaElement = new OpenXmlChart.PlotArea(

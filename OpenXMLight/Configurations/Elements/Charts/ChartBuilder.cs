@@ -76,7 +76,9 @@ namespace OpenXMLight.Configurations.Elements.Charts
 
             this.Chart.ChartXml.Append(titleElement);
         }
+        internal virtual void GeneratedAutoTitleDeleted() => this.Chart.ChartXml.AppendChild(new OpenXmlChart.AutoTitleDeleted() { Val = false});
         internal abstract void GeneratedPlotArea();
+        internal virtual void GeneratedPlotVisibleOnly() => this.Chart.ChartXml.AppendChild(new OpenXmlChart.PlotVisibleOnly() { Val = true});
         internal abstract void GeneratedLegend();
     }
 }
