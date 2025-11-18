@@ -45,7 +45,7 @@ namespace OpenXMLight.Configurations.Elements.Charts
                             new OpenXmlChart.StringCache(
                                 new OpenXmlChart.PointCount() { Val = 1U },
                                 new OpenXmlChart.StringPoint(
-                                    new OpenXmlChart.NumericValue() { Text = chartData[i].Title }
+                                    new OpenXmlChart.NumericValue() { Text = this.Chart.Data[i].Title }
                                     )
                                 { Index = 0U }
                                 )
@@ -58,17 +58,17 @@ namespace OpenXMLight.Configurations.Elements.Charts
                 OpenXmlChart.StringReference strReference = new OpenXmlChart.StringReference(
                     new OpenXmlChart.Formula()
                     {
-                        Text = chartData[i].Labels.Count() > 1 ? $"Лист1!$A$2:$A${chartData[i].Labels.Count() + 1}"
-                                                                                        : "Лист1!$A$2"
+                        Text = this.Chart.Data[i].Labels.Count() > 1 ? $"Лист1!$A$2:$A${this.Chart.Data[i].Labels.Count() + 1}"
+                                                                     : "Лист1!$A$2"
                     }
                     );
                 OpenXmlChart.StringCache strCache = new OpenXmlChart.StringCache(
-                    new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(chartData[i].Labels.Count()) }
+                    new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(this.Chart.Data[i].Labels.Count()) }
                     );
-                for (int j = 0; j < chartData[i].Data.Count(); j++)
+                for (int j = 0; j < this.Chart.Data[i].Data.Count(); j++)
                     strCache.AppendChild(
                         new OpenXmlChart.StringPoint(
-                            new OpenXmlChart.NumericValue() { Text = chartData[i].Labels[j] }
+                            new OpenXmlChart.NumericValue() { Text = this.Chart.Data[i].Labels[j] }
                             )
                         { Index = Convert.ToUInt32(j) }
                         );
@@ -81,18 +81,18 @@ namespace OpenXMLight.Configurations.Elements.Charts
                 OpenXmlChart.NumberReference numberReference = new OpenXmlChart.NumberReference(
                     new OpenXmlChart.Formula()
                     {
-                        Text = chartData[i].Data.Count() > 1 ? $"Лист1!${(char)('B' + i)}$2:${(char)('B' + i)}${chartData[i].Data.Count() + 1}"
-                                                                                      : $"Лист1!${(char)('B' + i)}$"
+                        Text = this.Chart.Data[i].Data.Count() > 1 ? $"Лист1!${(char)('B' + i)}$2:${(char)('B' + i)}${this.Chart.Data[i].Data.Count() + 1}"
+                                                                   : $"Лист1!${(char)('B' + i)}$"
                     }
                     );
                 OpenXmlChart.NumberingCache numCache = new OpenXmlChart.NumberingCache(
                     new OpenXmlChart.FormatCode() { Text = "General" },
-                    new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(chartData[i].Data.Count()) }
+                    new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(this.Chart.Data[i].Data.Count()) }
                     );
-                for (int j = 0; j < chartData[i].Data.Count(); j++)
+                for (int j = 0; j < this.Chart.Data[i].Data.Count(); j++)
                     numCache.AppendChild(
                         new OpenXmlChart.NumericPoint(
-                            new OpenXmlChart.NumericValue() { Text = chartData[i].Data[j].ToString(CultureInfo.InvariantCulture) }
+                            new OpenXmlChart.NumericValue() { Text = this.Chart.Data[i].Data[j].ToString(CultureInfo.InvariantCulture) }
                             )
                         { Index = Convert.ToUInt32(j) }
                         );
@@ -173,7 +173,6 @@ namespace OpenXMLight.Configurations.Elements.Charts
 
             this.Chart.ChartXml.AppendChild(plotAreaElement);
         }
-
         internal override void GeneratedLegend()
         {
             OpenXmlChart.Legend legendElement = new OpenXmlChart.Legend(

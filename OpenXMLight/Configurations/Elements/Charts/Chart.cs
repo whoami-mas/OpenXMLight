@@ -12,10 +12,10 @@ namespace OpenXMLight.Configurations.Elements.Charts
     public class Chart
     {
         private string title;
-        private ChartData data;
+        private List<ChartData> data;
 
         public string Title { get => title; set => title = value; }
-        public ChartData Data { get => data; set => data = value; }
+        public List<ChartData> Data { get => data; set => data = value; }
 
         internal OpenXmlChart.ChartSpace ChartSpaceXml { get; set; }
         internal OpenXmlChart.Chart ChartXml { get; set; }

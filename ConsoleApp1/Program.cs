@@ -31,6 +31,9 @@ try
             }
         };
 
+        ChartBuilder myChart = new ColumnChart().SetTitle("Мой график").SetData(chData);
+
+        test.
     }
 }
 catch(Exception ex)

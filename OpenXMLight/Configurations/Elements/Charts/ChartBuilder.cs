@@ -12,8 +12,18 @@ namespace OpenXMLight.Configurations.Elements.Charts
     {
         public Chart Chart { get; private set; }
 
-        public void SetTitle(string title) => Chart.Title = title;
-        public void SetData(ChartData data) => Chart.Data = data;
+        public ChartBuilder SetTitle(string title)
+        {
+            Chart.Title = title;
+
+            return this;
+        }
+        public ChartBuilder SetData(List<ChartData> data)
+        {
+            Chart.Data = data;
+
+            return this;
+        }
 
         public ChartBuilder()
         {

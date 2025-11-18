@@ -88,40 +88,51 @@ namespace OpenXMLight
             Doc.Body.AppendChild(table.TableXml);
         }
 
-        public void AddChart(charts.ColumnChart columnChart)
+        public void BuildChart(charts.ChartBuilder chartBuilder)
         {
+            chartBuilder.GeneratedTitle();
+            chartBuilder.GeneratedPlotArea();
+            chartBuilder.GeneratedLegend();
+
             ChartPart chartPart = Doc.MainDocumentPart.AddNewPart<ChartPart>();
-            chartPart.ChartSpace = columnChart.chartSpace;
+            chartPart.ChartSpace = chartBuilder.Chart.ChartSpaceXml;
 
-            Paragraph p = new Paragraph();
-            Run r = new Run();
-
-            Drawing drawing = new Drawing();
-            Inline inline = new();
-
-            inline.Append(
-                new Extent() { Cx = 5486400L, Cy = 3200400L },
-                new EffectExtent() { LeftEdge = 0, TopEdge = 0, RightEdge = 0, BottomEdge = 0 },
-                new DocProperties() { Name = "Диаграмма 1", Id = 1},
-                new NonVisualGraphicFrameDrawingProperties()
-                );
-            inline.AppendChild(
-                new OpenXmlDrawing.Graphic(
-                    new OpenXmlDrawing.GraphicData(
-                        new OpenXmlChart.ChartReference()
-                        {
-                            Id = Doc.MainDocumentPart.GetIdOfPart(chartPart)
-                        }
-                    )
-                    { Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart" }
-                )
-            );
-            drawing.AppendChild(inline);
-
-            r.AppendChild(drawing);
-            p.AppendChild(r);
-
-            Doc.Body.AppendChild(p);
+            
         }
+        //public void AddChart(charts.ColumnChart columnChart)
+        //{
+        //    ChartPart chartPart = Doc.MainDocumentPart.AddNewPart<ChartPart>();
+        //    chartPart.ChartSpace = columnChart.chartSpace;
+
+        //    Paragraph p = new Paragraph();
+        //    Run r = new Run();
+
+        //    Drawing drawing = new Drawing();
+        //    Inline inline = new();
+
+        //    inline.Append(
+        //        new Extent() { Cx = 5486400L, Cy = 3200400L },
+        //        new EffectExtent() { LeftEdge = 0, TopEdge = 0, RightEdge = 0, BottomEdge = 0 },
+        //        new DocProperties() { Name = "Диаграмма 1", Id = 1},
+        //        new NonVisualGraphicFrameDrawingProperties()
+        //        );
+        //    inline.AppendChild(
+        //        new OpenXmlDrawing.Graphic(
+        //            new OpenXmlDrawing.GraphicData(
+        //                new OpenXmlChart.ChartReference()
+        //                {
+        //                    Id = Doc.MainDocumentPart.GetIdOfPart(chartPart)
+        //                }
+        //            )
+        //            { Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart" }
+        //        )
+        //    );
+        //    drawing.AppendChild(inline);
+
+        //    r.AppendChild(drawing);
+        //    p.AppendChild(r);
+
+        //    Doc.Body.AppendChild(p);
+        //}
     }
 }
