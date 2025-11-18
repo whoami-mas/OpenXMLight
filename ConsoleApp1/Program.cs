@@ -31,9 +31,6 @@ try
             }
         };
 
-        ColumnChart chart = new ColumnChart("Создание тестового графика", chData);
-
-        test.AddChart(chart);
     }
 }
 catch(Exception ex)
