@@ -34,7 +34,7 @@ namespace OpenXMLight.Configurations.Elements.Table
                 width = value;
 
                 CellXml.TableCellProperties?.RemoveAllChildren<OpenXML.TableCellWidth>();
-                CellXml.TableCellProperties?.AppendChild(new OpenXML.TableCellWidth() {Type = OpenXML.TableWidthUnitValues.Pct, Width = width.ToString() });
+                CellXml.TableCellProperties?.AppendChild(new OpenXML.TableCellWidth() {Type = OpenXML.TableWidthUnitValues.Dxa, Width = width.ToString() });
             }
         }
         public int MergeColumn
@@ -80,13 +80,14 @@ namespace OpenXMLight.Configurations.Elements.Table
 
         public Cell() => this.CreateCell();
         
-        public Cell(Text text, int mergeColumn = 0, VerticalMerge vMerge = VerticalMerge.Non)
+        public Cell(Text text,int width = 0, int mergeColumn = 0, VerticalMerge vMerge = VerticalMerge.Non)
         {
             CreateCell();
 
             this.Text = text;
             this.MergeColumn = mergeColumn;
             this.VMerge = vMerge;
+            this.Width = width;
         }
 
         internal Cell(OpenXML.TableCell cell)

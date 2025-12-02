@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OpenXML = DocumentFormat.OpenXml.Wordprocessing;
 using OpenXmlF = DocumentFormat.OpenXml;
 using OpenXMLDrawing = DocumentFormat.OpenXml.Drawing;
 using OpenXmlChart = DocumentFormat.OpenXml.Drawing.Charts;
@@ -11,94 +10,15 @@ using System.Globalization;
 
 namespace OpenXMLight.Configurations.Elements.Charts
 {
-    public class ColumnChart
+    public class ColumnChart : ChartBuilder
     {
-        private string title;
-        private List<ChartData> chartData;
-        
-        public string Title { get => title; set => title = value; }
-        public List<ChartData> ChartData { get => chartData; set => chartData = value; }
-
-
-        internal OpenXmlChart.ChartSpace chartSpace { get; set; }
         internal int[] axisID;
-
-        public ColumnChart(string title, List<ChartData> chartData)
-        {
-            this.Title = title;
-            this.ChartData = chartData;
-
-            Create();
-        }
-
-        internal void Create()
+        public ColumnChart()
         {
             axisID = new int[2] { Random.Shared.Next(100000000, 999999999), Random.Shared.Next(100000000, 999999999) };
-
-            chartSpace ??= new OpenXmlChart.ChartSpace();
-
-            OpenXmlChart.Chart chart = new OpenXmlChart.Chart();
-
-            chart.Append(
-                GeneratedTitleChart(Title),
-                new OpenXmlChart.AutoTitleDeleted() { Val = false},
-                GeneratedPlotAreaChart(ChartData),
-                GeneratedLegend(),
-                new OpenXmlChart.PlotVisibleOnly() { Val = true }
-                );
-
-            chartSpace.AppendChild(chart);
         }
 
-        #region Generated data
-        private OpenXmlChart.Title GeneratedTitleChart(string title)
-        {
-            OpenXmlChart.Title titleElement = new OpenXmlChart.Title();
-
-            titleElement.AppendChild(
-                new OpenXmlChart.ChartText(
-                    new OpenXmlChart.RichText(
-                        new OpenXMLDrawing.BodyProperties()
-                        {
-                            Anchor = OpenXMLDrawing.TextAnchoringTypeValues.Center,
-                            AnchorCenter = true,
-                            Rotation = 0,
-                            UseParagraphSpacing = true,
-                            VerticalOverflow = OpenXMLDrawing.TextVerticalOverflowValues.Ellipsis,
-                            Vertical = OpenXMLDrawing.TextVerticalValues.Horizontal,
-                            Wrap = OpenXMLDrawing.TextWrappingValues.Square
-                        },
-                        new OpenXMLDrawing.Paragraph(
-                            new OpenXMLDrawing.Run(
-                                new OpenXMLDrawing.Text(title)
-                            )
-                        )
-                    )
-                )
-            );
-
-            titleElement.Append(
-                new OpenXmlChart.Overlay() { Val = false },
-                new OpenXmlChart.TextProperties(
-                    new OpenXMLDrawing.BodyProperties()
-                    {
-                        Rotation = 0,
-                        UseParagraphSpacing = true,
-                        VerticalOverflow = OpenXMLDrawing.TextVerticalOverflowValues.Ellipsis,
-                        Vertical = OpenXMLDrawing.TextVerticalValues.Horizontal,
-                        Wrap = OpenXMLDrawing.TextWrappingValues.Square,
-                        Anchor = OpenXMLDrawing.TextAnchoringTypeValues.Center,
-                        AnchorCenter = true
-                    },
-                    new OpenXMLDrawing.Paragraph(
-                        )
-                )
-            );
-
-            return titleElement;
-        }
-
-        private OpenXmlChart.PlotArea GeneratedPlotAreaChart(List<ChartData> chartData)
+        internal override void GeneratedPlotArea()
         {
             OpenXmlChart.PlotArea plotAreaElement = new OpenXmlChart.PlotArea(
                 new OpenXmlChart.Layout()
@@ -106,12 +26,12 @@ namespace OpenXMLight.Configurations.Elements.Charts
 
             //BarChart
             OpenXmlChart.BarChart barChart = new OpenXmlChart.BarChart(
-                new OpenXmlChart.BarDirection() { Val = OpenXmlChart.BarDirectionValues.Column},
-                new OpenXmlChart.BarGrouping() { Val = OpenXmlChart.BarGroupingValues.Clustered},
-                new OpenXmlChart.VaryColors() { Val = false}
+                new OpenXmlChart.BarDirection() { Val = OpenXmlChart.BarDirectionValues.Column },
+                new OpenXmlChart.BarGrouping() { Val = OpenXmlChart.BarGroupingValues.Clustered },
+                new OpenXmlChart.VaryColors() { Val = false }
                 );
 
-            for(int i = 0; i < chartData.Count; i++)
+            for (int i = 0; i < this.Chart.Data.Count; i++)
             {
                 //Index
                 OpenXmlChart.BarChartSeries barSeries = new OpenXmlChart.BarChartSeries(
@@ -125,89 +45,141 @@ namespace OpenXMLight.Configurations.Elements.Charts
                         new OpenXmlChart.StringReference(
                             new OpenXmlChart.Formula() { Text = $"Лист1!${(char)('B' + i)}$1" },
                             new OpenXmlChart.StringCache(
-                                new OpenXmlChart.PointCount() { Val = 1U},
+                                new OpenXmlChart.PointCount() { Val = 1U },
                                 new OpenXmlChart.StringPoint(
-                                    new OpenXmlChart.NumericValue() { Text = chartData[i].Title }
-                                    ) { Index = 0U }
+                                    new OpenXmlChart.NumericValue() { Text = this.Chart.Data[i].Title }
+                                    )
+                                { Index = 0U }
                                 )
                             )
                         )
                 );
 
-                //CategoryAxisDate
+                //ShapeProperties
+                barSeries.AppendChild(
+                    new OpenXmlChart.ChartShapeProperties(
+                            new OpenXMLDrawing.SolidFill(
+                                new OpenXMLDrawing.SchemeColor() { Val = this.StyleLine[i] }
+                                ),
+                            new OpenXMLDrawing.Outline(
+                                new OpenXMLDrawing.NoFill()
+                                ),
+                            new OpenXMLDrawing.EffectList()
+                        )
+                    );
+
+                barSeries.AppendChild(
+                    new OpenXmlChart.InvertIfNegative() { Val = false}
+                    );
+
+                #region CategoryAxisDate
                 OpenXmlChart.CategoryAxisData categoryAxisDate = new OpenXmlChart.CategoryAxisData();
                 OpenXmlChart.StringReference strReference = new OpenXmlChart.StringReference(
-                    new OpenXmlChart.Formula() { Text = chartData[i].Labels.Count() > 1 ? $"Лист1!$A$2:$A${chartData[i].Labels.Count() + 1}"
-                                                                                        : "Лист1!$A$2" }
+                    new OpenXmlChart.Formula()
+                    {
+                        Text = this.Chart.Data[i].Labels.Length > 1 ? $"Лист1!$A$2:$A${this.Chart.Data[i].Labels.Length}"
+                                                                     : "Лист1!$A$2"
+                    }
                     );
                 OpenXmlChart.StringCache strCache = new OpenXmlChart.StringCache(
-                    new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(chartData[i].Labels.Count())}
+                    new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(this.Chart.Data[i].Labels.Length) }
                     );
-                for (int j = 0; j < chartData[i].Data.Count(); j++)
+                for (int j = 0; j < this.Chart.Data[i].Data.Length; j++)
                     strCache.AppendChild(
                         new OpenXmlChart.StringPoint(
-                            new OpenXmlChart.NumericValue() { Text = chartData[i].Labels[j] }
-                            ) { Index = Convert.ToUInt32(j)}
+                            new OpenXmlChart.NumericValue() { Text = this.Chart.Data[i].Labels[j] }
+                            )
+                        { Index = Convert.ToUInt32(j) }
                         );
                 strReference.AppendChild(strCache);
                 categoryAxisDate.AppendChild(strReference);
                 barSeries.AppendChild(categoryAxisDate);
+                #endregion
 
-                //Values
+                #region Values
                 OpenXmlChart.Values values = new OpenXmlChart.Values();
                 OpenXmlChart.NumberReference numberReference = new OpenXmlChart.NumberReference(
-                    new OpenXmlChart.Formula() { Text = chartData[i].Data.Count() > 1 ? $"Лист1!${(char)('B' + i)}$2:${(char)('B' + i)}${chartData[i].Data.Count() + 1}"
-                                                                                      : $"Лист1!${(char)('B' + i)}$" }
+                    new OpenXmlChart.Formula()
+                    {
+                        Text = this.Chart.Data[i].Data.Length > 1 ? $"Лист1!${(char)('B' + i)}$2:${(char)('B' + i)}${this.Chart.Data[i].Data.Length}"
+                                                                   : $"Лист1!${(char)('B' + i)}$"
+                    }
                     );
                 OpenXmlChart.NumberingCache numCache = new OpenXmlChart.NumberingCache(
-                    new OpenXmlChart.FormatCode() { Text = "General"},
-                    new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(chartData[i].Data.Count()) }
+                    new OpenXmlChart.FormatCode() { Text = "General" },
+                    new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(this.Chart.Data[i].Data.Length) }
                     );
-                for (int j = 0; j < chartData[i].Data.Count(); j++)
+                for (int j = 0; j < this.Chart.Data[i].Data.Length; j++)
                     numCache.AppendChild(
                         new OpenXmlChart.NumericPoint(
-                            new OpenXmlChart.NumericValue() { Text = chartData[i].Data[j].ToString(CultureInfo.InvariantCulture) }
-                            ) { Index = Convert.ToUInt32(j)}
+                            new OpenXmlChart.NumericValue() { Text = this.Chart.Data[i].Data[j].ToString(CultureInfo.InvariantCulture) }
+                            )
+                        { Index = Convert.ToUInt32(j) }
                         );
                 numberReference.AppendChild(numCache);
                 values.AppendChild(numberReference);
 
                 barSeries.AppendChild(values);
+                #endregion
+
                 barChart.AppendChild(barSeries);
             }
 
             barChart.Append(
-                new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(axisID[0]) },
-                new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(axisID[1]) }
+                new OpenXmlChart.GapWidth() { Val = (OpenXmlF.UInt16Value)219U },
+                new OpenXmlChart.Overlap() { Val = -27 }
                 );
+
+            barChart.Append(
+               new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(axisID[0]) },
+               new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(axisID[1]) }
+               );
 
             plotAreaElement.AppendChild(barChart);
 
             //CategoryAxis
             OpenXmlChart.CategoryAxis catAxis = new OpenXmlChart.CategoryAxis(
-                new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(axisID[0])},
+                new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(axisID[0]) },
                 new OpenXmlChart.Scaling(
-                    new OpenXmlChart.Orientation() { Val = OpenXmlChart.OrientationValues.MinMax}
+                    new OpenXmlChart.Orientation() { Val = OpenXmlChart.OrientationValues.MinMax }
                 ),
-                new OpenXmlChart.Delete() { Val = false},
-                new OpenXmlChart.AxisPosition() { Val = OpenXmlChart.AxisPositionValues.Bottom},
-                new OpenXmlChart.NumberingFormat() { FormatCode = "General", SourceLinked = true},
+                new OpenXmlChart.Delete() { Val = false },
+                new OpenXmlChart.AxisPosition() { Val = OpenXmlChart.AxisPositionValues.Bottom },
+                new OpenXmlChart.NumberingFormat() { FormatCode = "General", SourceLinked = true },
                 new OpenXmlChart.MajorTickMark() { Val = OpenXmlChart.TickMarkValues.None },
                 new OpenXmlChart.MinorTickMark() { Val = OpenXmlChart.TickMarkValues.None },
-                new OpenXmlChart.TickLabelPosition() { Val = OpenXmlChart.TickLabelPositionValues.NextTo},
-
+                new OpenXmlChart.TickLabelPosition() { Val = OpenXmlChart.TickLabelPositionValues.NextTo },
+                new OpenXmlChart.ChartShapeProperties(
+                    new OpenXMLDrawing.NoFill(),
+                    new OpenXMLDrawing.Outline(
+                        new OpenXMLDrawing.SolidFill(
+                            new OpenXMLDrawing.SchemeColor(
+                                new OpenXMLDrawing.LuminanceModulation() { Val = 15000 },
+                                new OpenXMLDrawing.LuminanceOffset() { Val = 85000 }
+                            )
+                            { Val = OpenXMLDrawing.SchemeColorValues.Text1 }
+                        )
+                    )
+                    {
+                        Width = 9525,
+                        CapType = OpenXMLDrawing.LineCapValues.Flat,
+                        CompoundLineType = OpenXMLDrawing.CompoundLineValues.Single,
+                        Alignment = OpenXMLDrawing.PenAlignmentValues.Center
+                    },
+                    new OpenXMLDrawing.EffectList()
+                ),
                 new OpenXmlChart.CrossingAxis() { Val = Convert.ToUInt32(axisID[1]) },
-                new OpenXmlChart.Crosses() { Val = OpenXmlChart.CrossesValues.AutoZero},
+                new OpenXmlChart.Crosses() { Val = OpenXmlChart.CrossesValues.AutoZero },
                 new OpenXmlChart.AutoLabeled() { Val = true },
-                new OpenXmlChart.LabelAlignment() { Val = OpenXmlChart.LabelAlignmentValues.Center},
-                new OpenXmlChart.LabelOffset() { Val = Convert.ToUInt16(100)},
-                new OpenXmlChart.NoMultiLevelLabels() { Val = false}
+                new OpenXmlChart.LabelAlignment() { Val = OpenXmlChart.LabelAlignmentValues.Center },
+                new OpenXmlChart.LabelOffset() { Val = Convert.ToUInt16(100) },
+                new OpenXmlChart.NoMultiLevelLabels() { Val = false }
             );
             plotAreaElement.AppendChild(catAxis);
 
             //ValueAxis
             OpenXmlChart.ValueAxis valAxis = new OpenXmlChart.ValueAxis(
-                new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(axisID[1])},
+                new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(axisID[1]) },
                 new OpenXmlChart.Scaling(
                     new OpenXmlChart.Orientation() { Val = OpenXmlChart.OrientationValues.MinMax }
                 ),
@@ -218,15 +190,19 @@ namespace OpenXMLight.Configurations.Elements.Charts
                         new OpenXMLDrawing.Outline(
                             new OpenXMLDrawing.SolidFill(
                                 new OpenXMLDrawing.SchemeColor(
-                                    new OpenXMLDrawing.LuminanceModulation() { Val = 15000},
-                                    new OpenXMLDrawing.LuminanceOffset() { Val = 85000}
+                                    new OpenXMLDrawing.LuminanceModulation() { Val = 15000 },
+                                    new OpenXMLDrawing.LuminanceOffset() { Val = 85000 }
                                 )
-                                { Val = OpenXMLDrawing.SchemeColorValues.Text1}
+                                { Val = OpenXMLDrawing.SchemeColorValues.Text1 }
                             ),
                             new OpenXMLDrawing.Round()
-                        ) { Width = 9525, CapType = OpenXMLDrawing.LineCapValues.Flat,
+                        )
+                        {
+                            Width = 9525,
+                            CapType = OpenXMLDrawing.LineCapValues.Flat,
                             CompoundLineType = OpenXMLDrawing.CompoundLineValues.Single,
-                            Alignment = OpenXMLDrawing.PenAlignmentValues.Center },
+                            Alignment = OpenXMLDrawing.PenAlignmentValues.Center
+                        },
                         new OpenXMLDrawing.EffectList()
                     )
                 ),
@@ -234,59 +210,20 @@ namespace OpenXMLight.Configurations.Elements.Charts
                 new OpenXmlChart.MajorTickMark() { Val = OpenXmlChart.TickMarkValues.None },
                 new OpenXmlChart.MinorTickMark() { Val = OpenXmlChart.TickMarkValues.None },
                 new OpenXmlChart.TickLabelPosition() { Val = OpenXmlChart.TickLabelPositionValues.NextTo },
+                new OpenXmlChart.ChartShapeProperties(
+                    new OpenXMLDrawing.NoFill(),
+                    new OpenXMLDrawing.Outline(
+                        new OpenXMLDrawing.NoFill()
+                    ),
+                    new OpenXMLDrawing.EffectList()
+                ),
                 new OpenXmlChart.CrossingAxis() { Val = Convert.ToUInt32(axisID[0]) },
                 new OpenXmlChart.Crosses() { Val = OpenXmlChart.CrossesValues.AutoZero },
-                new OpenXmlChart.CrossBetween() { Val = OpenXmlChart.CrossBetweenValues.Between}
+                new OpenXmlChart.CrossBetween() { Val = OpenXmlChart.CrossBetweenValues.Between }
             );
             plotAreaElement.AppendChild(valAxis);
 
-            return plotAreaElement;
+            this.Chart.ChartXml.AppendChild(plotAreaElement);
         }
-
-        private OpenXmlChart.Legend GeneratedLegend()
-        {
-            OpenXmlChart.Legend legendElement = new OpenXmlChart.Legend(
-                new OpenXmlChart.LegendPosition() { Val = OpenXmlChart.LegendPositionValues.Bottom},
-                new OpenXmlChart.Overlay() { Val = false},
-                new OpenXmlChart.TextProperties(
-                    new OpenXMLDrawing.BodyProperties()
-                    {
-                        Rotation = 0,
-                        UseParagraphSpacing = true,
-                        VerticalOverflow = OpenXMLDrawing.TextVerticalOverflowValues.Ellipsis,
-                        Vertical = OpenXMLDrawing.TextVerticalValues.Horizontal,
-                        Wrap = OpenXMLDrawing.TextWrappingValues.Square,
-                        Anchor = OpenXMLDrawing.TextAnchoringTypeValues.Center,
-                        AnchorCenter = true
-                    },
-                    new OpenXMLDrawing.Paragraph(
-                        new OpenXMLDrawing.ParagraphProperties(
-                            new OpenXMLDrawing.DefaultRunProperties(
-                                new OpenXMLDrawing.SolidFill(
-                                    new OpenXMLDrawing.SchemeColor(
-                                        new OpenXMLDrawing.LuminanceModulation() { Val = 65000 },
-                                        new OpenXMLDrawing.LuminanceOffset() { Val = 35000 }
-                                        ) { Val = OpenXMLDrawing.SchemeColorValues.Text1}
-                                    )
-                                )
-                            {
-                                FontSize = 900,
-                                Bold = false,
-                                Italic = false,
-                                Underline = OpenXMLDrawing.TextUnderlineValues.None,
-                                Strike = OpenXMLDrawing.TextStrikeValues.NoStrike,
-                                Kerning = 1200,
-                                Baseline = 0
-                            }
-                            )
-                        )
-                )
-            );
-
-
-
-            return legendElement;
-        }
-        #endregion
     }
 }

@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 
 namespace OpenXMLight.Configurations.Elements.Charts
 {
+    public enum Orientation
+    {
+        Left, Right
+    }
+
     public class ChartData
     {
         public string Title { get; set; }
         public string[] Labels { get; set; }
         public double[] Data { get; set; }
-
+        public Orientation orientationY { get; set; } = Orientation.Left;
     }
 }
