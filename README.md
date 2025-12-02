@@ -7,3 +7,5 @@ Format support .docx, .xlsx
 
 <p>ChartBuilder builder = new LineChart().SetTitle("Title chart").SetData(data);</p>
 <p>document.BuildChart(builder);</p>
+
+<h2>Excel</h2>
