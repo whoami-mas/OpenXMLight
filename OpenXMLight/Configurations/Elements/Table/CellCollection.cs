@@ -11,7 +11,7 @@ namespace OpenXMLight.Configurations.Elements.Table
     public class CellCollection: ICollection<Cell>
     {
         public int Count => cells.Count();
-        public bool IsReadOnly => throw new NotImplementedException();
+        public bool IsReadOnly => false;
 
 
         private List<Cell> cells;

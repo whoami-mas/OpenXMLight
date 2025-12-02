@@ -1,39 +1,38 @@
 ﻿using OpenXMLight;
-using OpenXMLight.Configurations;
-using OpenXMLight.Configurations.Formatting;
-using OpenXMLight.Configurations.Elements.Table;
-using OpenXMLight.Configurations.Elements;
 using OpenXMLight.Configurations.Elements.Charts;
+using OpenXMLight.Spreadsheet;
+using OpenXMLight.Spreadsheet.Elements;
 
 try
 {
-    using (var test = new WordDocument("testingWord.docx", true))
+    using(var document = new WordDocument("test.docx", true))
     {
-        List<ChartData> chData = new()
+        List<ChartData> d = new List<ChartData>()
         {
             new ChartData()
             {
-                Title = "Величина портфеля займов, тыс. рублей",
-                Labels = new string[3]{ "1 кв 2025", "2 кв 2025", "3 кв 2025"},
-                Data = new double[3] {3.2, 1.2, 2 }
+                Title = "Линия1",
+                Labels = new string[2] { "Элемент1", "Элемент2" },
+                Data = new double[2] { 9881.382, 10953.682}
             },
             new ChartData()
             {
-                Title = "Проблемный портфель NPL90+, тыс. рублей",
-                Labels = new string[3]{ "1 кв 2025", "2 кв 2025", "3 кв 2025"},
-                Data = new double[3] {1.2, 2.3, 5 }
+                Title = "Линия2",
+                Labels = new string[2] { "Элемент1", "Элемент2" },
+                Data = new double[2] { 50.44, 39.25},
+                orientationY = Orientation.Right,
             },
             new ChartData()
             {
-                Title = "Удельный вес просроченных займов NPL90+, %",
-                Labels = new string[3]{ "1 кв 2025", "2 кв 2025", "3 кв 2025"},
-                Data = new double[3] {1.7, 3.6, 4 }
+                Title = "Линия3",
+                Labels = new string[2] { "Элемент1", "Элемент2" },
+                Data = new double[2] { 4983.71, 4299.85 }
             }
         };
+        
+        ChartBuilder chartB = new LineChart().SetTitle("Тест").SetData(d);
 
-        ChartBuilder myChart = new ColumnChart().SetTitle("Мой график").SetData(chData);
-
-        test.
+        document.BuildChart(chartB);
     }
 }
 catch(Exception ex)

@@ -12,11 +12,11 @@ namespace OpenXMLight.Configurations.Elements.Table
     {
         public int Count => rows.Count();
 
-        public bool IsReadOnly => throw new NotImplementedException();
+        public bool IsReadOnly => false;
 
 
         private List<Row> rows;
-
+        internal Table? ParentTable { get; set; }
         public Row this[int index]
         {
             get => rows[index];
@@ -48,9 +48,19 @@ namespace OpenXMLight.Configurations.Elements.Table
         }
 
         #region functions
-        public void Add(Row item) => rows.Add(item);
+        public void Add(Row item)
+        {
+            ParentTable?.TableXml.AppendChild(item.RowXml);
+            
+            rows.Add(item);
+        }
 
-        public void Clear() => rows.Clear();
+        public void Clear()
+        {
+            ParentTable?.TableXml.RemoveAllChildren<OpenXML.TableRow>();
+            
+            rows.Clear();
+        }
 
         public bool Contains(Row item) => rows.Contains(item);
 
@@ -61,7 +71,14 @@ namespace OpenXMLight.Configurations.Elements.Table
 
         public IEnumerator<Row> GetEnumerator() => rows.GetEnumerator();
 
-        public bool Remove(Row item) => rows.Remove(item);
+        public bool Remove(Row item)
+        {
+            ParentTable?.TableXml.RemoveChild(item.RowXml);
+            
+            rows.Remove(item);
+
+            return true;
+        }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         #endregion

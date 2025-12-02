@@ -51,6 +51,7 @@ namespace OpenXMLight.SettingsW
             MarginLeft = pgMargin.Left;
             MarginRight = pgMargin.Right;
             MarginBottom = pgMargin.Bottom;
+            MarginHeader = pgMargin.Header;
             MarginFooter = pgMargin.Footer;
             MarginGutter = pgMargin.Gutter;
 

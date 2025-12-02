@@ -16,9 +16,13 @@ namespace OpenXMLight
 {
     public class WordDocument : IDisposable
     {
-        private WordprocessingDocument? WordProc { get; set; } = null;
-        private Document? Doc { get; set; } = null;
-        private SettingsPageWord? SettingsDocument { get; set; }
+        private WordprocessingDocument? WordProc { get; set; }
+        private Document? Doc { get; set; }
+
+        #region Subject facade
+        private SettingsPageWord SettingsDocument { get; set; }
+        private StylesWord StylesDocument { get; set; }
+        #endregion
 
         #region Dispose
         public void Dispose()
@@ -30,30 +34,29 @@ namespace OpenXMLight
         }
         #endregion
 
-        public WordDocument(string pathDocument, bool overwrite = false)
+        public void Save()
         {
-            WordProc = File.Exists(pathDocument) ? WordprocessingDocument.Open(pathDocument, true)
-                                                     : WordprocessingDocument.Create(pathDocument, WordprocessingDocumentType.Document);
+            WordProc?.MainDocumentPart?.Document.Save();
+            WordProc?.Dispose();
+        }
+        public WordDocument(string path, bool overwrite = false)
+        {
+            if (overwrite)
+                File.Delete(path);
 
-            MainDocumentPart mainPart;
+            WordProc = File.Exists(path) ? WordprocessingDocument.Open(path, true)
+                                                 : WordprocessingDocument.Create(path, WordprocessingDocumentType.Document);
 
-            if (WordProc.MainDocumentPart != null)
-            {
-                if (overwrite)
-                {
-                    WordProc.DeletePart(WordProc.MainDocumentPart);
-                    WordProc.AddMainDocumentPart().Document = new Document(new Body());
-                }
+            if (WordProc.MainDocumentPart == null)
+                WordProc.AddMainDocumentPart().Document = new Document(new Body());
 
-                mainPart = WordProc.MainDocumentPart;
-            }
-            else
-                mainPart = WordProc.AddMainDocumentPart();
-
-            Doc = mainPart.Document;
+            Doc = WordProc.MainDocumentPart?.Document;
 
             SettingsDocument = new();
+            StylesDocument = new();
+            
             SettingsDocument.GenerateDocumentSettings(Doc);
+            StylesDocument.GenerateStyles(WordProc.MainDocumentPart);
         }
 
         public void AddText(elements.Text text)
@@ -65,6 +68,8 @@ namespace OpenXMLight
     
         public void AddTable(table.Table table)
         {
+            const int TWIPSINPIXELS = 15;
+
             if (table.Grid?.ColumnWidth == null)
             {
                 int? maxCountCell = table.Rows?.Select(s => s?.Cells?.Count).DefaultIfEmpty(null).Max();
@@ -82,7 +87,7 @@ namespace OpenXMLight
             else
                 foreach (var row in table.Rows)
                     for (int i = 0; i < table.Grid.ColumnWidth.Length; i++)
-                        row.Cells[i].Width = table.Grid.ColumnWidth[i];
+                        row.Cells[i].Width = table.Grid.ColumnWidth[i] * TWIPSINPIXELS;
 
 
             Doc.Body.AppendChild(table.TableXml);
@@ -99,42 +104,54 @@ namespace OpenXMLight
             ChartPart chartPart = Doc.MainDocumentPart.AddNewPart<ChartPart>();
             chartPart.ChartSpace = chartBuilder.Chart.ChartSpaceXml;
 
-            
+            Paragraph p = new Paragraph();
+            Run r = new Run();
+
+            Drawing drawing = new Drawing();
+            Inline inline = new();
+
+            inline.Append(
+                new Extent() { Cx = chartBuilder.Chart.WidthLong, Cy = chartBuilder.Chart.HeightLong },
+                new EffectExtent() { LeftEdge = 0, TopEdge = 0, RightEdge = 0, BottomEdge = 0 },
+                new DocProperties() { Name = "Диаграмма 1", Id = 1 },
+                new NonVisualGraphicFrameDrawingProperties()
+                );
+            inline.AppendChild(
+                new OpenXmlDrawing.Graphic(
+                    new OpenXmlDrawing.GraphicData(
+                        new OpenXmlChart.ChartReference()
+                        {
+                            Id = Doc.MainDocumentPart.GetIdOfPart(chartPart)
+                        }
+                    )
+                    { Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart" }
+                )
+            );
+            drawing.AppendChild(inline);
+
+            r.AppendChild(drawing);
+            p.AppendChild(r);
+
+            Doc.Body.AppendChild(p);
         }
-        //public void AddChart(charts.ColumnChart columnChart)
-        //{
-        //    ChartPart chartPart = Doc.MainDocumentPart.AddNewPart<ChartPart>();
-        //    chartPart.ChartSpace = columnChart.chartSpace;
 
-        //    Paragraph p = new Paragraph();
-        //    Run r = new Run();
+        public elements.Endnote AddEndnote(string content, TextProperties? textProp = default)
+        {
+            textProp ??= new TextProperties();
+            elements.Endnote endnote = new elements.Endnote(content, StylesDocument.CreateGetEndnoteStyle(), textProp);
 
-        //    Drawing drawing = new Drawing();
-        //    Inline inline = new();
+            EndnotesPart endnotesPart = Doc.MainDocumentPart.EndnotesPart ?? Doc.MainDocumentPart.AddNewPart<EndnotesPart>();
+            endnotesPart.Endnotes ??= new Endnotes();
 
-        //    inline.Append(
-        //        new Extent() { Cx = 5486400L, Cy = 3200400L },
-        //        new EffectExtent() { LeftEdge = 0, TopEdge = 0, RightEdge = 0, BottomEdge = 0 },
-        //        new DocProperties() { Name = "Диаграмма 1", Id = 1},
-        //        new NonVisualGraphicFrameDrawingProperties()
-        //        );
-        //    inline.AppendChild(
-        //        new OpenXmlDrawing.Graphic(
-        //            new OpenXmlDrawing.GraphicData(
-        //                new OpenXmlChart.ChartReference()
-        //                {
-        //                    Id = Doc.MainDocumentPart.GetIdOfPart(chartPart)
-        //                }
-        //            )
-        //            { Uri = "http://schemas.openxmlformats.org/drawingml/2006/chart" }
-        //        )
-        //    );
-        //    drawing.AppendChild(inline);
+            int idEndnote = endnotesPart.Endnotes.Count() == 0 ? 0 : +1;
+            endnote.SetID(idEndnote);
+            Endnote endnoteXml = new Endnote() { Id = idEndnote };
 
-        //    r.AppendChild(drawing);
-        //    p.AppendChild(r);
+            endnoteXml.AppendChild(endnote.Properties.Paragraph);
+            endnotesPart.Endnotes.AppendChild(endnoteXml);
+            endnotesPart.Endnotes.Save();
 
-        //    Doc.Body.AppendChild(p);
-        //}
+            return endnote;
+        }
     }
 }

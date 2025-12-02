@@ -12,30 +12,23 @@ namespace OpenXMLight.Configurations.Elements.Table
     {
         private RowCollection rows;
 
-        public RowCollection Rows 
-        {
-            get => rows;
-            set
-            {
-                rows = value;
-
-                TableXml.RemoveAllChildren<OpenXML.TableRow>();
-                TableXml.Append(value.Select(s => s.RowXml).ToArray());
-            }
-        }
+        public RowCollection Rows => rows;
         public TableProperties Properties { get; set; }
         public TableGrid Grid { get; set; }
+
 
         internal OpenXML.Table TableXml { get; set; }
 
 
         public Table() => this.Create();
-        public Table(TableProperties tblProp, TableGrid? tblGrid = default) => this.Create(tblProp, tblGrid);
+        public Table(TableProperties? tblProp = default, TableGrid? tblGrid = default) => this.Create(tblProp, tblGrid);
 
 
         internal void Create(TableProperties? tblProp = default, TableGrid? tblGrid = default)
         {
             TableXml = new OpenXML.Table();
+
+            rows = new RowCollection() { ParentTable = this };
 
             //Properties
             Properties = tblProp ?? new TableProperties();
@@ -52,7 +45,7 @@ namespace OpenXMLight.Configurations.Elements.Table
         {
             TableXml = table;
 
-            Rows = new RowCollection(table.Elements<OpenXML.TableRow>());
+            rows = new RowCollection(table.Elements<OpenXML.TableRow>());
         }
     }
 }
