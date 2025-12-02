@@ -249,14 +249,14 @@ namespace OpenXMLight.Configurations.Elements.Charts
             #endregion
 
             #region Append right
-            //LineChart
-            OpenXmlChart.LineChart lineChartRight = new OpenXmlChart.LineChart(
-                new OpenXmlChart.Grouping() { Val = OpenXmlChart.GroupingValues.Standard },
-                new OpenXmlChart.VaryColors() { Val = false }
-                );
-
             if (isAxisRight)
             {
+                //LineChart
+                OpenXmlChart.LineChart lineChartRight = new OpenXmlChart.LineChart(
+                    new OpenXmlChart.Grouping() { Val = OpenXmlChart.GroupingValues.Standard },
+                    new OpenXmlChart.VaryColors() { Val = false }
+                    );
+
                 List<ChartData> dataChartRight = this.Chart.Data.Where(w => w.orientationY == Orientation.Right).ToList();
                 foreach (ChartData ser in dataChartRight)
                 {
