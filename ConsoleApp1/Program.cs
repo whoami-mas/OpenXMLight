@@ -20,7 +20,6 @@ try
                 Title = "Line2",
                 Labels = new string[2] { "Element1", "Element2" },
                 Data = new double[2] { 50.44, 39.25},
-                orientationY = Orientation.Right,
             },
             new ChartData()
             {

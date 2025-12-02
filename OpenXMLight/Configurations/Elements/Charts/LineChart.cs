@@ -12,11 +12,9 @@ namespace OpenXMLight.Configurations.Elements.Charts
 {
     public class LineChart : ChartBuilder
     {
-        //internal int[] axisID;
-
+        internal bool isAxisRight = false;
         public LineChart()
         {
-            //axisID = new int[2] { Random.Shared.Next(100000000, 999999999), Random.Shared.Next(100000000, 999999999) };
             AxisID = new()
             {
                 {Axes.Left, Random.Shared.Next(100000000, 999999999) },
@@ -27,7 +25,10 @@ namespace OpenXMLight.Configurations.Elements.Charts
         internal override void GeneratedPlotArea()
         {
             if (Chart.Data.Where(w => w.orientationY == Orientation.Right).Count() > 0)
+            {
                 AxisID.Add(Axes.Right, Random.Shared.Next(100000000, 999999999));
+                isAxisRight = true;
+            }
 
             OpenXmlChart.PlotArea plotAreaElement = new OpenXmlChart.PlotArea(
                 new OpenXmlChart.Layout()
@@ -254,112 +255,115 @@ namespace OpenXMLight.Configurations.Elements.Charts
                 new OpenXmlChart.VaryColors() { Val = false }
                 );
 
-            List<ChartData> dataChartRight = this.Chart.Data.Where(w => w.orientationY == Orientation.Right).ToList();
-            foreach (ChartData ser in dataChartRight)
+            if (isAxisRight)
             {
-                //Index
-                OpenXmlChart.LineChartSeries lineSeries = new OpenXmlChart.LineChartSeries(
-                    new OpenXmlChart.Index() { Val = Convert.ToUInt32(indexSer) },
-                    new OpenXmlChart.Order() { Val = Convert.ToUInt32(indexSer) }
-                );
-
-                //SeriesText
-                lineSeries.AppendChild(
-                    new OpenXmlChart.SeriesText(
-                        new OpenXmlChart.StringReference(
-                            new OpenXmlChart.Formula() { Text = $"Лист1!${(char)('B' + indexSer)}$1" },
-                            new OpenXmlChart.StringCache(
-                                new OpenXmlChart.PointCount() { Val = 1U },
-                                new OpenXmlChart.StringPoint(
-                                    new OpenXmlChart.NumericValue() { Text = ser.Title }
-                                    )
-                                { Index = 0U }
-                                )
-                            )
-                        )
-                );
-
-                //ShapeProperties
-                lineSeries.AppendChild(
-                    new OpenXmlChart.ChartShapeProperties(
-                            new OpenXMLDrawing.Outline(
-                                new OpenXMLDrawing.SolidFill(
-                                    new OpenXMLDrawing.SchemeColor() { Val = this.StyleLine[indexSer] }
-                                    )
-                                )
-                            { Width = 35000, CapType = OpenXMLDrawing.LineCapValues.Round }, //28575
-                            new OpenXMLDrawing.EffectList()
-                    )
-                );
-
-                //Marker
-                lineSeries.AppendChild(
-                    new OpenXmlChart.Marker(
-                        new OpenXmlChart.Symbol() { Val = OpenXmlChart.MarkerStyleValues.None }
-                    )
-                );
-
-                #region CategoryAxisDate
-                OpenXmlChart.CategoryAxisData categoryAxisDate = new OpenXmlChart.CategoryAxisData();
-                OpenXmlChart.StringReference strReference = new OpenXmlChart.StringReference(
-                    new OpenXmlChart.Formula()
-                    {
-                        Text = ser.Labels.Length > 1 ? $"Лист1!$A$2:$A${ser.Labels.Length}"
-                                                                     : "Лист1!$A$2"
-                    }
-                );
-                OpenXmlChart.StringCache strCache = new OpenXmlChart.StringCache(
-                    new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(ser.Labels.Length) }
-                );
-                for (int j = 0; j < ser.Data.Length; j++)
-                    strCache.AppendChild(
-                        new OpenXmlChart.StringPoint(
-                            new OpenXmlChart.NumericValue() { Text = ser.Labels[j] }
-                            )
-                        { Index = Convert.ToUInt32(j) }
+                List<ChartData> dataChartRight = this.Chart.Data.Where(w => w.orientationY == Orientation.Right).ToList();
+                foreach (ChartData ser in dataChartRight)
+                {
+                    //Index
+                    OpenXmlChart.LineChartSeries lineSeries = new OpenXmlChart.LineChartSeries(
+                        new OpenXmlChart.Index() { Val = Convert.ToUInt32(indexSer) },
+                        new OpenXmlChart.Order() { Val = Convert.ToUInt32(indexSer) }
                     );
-                strReference.AppendChild(strCache);
-                categoryAxisDate.AppendChild(strReference);
-                lineSeries.AppendChild(categoryAxisDate);
-                #endregion
 
-                #region Values
-                OpenXmlChart.Values values = new OpenXmlChart.Values();
-                OpenXmlChart.NumberReference numberReference = new OpenXmlChart.NumberReference(
-                    new OpenXmlChart.Formula()
-                    {
-                        Text = ser.Data.Length > 1 ? $"Лист1!${(char)('B' + indexSer)}$2:${(char)('B' + indexSer)}${ser.Data.Length}"
-                                                                   : $"Лист1!${(char)('B' + indexSer)}$"
-                    }
-                );
-                OpenXmlChart.NumberingCache numCache = new OpenXmlChart.NumberingCache(
-                    new OpenXmlChart.FormatCode() { Text = "General" },
-                    new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(ser.Data.Length) }
-                );
-                for (int j = 0; j < ser.Data.Length; j++)
-                    numCache.AppendChild(
-                        new OpenXmlChart.NumericPoint(
-                            new OpenXmlChart.NumericValue() { Text = ser.Data[j].ToString(CultureInfo.InvariantCulture) }
+                    //SeriesText
+                    lineSeries.AppendChild(
+                        new OpenXmlChart.SeriesText(
+                            new OpenXmlChart.StringReference(
+                                new OpenXmlChart.Formula() { Text = $"Лист1!${(char)('B' + indexSer)}$1" },
+                                new OpenXmlChart.StringCache(
+                                    new OpenXmlChart.PointCount() { Val = 1U },
+                                    new OpenXmlChart.StringPoint(
+                                        new OpenXmlChart.NumericValue() { Text = ser.Title }
+                                        )
+                                    { Index = 0U }
+                                    )
+                                )
                             )
-                        { Index = Convert.ToUInt32(j) }
+                    );
+
+                    //ShapeProperties
+                    lineSeries.AppendChild(
+                        new OpenXmlChart.ChartShapeProperties(
+                                new OpenXMLDrawing.Outline(
+                                    new OpenXMLDrawing.SolidFill(
+                                        new OpenXMLDrawing.SchemeColor() { Val = this.StyleLine[indexSer] }
+                                        )
+                                    )
+                                { Width = 35000, CapType = OpenXMLDrawing.LineCapValues.Round }, //28575
+                                new OpenXMLDrawing.EffectList()
+                        )
+                    );
+
+                    //Marker
+                    lineSeries.AppendChild(
+                        new OpenXmlChart.Marker(
+                            new OpenXmlChart.Symbol() { Val = OpenXmlChart.MarkerStyleValues.None }
+                        )
+                    );
+
+                    #region CategoryAxisDate
+                    OpenXmlChart.CategoryAxisData categoryAxisDate = new OpenXmlChart.CategoryAxisData();
+                    OpenXmlChart.StringReference strReference = new OpenXmlChart.StringReference(
+                        new OpenXmlChart.Formula()
+                        {
+                            Text = ser.Labels.Length > 1 ? $"Лист1!$A$2:$A${ser.Labels.Length}"
+                                                                         : "Лист1!$A$2"
+                        }
+                    );
+                    OpenXmlChart.StringCache strCache = new OpenXmlChart.StringCache(
+                        new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(ser.Labels.Length) }
+                    );
+                    for (int j = 0; j < ser.Data.Length; j++)
+                        strCache.AppendChild(
+                            new OpenXmlChart.StringPoint(
+                                new OpenXmlChart.NumericValue() { Text = ser.Labels[j] }
+                                )
+                            { Index = Convert.ToUInt32(j) }
                         );
-                numberReference.AppendChild(numCache);
-                values.AppendChild(numberReference);
+                    strReference.AppendChild(strCache);
+                    categoryAxisDate.AppendChild(strReference);
+                    lineSeries.AppendChild(categoryAxisDate);
+                    #endregion
 
-                lineSeries.AppendChild(values);
-                #endregion
+                    #region Values
+                    OpenXmlChart.Values values = new OpenXmlChart.Values();
+                    OpenXmlChart.NumberReference numberReference = new OpenXmlChart.NumberReference(
+                        new OpenXmlChart.Formula()
+                        {
+                            Text = ser.Data.Length > 1 ? $"Лист1!${(char)('B' + indexSer)}$2:${(char)('B' + indexSer)}${ser.Data.Length}"
+                                                                       : $"Лист1!${(char)('B' + indexSer)}$"
+                        }
+                    );
+                    OpenXmlChart.NumberingCache numCache = new OpenXmlChart.NumberingCache(
+                        new OpenXmlChart.FormatCode() { Text = "General" },
+                        new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(ser.Data.Length) }
+                    );
+                    for (int j = 0; j < ser.Data.Length; j++)
+                        numCache.AppendChild(
+                            new OpenXmlChart.NumericPoint(
+                                new OpenXmlChart.NumericValue() { Text = ser.Data[j].ToString(CultureInfo.InvariantCulture) }
+                                )
+                            { Index = Convert.ToUInt32(j) }
+                            );
+                    numberReference.AppendChild(numCache);
+                    values.AppendChild(numberReference);
 
-                lineChartRight.AppendChild(lineSeries);
+                    lineSeries.AppendChild(values);
+                    #endregion
 
-                indexSer++;
+                    lineChartRight.AppendChild(lineSeries);
+
+                    indexSer++;
+                }
+
+                lineChartRight.Append(
+                   new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxisID[Axes.Bottom]) },
+                   new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxisID[Axes.Right]) }
+                );
+
+                plotAreaElement.AppendChild(lineChartRight);
             }
-
-            lineChartRight.Append(
-               new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxisID[Axes.Bottom]) },
-               new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxisID[Axes.Right]) }
-            );
-
-            plotAreaElement.AppendChild(lineChartRight);
             #endregion
 
             //CategoryAxis
@@ -444,7 +448,7 @@ namespace OpenXMLight.Configurations.Elements.Charts
             );
             plotAreaElement.AppendChild(valAxis);
 
-            if(dataChartRight.Count > 0)
+            if(isAxisRight)
             {
                 //ValueAxis
                 OpenXmlChart.ValueAxis valAxisRight = new OpenXmlChart.ValueAxis(
