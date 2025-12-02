@@ -1,3 +1,3 @@
 # OpenXMLight
-Библиотека для облегчения работы с XML Office
-Поддержка формата  .docx, .xlsx
+Library for easier work with XML Office
+Format support .docx, .xlsx
