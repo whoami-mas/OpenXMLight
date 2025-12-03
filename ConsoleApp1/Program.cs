@@ -12,24 +12,18 @@ try
             new ChartData()
             {
                 Title = "Line1",
-                Labels = new string[2] { "Element1", "Element2" },
-                Data = new double[2] { 9881.382, 10953.682}
+                Labels = new string[1] { "Element1"},
+                Data = new double[1] { 9881.382}
             },
             new ChartData()
             {
                 Title = "Line2",
-                Labels = new string[2] { "Element1", "Element2" },
-                Data = new double[2] { 50.44, 39.25},
-            },
-            new ChartData()
-            {
-                Title = "Line3",
-                Labels = new string[2] { "Element1", "Element2" },
-                Data = new double[2] { 4983.71, 4299.85 }
+                Labels = new string[1] { "Element2" },
+                Data = new double[1] { 50.44},
             }
         };
         
-        ChartBuilder builder = new LineChart().SetTitle("Title chart").SetData(data);
+        ChartBuilder builder = new PieChart().SetTitle("Title chart").SetData(data);
 
         document.BuildChart(builder);
 

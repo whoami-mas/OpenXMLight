@@ -15,8 +15,10 @@ namespace OpenXMLight.Configurations.Elements.Charts
 
         public override ChartBuilder SetData(List<ChartData> data)
         {
-            if (data.Count > 1)
-                throw new Exception("A pie chart allows only a set of data one");
+            if (data.Where(w => w.Labels.Length > 1 || w.Data.Length > 1).ToList().Count > 0)
+                throw new Exception("Круговая диаграмма не допускает несколько значений для 1 серии");
+            //if (data.Count > 1)
+            //    throw new Exception("");
             
             return base.SetData(data);
         }
@@ -84,14 +86,43 @@ namespace OpenXMLight.Configurations.Elements.Charts
                         new OpenXmlChart.StringCache(
                             new OpenXmlChart.PointCount() { Val = 1U},
                             new OpenXmlChart.StringPoint(
-                                new OpenXmlChart.NumericValue() { Text = chartData.Title }
+                                new OpenXmlChart.NumericValue() { Text = base.Chart.Title }
                             ) { Index = 0U}
                         )
                     )
                 )
             );
 
-            for(int i = 0; i < chartData.Data.Count(); i++)
+            #region Inizialization CategoryAxisData
+            OpenXmlChart.CategoryAxisData catAxisData = new OpenXmlChart.CategoryAxisData();
+            OpenXmlChart.StringReference strReference = new OpenXmlChart.StringReference(
+                new OpenXmlChart.Formula()
+                {
+                    Text = base.Chart.Data.Count > 1 ? $"Лист1!$A$2:$A${base.Chart.Data.Count + 1}"
+                                                                                 : "Лист1!$A$2"
+                }
+            );
+            OpenXmlChart.StringCache strCache = new OpenXmlChart.StringCache(
+                new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(base.Chart.Data.Count) }
+                );
+            #endregion
+
+            #region Inizialization Values
+            OpenXmlChart.Values values = new OpenXmlChart.Values();
+            OpenXmlChart.NumberReference numReference = new OpenXmlChart.NumberReference(
+                new OpenXmlChart.Formula()
+                {
+                    Text = base.Chart.Data.Count > 1 ? $"Лист1!$A$2:$A${base.Chart.Data.Count + 1}"
+                                                                                 : "Лист1!$A$2"
+                }
+            );
+            OpenXmlChart.NumberingCache numCache = new OpenXmlChart.NumberingCache(
+                new OpenXmlChart.FormatCode() { Text = "Genereal" },
+                new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(base.Chart.Data.Count) }
+            );
+            #endregion
+
+            for (int i = 0; i < base.Chart.Data.Count; i++)
             {
                 OpenXmlChart.DataPoint dataPoint = new OpenXmlChart.DataPoint(
                     new OpenXmlChart.Index() { Val = Convert.ToUInt32(i) },
@@ -111,59 +142,41 @@ namespace OpenXMLight.Configurations.Elements.Charts
                 );
 
                 pieChartSeries.AppendChild(dataPoint);
-            }
 
-            #region CategoryAxisData
-            OpenXmlChart.CategoryAxisData catAxisData = new OpenXmlChart.CategoryAxisData();
-            OpenXmlChart.StringReference strReference = new OpenXmlChart.StringReference(
-                new OpenXmlChart.Formula() { Text = chartData.Labels.Count() > 1 ? $"Лист1!$A$2:$A${chartData.Labels.Length}"
-                                                                                 : "Лист1!$A$2"
+                #region CategoryAxisData
+                for (int j = 0; j < base.Chart.Data[i].Labels.Length; j++)
+                {
+                    OpenXmlChart.StringPoint strPoint = new OpenXmlChart.StringPoint(
+                        new OpenXmlChart.NumericValue() { Text = base.Chart.Data[i].Title }
+                    )
+                    { Index = Convert.ToUInt32(i) };
+
+                    strCache.AppendChild(strPoint);
                 }
-            );
-            OpenXmlChart.StringCache strCache = new OpenXmlChart.StringCache(
-                new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(chartData.Labels.Length) }
-                );
-            for(int i = 0; i < chartData.Labels.Length; i++)
-            {
-                OpenXmlChart.StringPoint strPoint = new OpenXmlChart.StringPoint(
-                    new OpenXmlChart.NumericValue() { Text = chartData.Labels[i] }
-                )
-                { Index = Convert.ToUInt32(i) };
+                #endregion
 
-                strCache.AppendChild(strPoint);
+                #region Values
+                for (int e = 0; e < base.Chart.Data[i].Data.Length; e++)
+                {
+                    OpenXmlChart.NumericPoint numPoint = new OpenXmlChart.NumericPoint(
+                        new OpenXmlChart.NumericValue() { Text = base.Chart.Data[i].Data[e].ToString(CultureInfo.InvariantCulture) }
+                        )
+                    { Index = Convert.ToUInt32(i) };
+
+                    numCache.AppendChild(numPoint);
+                }
+                #endregion
             }
+            //Append CategoryAxisData
             strReference.AppendChild(strCache);
             catAxisData.AppendChild(strReference);
             pieChartSeries.AppendChild(catAxisData);
-            #endregion
 
-            #region Values
-            OpenXmlChart.Values values = new OpenXmlChart.Values();
-            OpenXmlChart.NumberReference numReference = new OpenXmlChart.NumberReference(
-                new OpenXmlChart.Formula()
-                {
-                    Text = chartData.Labels.Count() > 1 ? $"Лист1!$A$2:$A${chartData.Data.Length}"
-                                                                                 : "Лист1!$A$2"
-                }
-            );
-            OpenXmlChart.NumberingCache numCache = new OpenXmlChart.NumberingCache(
-                new OpenXmlChart.FormatCode() { Text = "Genereal" },
-                new OpenXmlChart.PointCount() { Val = Convert.ToUInt32(chartData.Data.Length) }
-            );
-
-            for(int i = 0; i < chartData.Data.Length; i++)
-            {
-                OpenXmlChart.NumericPoint numPoint = new OpenXmlChart.NumericPoint(
-                    new OpenXmlChart.NumericValue() { Text = chartData.Data[i].ToString(CultureInfo.InvariantCulture) }
-                    ) { Index = Convert.ToUInt32(i)};
-
-                numCache.AppendChild(numPoint);
-            }
+            //Append values
             numReference.AppendChild(numCache);
             values.AppendChild(numReference);
             pieChartSeries.AppendChild(values);
-            #endregion
-
+            
             pieChart.AppendChild(pieChartSeries);
 
             plotAreaElement.AppendChild(pieChart);
