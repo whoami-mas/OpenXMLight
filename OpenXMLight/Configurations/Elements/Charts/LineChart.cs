@@ -7,15 +7,17 @@ using System.Threading.Tasks;
 using OpenXMLDrawing = DocumentFormat.OpenXml.Drawing;
 using OpenXmlChart = DocumentFormat.OpenXml.Drawing.Charts;
 using System.Globalization;
+using OpenXMLight.Spreadsheet.Formatting;
 
 namespace OpenXMLight.Configurations.Elements.Charts
 {
     public class LineChart : ChartBuilder
     {
         internal bool isAxisRight = false;
+
         public LineChart()
         {
-            AxisID = new()
+            AxesID = new()
             {
                 {Axes.Left, Random.Shared.Next(100000000, 999999999) },
                 {Axes.Bottom, Random.Shared.Next(100000000, 999999999) }
@@ -26,7 +28,7 @@ namespace OpenXMLight.Configurations.Elements.Charts
         {
             if (Chart.Data.Where(w => w.orientationY == Orientation.Right).Count() > 0)
             {
-                AxisID.Add(Axes.Right, Random.Shared.Next(100000000, 999999999));
+                AxesID.Add(Axes.Right, Random.Shared.Next(100000000, 999999999));
                 isAxisRight = true;
             }
 
@@ -241,15 +243,15 @@ namespace OpenXMLight.Configurations.Elements.Charts
             //}
 
             lineChartLeft.Append(
-               new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxisID[Axes.Bottom]) },
-               new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxisID[Axes.Left]) }
+               new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxesID[Axes.Bottom]) },
+               new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxesID[Axes.Left]) }
             );
 
             plotAreaElement.AppendChild(lineChartLeft);
             #endregion
 
             #region Append right
-            if (isAxisRight)
+            if (base.IsRightAxis)
             {
                 //LineChart
                 OpenXmlChart.LineChart lineChartRight = new OpenXmlChart.LineChart(
@@ -342,10 +344,18 @@ namespace OpenXMLight.Configurations.Elements.Charts
                     for (int j = 0; j < ser.Data.Length; j++)
                         numCache.AppendChild(
                             new OpenXmlChart.NumericPoint(
-                                new OpenXmlChart.NumericValue() { Text = ser.Data[j].ToString(CultureInfo.InvariantCulture) }
-                                )
+                                new OpenXmlChart.NumericValue()
+                                {
+                                    Text = ser.TypeValueSeries switch
+                                    {
+                                        TypeSeries.Percent => (ser.Data[j] * 0.01).ToString(CultureInfo.InvariantCulture),
+                                        TypeSeries.General => ser.Data[j].ToString(CultureInfo.InvariantCulture),
+                                        _ => throw new ArgumentException("Неизвестный тип серии")
+                                    }
+                                }
+                            )
                             { Index = Convert.ToUInt32(j) }
-                            );
+                        );
                     numberReference.AppendChild(numCache);
                     values.AppendChild(numberReference);
 
@@ -358,8 +368,8 @@ namespace OpenXMLight.Configurations.Elements.Charts
                 }
 
                 lineChartRight.Append(
-                   new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxisID[Axes.Bottom]) },
-                   new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxisID[Axes.Right]) }
+                   new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxesID[Axes.Bottom]) },
+                   new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxesID[Axes.Right]) }
                 );
 
                 plotAreaElement.AppendChild(lineChartRight);
@@ -368,7 +378,7 @@ namespace OpenXMLight.Configurations.Elements.Charts
 
             //CategoryAxis
             OpenXmlChart.CategoryAxis catAxis = new OpenXmlChart.CategoryAxis(
-                new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxisID[Axes.Bottom]) },
+                new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxesID[Axes.Bottom]) },
                 new OpenXmlChart.Scaling(
                     new OpenXmlChart.Orientation() { Val = OpenXmlChart.OrientationValues.MinMax }
                 ),
@@ -393,7 +403,7 @@ namespace OpenXMLight.Configurations.Elements.Charts
                             Alignment = OpenXMLDrawing.PenAlignmentValues.Center},
                     new OpenXMLDrawing.EffectList()
                 ),
-                new OpenXmlChart.CrossingAxis() { Val = Convert.ToUInt32(AxisID[Axes.Left]) },
+                new OpenXmlChart.CrossingAxis() { Val = Convert.ToUInt32(AxesID[Axes.Left]) },
                 new OpenXmlChart.Crosses() { Val = OpenXmlChart.CrossesValues.AutoZero },
                 new OpenXmlChart.AutoLabeled() { Val = true },
                 new OpenXmlChart.LabelAlignment() { Val = OpenXmlChart.LabelAlignmentValues.Center },
@@ -404,7 +414,7 @@ namespace OpenXMLight.Configurations.Elements.Charts
 
             //ValueAxis
             OpenXmlChart.ValueAxis valAxis = new OpenXmlChart.ValueAxis(
-                new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxisID[Axes.Left]) },
+                new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxesID[Axes.Left]) },
                 new OpenXmlChart.Scaling(
                     new OpenXmlChart.Orientation() { Val = OpenXmlChart.OrientationValues.MinMax }
                 ),
@@ -442,23 +452,23 @@ namespace OpenXMLight.Configurations.Elements.Charts
                     ),
                     new OpenXMLDrawing.EffectList()
                 ),
-                new OpenXmlChart.CrossingAxis() { Val = Convert.ToUInt32(AxisID[Axes.Bottom]) },
+                new OpenXmlChart.CrossingAxis() { Val = Convert.ToUInt32(AxesID[Axes.Bottom]) },
                 new OpenXmlChart.Crosses() { Val = OpenXmlChart.CrossesValues.AutoZero },
                 new OpenXmlChart.CrossBetween() { Val = OpenXmlChart.CrossBetweenValues.Between }
             );
             plotAreaElement.AppendChild(valAxis);
 
-            if(isAxisRight)
+            if(base.IsRightAxis)
             {
                 //ValueAxis
                 OpenXmlChart.ValueAxis valAxisRight = new OpenXmlChart.ValueAxis(
-                    new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxisID[Axes.Right]) },
+                    new OpenXmlChart.AxisId() { Val = Convert.ToUInt32(AxesID[Axes.Right]) },
                     new OpenXmlChart.Scaling(
                         new OpenXmlChart.Orientation() { Val = OpenXmlChart.OrientationValues.MinMax }
                     ),
                     new OpenXmlChart.Delete() { Val = false },
                     new OpenXmlChart.AxisPosition() { Val = OpenXmlChart.AxisPositionValues.Right },
-                    new OpenXmlChart.NumberingFormat() { FormatCode = "General", SourceLinked = true },
+                    new OpenXmlChart.NumberingFormat() { FormatCode = base.TypeFormatAxis.Value, SourceLinked = false },
                     new OpenXmlChart.MajorTickMark() { Val = OpenXmlChart.TickMarkValues.Outside },
                     new OpenXmlChart.MinorTickMark() { Val = OpenXmlChart.TickMarkValues.None },
                     new OpenXmlChart.TickLabelPosition() { Val = OpenXmlChart.TickLabelPositionValues.NextTo },
@@ -469,7 +479,7 @@ namespace OpenXMLight.Configurations.Elements.Charts
                         ),
                         new OpenXMLDrawing.EffectList()
                     ),
-                    new OpenXmlChart.CrossingAxis() { Val = Convert.ToUInt32(AxisID[Axes.Bottom]) },
+                    new OpenXmlChart.CrossingAxis() { Val = Convert.ToUInt32(AxesID[Axes.Bottom]) },
                     new OpenXmlChart.Crosses() { Val = OpenXmlChart.CrossesValues.Maximum },
                     new OpenXmlChart.CrossBetween() { Val = OpenXmlChart.CrossBetweenValues.Between }
                 );
