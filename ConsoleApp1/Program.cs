@@ -2,37 +2,35 @@
 using OpenXMLight.Configurations.Elements.Charts;
 using OpenXMLight.Spreadsheet;
 using OpenXMLight.Spreadsheet.Elements;
+using OpenXMLight.Spreadsheet.Formatting;
 
 try
 {
     using(var document = new WordDocument("test.docx", true))
     {
-        List<ChartData> d = new List<ChartData>()
+        List<ChartData> data = new List<ChartData>()
         {
             new ChartData()
             {
-                Title = "Линия1",
-                Labels = new string[2] { "Элемент1", "Элемент2" },
-                Data = new double[2] { 9881.382, 10953.682}
+                Title = "Line1",
+                Labels = new string[2] { "Element1", "Element2"},
+                Data = new double[2] { 19, 13}
             },
             new ChartData()
             {
-                Title = "Линия2",
-                Labels = new string[2] { "Элемент1", "Элемент2" },
-                Data = new double[2] { 50.44, 39.25},
-                orientationY = Orientation.Right,
-            },
-            new ChartData()
-            {
-                Title = "Линия3",
-                Labels = new string[2] { "Элемент1", "Элемент2" },
-                Data = new double[2] { 4983.71, 4299.85 }
+                Title = "Line2",
+                Labels = new string[2] { "Element1", "Element2" },
+                Data = new double[2] { 24, 10},
+                TypeValueSeries = TypeSeries.General,
+                orientationY = Orientation.Right
             }
         };
         
-        ChartBuilder chartB = new LineChart().SetTitle("Тест").SetData(d);
+        ChartBuilder builder = new LineChart().SetTitle("Title chart").SetData(data).SetIsRightAxis(true, TypeValue.General);
 
-        document.BuildChart(chartB);
+        document.BuildChart(builder);
+
+        document.Save();
     }
 }
 catch(Exception ex)

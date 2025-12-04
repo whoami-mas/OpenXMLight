@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenXMLDrawing = DocumentFormat.OpenXml.Drawing;
 using OpenXmlChart = DocumentFormat.OpenXml.Drawing.Charts;
+using OpenXMLight.Spreadsheet.Formatting;
 
 namespace OpenXMLight.Configurations.Elements.Charts
 {
@@ -16,7 +17,9 @@ namespace OpenXMLight.Configurations.Elements.Charts
     {
         public Chart Chart { get; private set; }
         internal Dictionary<int, OpenXMLDrawing.SchemeColorValues> StyleLine { get; private set; }
-        internal Dictionary<Axes, int> AxisID { get; init; }
+        internal Dictionary<Axes, int> AxesID { get; init; }
+        internal bool IsRightAxis { get; set; } = false;
+        internal TypeValue TypeFormatAxis { get; set; }
 
         public ChartBuilder SetTitle(string title)
         {
@@ -37,6 +40,14 @@ namespace OpenXMLight.Configurations.Elements.Charts
 
             return this;
         }
+        public ChartBuilder SetIsRightAxis(bool isRightAxis, TypeValue TypeFormat)
+        {
+            IsRightAxis = isRightAxis;
+            TypeFormatAxis = TypeFormat;
+
+            return this;
+        }
+
 
         public ChartBuilder()
         {
@@ -52,6 +63,7 @@ namespace OpenXMLight.Configurations.Elements.Charts
 
             Chart = new Chart();
         }
+
 
         internal virtual void GeneratedTitle()
         {
