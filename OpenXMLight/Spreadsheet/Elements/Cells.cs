@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using OpenXMLight.Tools;
+using OpenXMLight.Validations;
+
 using OpenXmlPackaging = DocumentFormat.OpenXml.Packaging;
 using OpenXmlSpreadsheet = DocumentFormat.OpenXml.Spreadsheet;
 using OpenXml = DocumentFormat.OpenXml;
-using OpenXMLight.Tools;
-using OpenXMLight.Validations;
 
 namespace OpenXMLight.Spreadsheet.Elements
 {
@@ -44,10 +46,10 @@ namespace OpenXMLight.Spreadsheet.Elements
             }
         }
 
-        internal Cells(OpenXmlPackaging.WorksheetPart worksheetPart, OpenXmlPackaging.WorkbookPart workbookPart) 
+        internal Cells(OpenXmlPackaging.WorksheetPart worksheetPart, OpenXmlPackaging.WorkbookPart workbookPart)
             : base(worksheetPart, workbookPart)
         {
-           
+
         }
 
     }

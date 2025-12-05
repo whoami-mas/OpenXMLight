@@ -13,13 +13,24 @@ namespace OpenXMLight.Validations
 {
     internal static class ValidationExcel
     {
-        internal static void ValidationIndex(int row, int col)
+        internal static void ValidationIndexRow(int row)
         {
             if (row < 1 || row > 1048576)
                 throw new ArgumentOutOfRangeException("Индекс строки неверен");
+        }
+        internal static void ValidationIndexColumn(int col)
+        {
             if (col < 1 || col > 16384)
                 throw new ArgumentOutOfRangeException("Индекс колонки неверен");
         }
+
+        internal static void ValidationIndex(int row, int col)
+        {
+            ValidationIndexRow(row);
+            ValidationIndexColumn(col);
+        }
+
+
 
         internal static void ValidationAddress(string address)
         {
@@ -34,6 +45,8 @@ namespace OpenXMLight.Validations
             int indexRow = HalperData.GetRowIndex(address);
             ValidationIndex(indexRow, indexColumn);
         }
+
+
 
         internal static void ValidationMerge(int rowFrom, int colFrom, int rowTo, int colTo)
         {

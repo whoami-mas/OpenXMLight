@@ -17,11 +17,14 @@ namespace OpenXMLight.Spreadsheet.Elements
             set => SheetXml.Name = value;
         }
         public Cells Cells { get; private set; }
+        public Rows Rows { get; private set; }
+
 
         internal OpenXmlSpreadsheet.Sheet SheetXml { get; private set; }
         internal OpenXmlPackaging.WorksheetPart WorksheetPart { get; set; }
         internal OpenXmlPackaging.WorkbookPart WorkbookPart { get; set; }
         
+
         internal Sheet(OpenXmlPackaging.WorkbookPart workbookPart, OpenXmlPackaging.WorksheetPart worksheetPart, string? name = null)
         {
             Create(workbookPart, worksheetPart: worksheetPart);
@@ -44,6 +47,7 @@ namespace OpenXMLight.Spreadsheet.Elements
             this.WorkbookPart = workbookPart;
 
             Cells = new Cells(this.WorksheetPart, this.WorkbookPart);
+            Rows = new Rows(this.WorksheetPart, this.WorkbookPart);
         }
     }
 }

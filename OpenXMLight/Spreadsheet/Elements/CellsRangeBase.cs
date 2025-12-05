@@ -3,32 +3,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenXMLight.Tools;
+using OpenXMLight.Validations;
+
+using OpenXml = DocumentFormat.OpenXml;
 using OpenXmlPackaging = DocumentFormat.OpenXml.Packaging;
 using OpenXmlSpreadsheet = DocumentFormat.OpenXml.Spreadsheet;
-using OpenXml = DocumentFormat.OpenXml;
-using OpenXMLight.Tools;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using OpenXMLight.Validations;
-using DocumentFormat.OpenXml.Drawing;
 
 namespace OpenXMLight.Spreadsheet.Elements
 {
-    public class CellsRangeBase
+    public class CellsRangeBase : RangeBase
     {
-        private object _value;
+        private object? _value = null;
 
         internal int _row;
         internal int _col;
-        internal string _addressCell;
+        internal string? _addressCell;
+        
+        internal override OpenXmlPackaging.WorksheetPart WorksheetPart { get; init; }
+        internal override OpenXmlPackaging.WorkbookPart WorkbookPart { get; init; }
+        internal override OpenXmlSpreadsheet.SheetData SheetData => WorksheetPart.Worksheet.Elements<OpenXmlSpreadsheet.SheetData>().First();
 
-        internal OpenXmlPackaging.WorksheetPart WorksheetPart { get; private set; }
-        internal OpenXmlSpreadsheet.SheetData SheetData => WorksheetPart.Worksheet.Elements<OpenXmlSpreadsheet.SheetData>().First();
+
         internal OpenXmlSpreadsheet.MergeCells MergeCells => WorksheetPart.Worksheet.Elements<OpenXmlSpreadsheet.MergeCells>().FirstOrDefault();
-        internal OpenXmlPackaging.WorkbookPart WorkbookPart { get; private set; }
-        internal OpenXmlSpreadsheet.Cell CellXml { get; private set; }
 
 
-        public object Value
+        internal OpenXmlSpreadsheet.Cell? CellXml { get; private set; }
+
+
+        internal CellsRangeBase(OpenXmlPackaging.WorksheetPart worksheetPart, OpenXmlPackaging.WorkbookPart workbookPart)
+        {
+            this.WorkbookPart = workbookPart;
+            this.WorksheetPart = worksheetPart;
+        }
+
+        public object? Value
         {
             get
             {
@@ -41,14 +50,6 @@ namespace OpenXMLight.Spreadsheet.Elements
                 _value = value;
             }
         }
-
-
-        internal CellsRangeBase(OpenXmlPackaging.WorksheetPart worksheetPart, OpenXmlPackaging.WorkbookPart workbookPart)
-        {
-            this.WorksheetPart = worksheetPart;
-            this.WorkbookPart = workbookPart;
-        }
-
 
         internal void GetData()
         {
@@ -106,31 +107,34 @@ namespace OpenXMLight.Spreadsheet.Elements
 
             if(CellXml.CellValue == null)
             {
-                if (MergeCells == null)
-                    return;
+                _value = null;
 
-                string addressCell = "";
-                foreach(OpenXmlSpreadsheet.MergeCell item in MergeCells.ChildElements.Cast<OpenXmlSpreadsheet.MergeCell>())
-                {
-                    string[] address = item.Reference.Value.Split(":");
+                return;
+                //if (MergeCells == null)
+                //    return;
 
-                    int indexMinRow = HalperData.GetRowIndex(address[0]);
-                    int indexMaxRow = HalperData.GetRowIndex(address[1]);
+                //string addressCell = "";
+                //foreach(OpenXmlSpreadsheet.MergeCell item in MergeCells.ChildElements.Cast<OpenXmlSpreadsheet.MergeCell>())
+                //{
+                //    string[] address = item.Reference.Value.Split(":");
 
-                    int indexMinCol = HalperData.GetRowIndex(address[0]);
-                    int indexMaxCol = HalperData.GetRowIndex(address[1]);
+                //    int indexMinRow = HalperData.GetRowIndex(address[0]);
+                //    int indexMaxRow = HalperData.GetRowIndex(address[1]);
 
-                    bool isRangeCellFrom = _row >= indexMinRow || _row <= indexMaxRow &&
-                    _col >= indexMinCol || _col <= indexMaxCol;
+                //    int indexMinCol = HalperData.GetRowIndex(address[0]);
+                //    int indexMaxCol = HalperData.GetRowIndex(address[1]);
 
-                    if (isRangeCellFrom)
-                        addressCell = address[0];
-                }
+                //    bool isRangeCellFrom = _row >= indexMinRow || _row <= indexMaxRow &&
+                //    _col >= indexMinCol || _col <= indexMaxCol;
 
-                OpenXmlSpreadsheet.Row rowFind = SheetData.Elements<OpenXmlSpreadsheet.Row>().FirstOrDefault(f => f.RowIndex == HalperData.GetRowIndex(addressCell));
+                //    if (isRangeCellFrom)
+                //        addressCell = address[0];
+                //}
+
+                //OpenXmlSpreadsheet.Row rowFind = SheetData.Elements<OpenXmlSpreadsheet.Row>().FirstOrDefault(f => f.RowIndex == HalperData.GetRowIndex(addressCell));
                 
-                CellXml = rowFind.Elements<OpenXmlSpreadsheet.Cell>()
-                                    .FirstOrDefault(f => f.CellReference == addressCell);
+                //CellXml = rowFind.Elements<OpenXmlSpreadsheet.Cell>()
+                //                    .FirstOrDefault(f => f.CellReference == addressCell);
             }
 
             if (CellXml.DataType != null && CellXml.DataType == OpenXmlSpreadsheet.CellValues.SharedString)
