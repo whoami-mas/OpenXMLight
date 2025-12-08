@@ -73,9 +73,13 @@ try
             }))
             );
 
-        Table table_date = new TableBuilder().AppendRows(row1, row2);
+        Table table_date = new TableBuilder().AppendRows(row1, row2).SetTableGrid(100, 200,200);
                 
         document.AddTable(table_date);
+
+        document.BreakPage();
+
+        document.AddText(new Text("Hello new Page"));
     }
 }
 catch(Exception ex)

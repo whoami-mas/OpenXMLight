@@ -64,6 +64,8 @@ namespace OpenXMLight
             StylesDocument.GenerateStyles(WordProc.MainDocumentPart);
         }
 
+        public void BreakPage() => Doc.Body.AppendChild(new Paragraph(new Run(new Break() { Type = BreakValues.Page })));
+
         public void AddText(elements.Text text)
         {
             ValidationDocument.ValidationWord(WordProc);
