@@ -9,10 +9,6 @@ namespace OpenXMLight.Configurations.Elements.Table
 {
     public class TableGrid
     {
-        private const int TWIPSINPIXELS = 15;
-
-
-
         private int[]? columnWidth;
         
 
@@ -28,7 +24,7 @@ namespace OpenXMLight.Configurations.Elements.Table
                     columnWidth
                             .Select((value, index) => new OpenXML.GridColumn()
                             {
-                                Width = (value * TWIPSINPIXELS).ToString()
+                                Width = (value * Configuration.TwipsInPixels).ToString()
                             })
                             .ToArray()
                 );

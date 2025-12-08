@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenXMLight.Spreadsheet.Elements;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,11 +9,19 @@ namespace OpenXMLight.Configurations.Elements.Table
 {
     public class TableBuilder
     {
-        private Table Table { get; set; }
+        private Table table;
 
-        public TableBuilder SetTableGrid(TableGrid tableGRid)
+        public TableBuilder SetTableProperties(TableProperties tableProperties)
         {
-            Table.Grid = tableGRid;
+            table.Properties = tableProperties;
+            table.TableXml.AppendChild(tableProperties.TblPropXml);
+
+            return this;
+        }
+        public TableBuilder SetTableGrid(TableGrid tableGrid)
+        {
+            table.Grid = tableGrid;
+            table.TableXml.AppendChild(tableGrid.TblGridXml);
 
             return this;
         }
@@ -20,20 +29,20 @@ namespace OpenXMLight.Configurations.Elements.Table
         public TableBuilder AppendRows(params Row[] rows)
         {
             foreach(var row in rows)
-                Table.Rows.Add(row);
+                table.Rows.Add(row);
 
             return this;
         }
 
         public TableBuilder()
         {
-            Table = new();
+            table = new Table();
         }
 
 
         public static implicit operator Table(TableBuilder builder)
         {
-            return builder.Table;
+            return builder.table;
         }
     }
 }

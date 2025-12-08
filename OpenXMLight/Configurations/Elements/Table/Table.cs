@@ -11,35 +11,31 @@ namespace OpenXMLight.Configurations.Elements.Table
     public class Table
     {
         private RowCollection rows;
+        private TableGrid grid;
 
         public RowCollection Rows => rows;
         public TableProperties Properties { get; set; }
-        public TableGrid Grid { get; set; }
+        public TableGrid Grid { get => grid; set 
+            {
+                grid = value;
+
+                this.TableXml.RemoveAllChildren<OpenXML.TableGrid>();
+                this.TableXml.AppendChild<OpenXML.TableGrid>(value.TblGridXml);
+            } }
 
 
         internal OpenXML.Table TableXml { get; set; }
 
 
         public Table() => this.Create();
-        public Table(TableProperties? tblProp = default, TableGrid? tblGrid = default) => this.Create(tblProp, tblGrid);
-
-
-        internal void Create(TableProperties? tblProp = default, TableGrid? tblGrid = default)
+        
+        internal void Create()
         {
             TableXml = new OpenXML.Table();
 
             rows = new RowCollection() { ParentTable = this };
 
-            //Properties
-            if(tblProp != null)
-            {
-                Properties = tblProp; /*?? new TableProperties();*/
-                TableXml.AppendChild(Properties.TblPropXml);
-            }
-
-            //Grid
-            Grid = tblGrid ?? new TableGrid();
-            TableXml.AppendChild(Grid.TblGridXml);
+            this.Grid ??= new TableGrid();
         }
 
 

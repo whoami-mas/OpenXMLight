@@ -74,7 +74,7 @@ try
             );
 
         Table table_date = new TableBuilder().AppendRows(row1, row2);
-        
+                
         document.AddTable(table_date);
     }
 }
