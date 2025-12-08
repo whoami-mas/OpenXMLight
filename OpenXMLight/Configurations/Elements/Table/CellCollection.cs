@@ -27,7 +27,7 @@ namespace OpenXMLight.Configurations.Elements.Table
 
         internal CellCollection(IEnumerable<OpenXML.TableCell> cells)
         {
-            //this.cells = cells.ToList();
+            this.cells = cells.Select(s => new Cell(s)).ToList();
         }
 
         #region functions

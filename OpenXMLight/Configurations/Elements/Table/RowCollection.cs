@@ -44,7 +44,13 @@ namespace OpenXMLight.Configurations.Elements.Table
 
         internal RowCollection(IEnumerable<OpenXML.TableRow> rows)
         {
-            //this.rows = rows.ToList();
+            this.rows = new();
+            foreach(OpenXML.TableRow rowXml in rows)
+            {
+                Row row = new(rowXml);
+                
+                this.rows.Add(row);
+            }
         }
 
         #region functions

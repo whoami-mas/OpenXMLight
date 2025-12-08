@@ -11,16 +11,21 @@ using charts = OpenXMLight.Configurations.Elements.Charts;
 using DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using OpenXmlDrawing = DocumentFormat.OpenXml.Drawing;
 using OpenXmlChart = DocumentFormat.OpenXml.Drawing.Charts;
+using System.Linq;
 
 namespace OpenXMLight
 {
     public class WordDocument : IDisposable
     {
+        private table.Table tables;
+
         private WordprocessingDocument? WordProc { get; set; }
         private Document? Doc { get; set; }
+        public List<table.Table> Tables => Doc.Body.Elements<Table>().Select(tbl => new table.Table(tbl)).ToList();
+
 
         #region Subject facade
-        private SettingsPageWord SettingsDocument { get; set; }
+        public SettingsPageWord SettingsDocument { get; protected set; }
         private StylesWord StylesDocument { get; set; }
         #endregion
 

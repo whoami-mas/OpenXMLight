@@ -33,7 +33,7 @@ namespace OpenXMLight.Configurations.Elements.Table
         {
             RowXml = row;
 
-            Cells = new CellCollection();
+            _cells = new CellCollection(RowXml.Elements<OpenXML.TableCell>());
         }
     }
 }

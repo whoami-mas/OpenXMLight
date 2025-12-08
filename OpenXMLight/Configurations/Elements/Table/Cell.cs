@@ -93,6 +93,20 @@ namespace OpenXMLight.Configurations.Elements.Table
         internal Cell(OpenXML.TableCell cell)
         {
             CellXml = cell;
+
+            this.text = new Text(cell.InnerText);
+            this.width = int.Parse(cell.TableCellProperties?.TableCellWidth?.Width);
+            this.mergeColumn = int.Parse(cell.TableCellProperties?.GridSpan?.Val ?? 0);
+
+            if (cell.TableCellProperties?.VerticalMerge != null)
+            {
+                if (cell.TableCellProperties?.VerticalMerge.Val == OpenXML.MergedCellValues.Restart)
+                    this.vMerge = VerticalMerge.Start;
+                else
+                    this.vMerge = VerticalMerge.Continue;
+            }
+            else
+                this.vMerge = VerticalMerge.Non;
         }
 
 

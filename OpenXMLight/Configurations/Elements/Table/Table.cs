@@ -45,7 +45,7 @@ namespace OpenXMLight.Configurations.Elements.Table
         {
             TableXml = table;
 
-            rows = new RowCollection(table.Elements<OpenXML.TableRow>());
+            rows = new RowCollection(table.Elements<OpenXML.TableRow>()) { ParentTable = this };
         }
     }
 }
