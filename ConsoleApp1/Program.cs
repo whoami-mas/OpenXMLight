@@ -14,8 +14,6 @@ try
     {
         document.SettingsDocument.Orientation = OrientationPage.Landscape;
 
-
-        Table table_date = new Table();
         Row row1 = new Row();
         row1.Cells = new CellCollection(
             new Cell(new Text("", textProp: new TextProperties()
@@ -45,7 +43,6 @@ try
                 { After = 0, Before = 0 }
             }))
             );
-        table_date.Rows.Add(row1);
         Row row2 = new Row();
         row2.Cells = new CellCollection(
             new Cell(new Text("", textProp: new TextProperties()
@@ -75,8 +72,9 @@ try
                 { After = 0, Before = 0 }
             }))
             );
-        table_date.Rows.Add(row2);
 
+        Table table_date = new TableBuilder().AppendRows(row1, row2);
+        
         document.AddTable(table_date);
     }
 }

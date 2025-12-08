@@ -43,12 +43,13 @@ namespace OpenXMLight.Configurations.Elements.Table
         }
 
 
-
         internal Table(OpenXML.Table table)
         {
             TableXml = table;
 
             rows = new RowCollection(table.Elements<OpenXML.TableRow>()) { ParentTable = this };
         }
+
+        public static TableBuilder TableBuilder() => new TableBuilder();
     }
 }
