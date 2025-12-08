@@ -31,8 +31,11 @@ namespace OpenXMLight.Configurations.Elements.Table
             rows = new RowCollection() { ParentTable = this };
 
             //Properties
-            Properties = tblProp ?? new TableProperties();
-            TableXml.AppendChild(Properties.TblPropXml);
+            if(tblProp != null)
+            {
+                Properties = tblProp; /*?? new TableProperties();*/
+                TableXml.AppendChild(Properties.TblPropXml);
+            }
 
             //Grid
             Grid = tblGrid ?? new TableGrid();
