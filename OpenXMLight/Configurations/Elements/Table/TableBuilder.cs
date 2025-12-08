@@ -18,9 +18,14 @@ namespace OpenXMLight.Configurations.Elements.Table
 
             return this;
         }
-        public TableBuilder SetTableGrid(params int[] tableGrid)
+        public TableBuilder SetTableGrid(params int[] widthColumn)
         {
-            table.Grid = new TableGrid() { ColumnWidth = tableGrid };
+            int countCell = (int)table.Rows?.Select(s => s?.Cells?.Count).DefaultIfEmpty(0).Max();
+
+            if (countCell != widthColumn.Length)
+                throw new ArgumentException("Количество ячеек не сходиться с указанным количеством размера");
+
+            table.Grid.ColumnWidth = widthColumn;
             
             return this;
         }
