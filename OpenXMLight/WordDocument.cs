@@ -73,8 +73,6 @@ namespace OpenXMLight
     
         public void AddTable(table.Table table)
         {
-            const int TWIPSINPIXELS = 15;
-
             if (table.Grid?.ColumnWidth == null)
             {
                 int? maxCountCell = table.Rows?.Select(s => s?.Cells?.Count).DefaultIfEmpty(null).Max();
@@ -92,7 +90,7 @@ namespace OpenXMLight
             else
                 foreach (var row in table.Rows)
                     for (int i = 0; i < table.Grid.ColumnWidth.Length; i++)
-                        row.Cells[i].Width = table.Grid.ColumnWidth[i] * TWIPSINPIXELS;
+                        row.Cells[i].Width = table.Grid.ColumnWidth[i] * Configuration.TwipsInPixels;
 
 
             Doc.Body.AppendChild(table.TableXml);

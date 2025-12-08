@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenXML = DocumentFormat.OpenXml.Wordprocessing;
+using OpenXmlFormatte = DocumentFormat.OpenXml;
 
 namespace OpenXMLight.Configurations.Elements
 {
@@ -21,7 +22,12 @@ namespace OpenXMLight.Configurations.Elements
                 content = value;
 
                 Properties.Run.RemoveAllChildren<OpenXML.Text>();
-                Properties.Run.Append(new OpenXML.Text(content));
+
+                OpenXML.Text textXml = new OpenXML.Text();
+                textXml.Text = value;
+                textXml.Space = string.IsNullOrWhiteSpace(value) ? OpenXmlFormatte.SpaceProcessingModeValues.Preserve : null;
+                
+                Properties.Run.Append(textXml);
             }
         }
         public Endnote? Endnote {

@@ -36,7 +36,11 @@ try
         };
 
         document.AddText(new Text($"ООО МКК «test»", textProp: txtProp));
+
+        txtProp1.SpBetLines.Before = 220;
         document.AddText(new Text("ЖУРНАЛ", textProp: txtProp1));
+
+        txtProp.SpBetLines.After = 150;
         document.AddText(new Text("Журнал учета проведения обучений по Риск-менеджменту", textProp: txtProp));
 
         Table table_date = new Table();
