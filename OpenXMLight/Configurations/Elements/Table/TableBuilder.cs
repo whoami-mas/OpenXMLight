@@ -18,11 +18,10 @@ namespace OpenXMLight.Configurations.Elements.Table
 
             return this;
         }
-        public TableBuilder SetTableGrid(TableGrid tableGrid)
+        public TableBuilder SetTableGrid(params int[] tableGrid)
         {
-            table.Grid = tableGrid;
-            table.TableXml.AppendChild(tableGrid.TblGridXml);
-
+            table.Grid = new TableGrid() { ColumnWidth = tableGrid };
+            
             return this;
         }
 
