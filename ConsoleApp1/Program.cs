@@ -1,21 +1,61 @@
 ﻿using ConsoleApp1;
 using OpenXMLight;
+using OpenXMLight.Configurations;
+using OpenXMLight.Configurations.Elements;
 using OpenXMLight.Configurations.Elements.Table;
 using OpenXMLight.Configurations.Formatting;
-using OpenXMLight.Spreadsheet;
-using OpenXMLight.Spreadsheet.Elements;
-using OpenXMLight.Spreadsheet.Formatting;
 
 try
 {
     //string path = @"C:\Users\bushk\Desktop\Reportings risks\act_rep_4_2025.xlsx";
     string path = @"testingTable.docx";
 
-    using (WordDocument doc = new WordDocument(path))
+    using (WordDocument document = new WordDocument(path, true))
     {
-        Table countTable = doc.Tables[0];
+        document.SettingsDocument.Orientation = OrientationPage.Landscape;
 
-        string s = countTable.Rows[1].Cells[1].Text.Content;
+        TextProperties txtProp = new TextProperties()
+        {
+            FontSize = 16,
+            FontFamily = FontsFamily.TimesNewRoman,
+            Bold = true,
+            HAlignment = HorizonatalAlignments.Center,
+        };
+        TextProperties txtProp1 = new TextProperties()
+        {
+            FontSize = 24,
+            FontFamily = FontsFamily.TimesNewRoman,
+            Bold = true,
+            HAlignment = HorizonatalAlignments.Center,
+        };
+        TextProperties txtProp2 = new TextProperties()
+        {
+            FontSize = 16,
+            FontFamily = FontsFamily.TimesNewRoman,
+            HAlignment = HorizonatalAlignments.Center,
+        };
+
+        document.AddText(new Text($"ООО МКК «test»", textProp: txtProp));
+        document.AddText(new Text("ЖУРНАЛ", textProp: txtProp1));
+        document.AddText(new Text("Журнал учета проведения обучений по Риск-менеджменту", textProp: txtProp));
+
+        Table table_date = new Table();
+        Row row1 = new Row();
+        row1.Cells = new CellCollection(
+            new Cell(new Text("")),
+            new Cell(new Text("Начат:", textProp: txtProp)),
+            new Cell(new Text($"{DateTime.Now.ToString("dd.MM.yyyy")}", textProp: txtProp2))
+            );
+        table_date.Rows.Add(row1);
+        Row row2 = new Row();
+        row2.Cells = new CellCollection(
+            new Cell(new Text("")),
+            new Cell(new Text("Окончен:", textProp: txtProp)),
+            new Cell(new Text($"__.__.____", textProp: txtProp2))
+            );
+        table_date.Rows.Add(row2);
+
+        document.AddTable(table_date);
     }
 }
 catch(Exception ex)

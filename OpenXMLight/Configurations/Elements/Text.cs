@@ -56,7 +56,7 @@ namespace OpenXMLight.Configurations.Elements
 
         internal void Create(TextProperties? textProp = default)
         {
-            this.Properties = textProp ?? new();
+            this.Properties = textProp != null ? new TextProperties(textProp) : new();
 
             this.Properties.Paragraph.AppendChild(this.Properties.Run);
         }

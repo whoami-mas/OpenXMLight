@@ -40,7 +40,7 @@ namespace OpenXMLight.Configurations
                 fontFamily = value;
 
                 Run.RunProperties.RunFonts = null;
-                Run.RunProperties.RunFonts = new OpenXML.RunFonts() { Ascii = fontFamily.Value };
+                Run.RunProperties.RunFonts = new OpenXML.RunFonts() { Ascii = fontFamily.Value, HighAnsi = fontFamily.Value };
             }
         }
         public bool Bold 
@@ -89,6 +89,17 @@ namespace OpenXMLight.Configurations
         }
 
         public TextProperties() => this.Create();
+
+        internal TextProperties(TextProperties textProp)
+        {
+            this.Create();
+
+            FontSize = textProp.FontSize;
+            FontFamily = textProp.FontFamily;
+            Bold = textProp.Bold;
+            HAlignment = textProp.HAlignment;
+            SpBetLines = textProp.SpBetLines;
+        }
 
         internal void Create()
         {
