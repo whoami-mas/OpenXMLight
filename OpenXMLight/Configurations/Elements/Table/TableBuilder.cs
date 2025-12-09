@@ -13,9 +13,10 @@ namespace OpenXMLight.Configurations.Elements.Table
 
         public TableBuilder SetTableProperties(TableProperties tableProperties)
         {
-            table.Properties = tableProperties;
-            table.TableXml.AppendChild(tableProperties.TblPropXml);
-
+            table.Properties.Border = tableProperties.Border;
+            table.Properties.Size = tableProperties.Size;
+            table.Properties.MarginCell = tableProperties.MarginCell;
+            
             return this;
         }
         public TableBuilder SetTableGrid(params int[] widthColumn)

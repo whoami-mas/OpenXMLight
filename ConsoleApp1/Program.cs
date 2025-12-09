@@ -73,7 +73,9 @@ try
             }))
             );
 
-        Table table_date = new TableBuilder().AppendRows(row1, row2).SetTableGrid(100, 200,200);
+        Table table_date = new TableBuilder().AppendRows(row1, row2)
+            .SetTableGrid(100, 200,200)
+            .SetTableProperties(new TableProperties(4, BordersType.Single, 7));
                 
         document.AddTable(table_date);
 

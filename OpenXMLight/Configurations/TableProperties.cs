@@ -11,11 +11,39 @@ namespace OpenXMLight.Configurations
 {
     public class TableProperties
     {
+        private uint size;
+        private BordersType borders;
+        private int marginCell;
+
         internal OpenXML.TableProperties TblPropXml { get; set; }
 
-        private uint Size { get;}
-        private BordersType Border { get; set; }
-        private int MarginCell { get; set; }
+        public uint Size { get => size; set 
+            {
+                size = value;
+
+                ValidateBorders();
+
+                TblPropXml.TableBorders.TopBorder.Size = value;
+                TblPropXml.TableBorders.BottomBorder.Size = value;
+                TblPropXml.TableBorders.LeftBorder.Size = value;
+                TblPropXml.TableBorders.RightBorder.Size = value;
+                TblPropXml.TableBorders.InsideHorizontalBorder.Size = value;
+                TblPropXml.TableBorders.InsideVerticalBorder.Size = value;
+            } }
+        public BordersType Border { get => borders; set 
+            {
+                borders = value;
+
+                ValidateBorders();
+
+                TblPropXml.TableBorders.TopBorder.Val = value.Value;
+                TblPropXml.TableBorders.BottomBorder.Val = value.Value;
+                TblPropXml.TableBorders.LeftBorder.Val = value.Value;
+                TblPropXml.TableBorders.RightBorder.Val = value.Value;
+                TblPropXml.TableBorders.InsideHorizontalBorder.Val = value.Value;
+                TblPropXml.TableBorders.InsideVerticalBorder.Val = value.Value;
+            } }
+        public int MarginCell { get; set; }
 
         /// <summary>
         /// 
@@ -25,11 +53,11 @@ namespace OpenXMLight.Configurations
         /// <param name="paddingLR">pt margin cells left\right</param>
         public TableProperties(uint sizeBorder = 4, BordersType borderStyle = default, int paddingLR = 7)
         {
+            this.Create();
+
             this.Size = sizeBorder;
             this.Border = borderStyle;
-            this.MarginCell = paddingLR * 15;
-
-            this.Create();
+            this.MarginCell = paddingLR * Configuration.TwipsInPixels;
         }
 
         private void Create()
@@ -37,19 +65,32 @@ namespace OpenXMLight.Configurations
             TblPropXml = new OpenXML.TableProperties(
                 new OpenXML.TableWidth() { Type = OpenXML.TableWidthUnitValues.Auto, Width = "0" },
                 
-                new OpenXML.TableBorders(
-                    new OpenXML.TopBorder() { Val = Border.Value, Size = Size },
-                    new OpenXML.BottomBorder() { Val = Border.Value, Size = Size },
-                    new OpenXML.LeftBorder() { Val = Border.Value, Size = Size },
-                    new OpenXML.RightBorder() { Val = Border.Value, Size = Size },
-                    new OpenXML.InsideHorizontalBorder() { Val = Border.Value, Size = Size },
-                    new OpenXML.InsideVerticalBorder() { Val = Border.Value, Size = Size }
-                    ),
+                //new OpenXML.TableBorders(
+                //    new OpenXML.TopBorder() { Val = Border.Value, Size = Size },
+                //    new OpenXML.BottomBorder() { Val = Border.Value, Size = Size },
+                //    new OpenXML.LeftBorder() { Val = Border.Value, Size = Size },
+                //    new OpenXML.RightBorder() { Val = Border.Value, Size = Size },
+                //    new OpenXML.InsideHorizontalBorder() { Val = Border.Value, Size = Size },
+                //    new OpenXML.InsideVerticalBorder() { Val = Border.Value, Size = Size }
+                //    ),
                 new OpenXML.TableCellMarginDefault(
                     new OpenXML.TableCellLeftMargin() { Width = (OpenXmlType.Int16Value)MarginCell, Type = OpenXML.TableWidthValues.Dxa },
                     new OpenXML.TableCellRightMargin() { Width = (OpenXmlType.Int16Value)MarginCell, Type = OpenXML.TableWidthValues.Dxa }
                 )
             );
+        }
+
+        private void ValidateBorders()
+        {
+            if (TblPropXml.TableBorders == null)
+                TblPropXml.TableBorders = new(
+                        new OpenXML.TopBorder(),
+                        new OpenXML.BottomBorder(),
+                        new OpenXML.LeftBorder(),
+                        new OpenXML.RightBorder(),
+                        new OpenXML.InsideHorizontalBorder(),
+                        new OpenXML.InsideVerticalBorder()
+                    );
         }
     }
 }
