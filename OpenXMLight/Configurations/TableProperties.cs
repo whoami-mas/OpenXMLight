@@ -14,6 +14,7 @@ namespace OpenXMLight.Configurations
         private uint size;
         private BordersType borders;
         private int marginCell;
+        private bool _fixed;
 
         internal OpenXML.TableProperties TblPropXml { get; set; }
 
@@ -49,6 +50,15 @@ namespace OpenXMLight.Configurations
 
                 TblPropXml.TableCellMarginDefault.TableCellLeftMargin.Width = Convert.ToInt16(marginCell);
                 TblPropXml.TableCellMarginDefault.TableCellRightMargin.Width = Convert.ToInt16(marginCell);
+            }
+        }
+        public bool Fixed { get => _fixed;
+            set{
+                _fixed = value;
+
+                TblPropXml.RemoveAllChildren<OpenXML.TableLayout>();
+                if (_fixed)
+                    TblPropXml.TableLayout ??= new OpenXML.TableLayout() { Type = OpenXML.TableLayoutValues.Fixed };
             }
         }
 

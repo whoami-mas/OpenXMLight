@@ -40,8 +40,8 @@ namespace OpenXMLight.Configurations.Elements.Table
 
             rows = new RowCollection() { ParentTable = this };
 
-            this.Grid ??= new TableGrid();
             this.Properties ??= new TableProperties();
+            this.Grid ??= new TableGrid();
         }
 
 

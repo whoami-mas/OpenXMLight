@@ -16,6 +16,7 @@ namespace OpenXMLight.Configurations.Elements.Table
             table.Properties.Border = tableProperties.Border;
             table.Properties.Size = tableProperties.Size;
             table.Properties.MarginCell = tableProperties.MarginCell;
+            table.Properties.Fixed = tableProperties.Fixed;
             
             return this;
         }

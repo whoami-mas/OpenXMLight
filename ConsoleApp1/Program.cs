@@ -21,22 +21,95 @@ try
         document.SettingsDocument.MarginLeft = 78;
         document.SettingsDocument.MarginRight = 78;
 
-        int width = document.SettingsDocument.WidthPage;
+        Row header = new Row();
+        header.Cells = new CellCollection(
+            new Cell(new Text("Дата", textProp: new TextProperties()
+            {
+                FontSize = 11,
+                Bold = true,
+                FontFamily = FontsFamily.TimesNewRoman,
+                HAlignment = HorizonatalAlignments.Center
+            }), vMerge: VerticalMerge.Start, vAlignment: VerticalAlignment.Center),
+            new Cell(new Text("Фамилия, имя, отчество обучаемого", textProp: new TextProperties()
+            {
+                FontSize = 11,
+                Bold = true,
+                FontFamily = FontsFamily.TimesNewRoman,
+                HAlignment = HorizonatalAlignments.Center
+            }), vMerge: VerticalMerge.Start),
+            new Cell(new Text("Год рождения", textProp: new TextProperties()
+            {
+                FontSize = 11,
+                Bold = true,
+                FontFamily = FontsFamily.TimesNewRoman,
+                HAlignment = HorizonatalAlignments.Center
+            }), vMerge: VerticalMerge.Start),
+            new Cell(new Text("Должность обучаемого", textProp: new TextProperties()
+            {
+                FontSize = 11,
+                Bold = true,
+                FontFamily = FontsFamily.TimesNewRoman,
+                HAlignment = HorizonatalAlignments.Center
+            }), vMerge: VerticalMerge.Start),
+            new Cell(new Text("Вид обучения", textProp: new TextProperties()
+            {
+                FontSize = 11,
+                Bold = true,
+                FontFamily = FontsFamily.TimesNewRoman,
+                HAlignment = HorizonatalAlignments.Center
+            }), vMerge: VerticalMerge.Start),
+            new Cell(new Text("Основание проведения внепланового обучения", textProp: new TextProperties()
+            {
+                FontSize = 11,
+                Bold = true,
+                FontFamily = FontsFamily.TimesNewRoman,
+                HAlignment = HorizonatalAlignments.Center
+            }), vMerge: VerticalMerge.Start),
+            new Cell(new Text("Фамилия, инициалы, должность обучающего", textProp: new TextProperties()
+            {
+                FontSize = 11,
+                Bold = true,
+                FontFamily = FontsFamily.TimesNewRoman,
+                HAlignment = HorizonatalAlignments.Center
+            }), vMerge: VerticalMerge.Start),
+            new Cell(new Text("Подпись", textProp: new TextProperties()
+            {
+                FontSize = 11,
+                Bold = true,
+                FontFamily = FontsFamily.TimesNewRoman,
+                HAlignment = HorizonatalAlignments.Center
+            })).Merge(1)
+        );
+        Row header2 = new Row();
+        header2.Cells = new CellCollection(
+            new Cell(new Text(""), vMerge: VerticalMerge.Continue),
+            new Cell(new Text(""), vMerge: VerticalMerge.Continue),
+            new Cell(new Text(""), vMerge: VerticalMerge.Continue),
+            new Cell(new Text(""), vMerge: VerticalMerge.Continue),
+            new Cell(new Text(""), vMerge: VerticalMerge.Continue),
+            new Cell(new Text(""), vMerge: VerticalMerge.Continue),
+            new Cell(new Text(""), vMerge: VerticalMerge.Continue),
+            new Cell(new Text("Обучающего", textProp: new TextProperties()
+            {
+                FontSize = 11,
+                Bold = true,
+                FontFamily = FontsFamily.TimesNewRoman,
+                HAlignment = HorizonatalAlignments.Center
+            })),
+            new Cell(new Text("Обучаемого", textProp: new TextProperties()
+            {
+                FontSize = 11,
+                Bold = true,
+                FontFamily = FontsFamily.TimesNewRoman,
+                HAlignment = HorizonatalAlignments.Center
+            }))
+        );
 
-        Row row1 = new Row();
-        row1.Cells = new CellCollection(
-            new Cell(new Text("1")),
-            new Cell(new Text("2")),
-            new Cell(new Text("3"))
-            );
-        Row row2 = new Row();
-        row2.Cells = new CellCollection(
-            new Cell(new Text("4")),
-            new Cell(new Text("5")).Merge(1)
-            );
+        Table table_data = new TableBuilder().AppendRows(header, header2)
+            .SetTableGrid(83, 206, 58, 113, 75, 121, 132, 103, 96)
+            .SetTableProperties(new TableProperties() { MarginCell = 5, Fixed = true });
 
-        Table tbl = new TableBuilder().AppendRows(row1, row2).SetTableProperties(new TableProperties() { MarginCell = 17});
-        document.AddTable(tbl);
+        document.AddTable(table_data);
 
     }
 }

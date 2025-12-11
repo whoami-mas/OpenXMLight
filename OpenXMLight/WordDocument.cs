@@ -90,9 +90,10 @@ namespace OpenXMLight
                         cell.Width = int.Parse(widthColumn);
             }
             else
-                foreach(var row in table.Rows)
+            {
+                foreach (var row in table.Rows)
                 {
-                    for(int i = 0; i < row.Cells.Count; i++)
+                    for (int i = 0; i < row.Cells.Count; i++)
                     {
                         if (row.Cells[i].CellSpan != 0)
                             row.Cells[i].Width = table.Grid.ColumnWidth.Skip(i).Take(row.Cells[i].CellSpan).Sum();
@@ -100,10 +101,10 @@ namespace OpenXMLight
                             row.Cells[i].Width = table.Grid.ColumnWidth[i];
                     }
                 }
-                //foreach (var row in table.Rows)
-                //    for (int i = 0; i < table.Grid.ColumnWidth.Length; i++)
-                //        row.Cells[i].Width = table.Grid.ColumnWidth[i] * Configuration.TwipsInPixels;
 
+                table.Properties.TblPropXml.TableWidth.Width = (table.Grid.ColumnWidth.Sum() * Configuration.TwipsInPixels).ToString();
+                table.Properties.TblPropXml.TableWidth.Type = TableWidthUnitValues.Dxa;
+            }
 
             Doc.Body.AppendChild(table.TableXml);
         }

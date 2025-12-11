@@ -13,6 +13,8 @@ namespace OpenXMLight.Configurations.Elements.Table
         private Text text;
         private int width;
         private VerticalMerge vMerge;
+        private VerticalAlignment verticalAlignment;
+
 
         List<ICellObserver> observers = new();
 
@@ -64,20 +66,44 @@ namespace OpenXMLight.Configurations.Elements.Table
                 }
             }
         }
+        public VerticalAlignment VerticalAlignment { get => verticalAlignment;
+            set {
+                verticalAlignment = value;
 
+                this.CellXml.RemoveAllChildren<OpenXML.TableCellVerticalAlignment>();
+                switch(verticalAlignment)
+                {
+                    case VerticalAlignment.Top:
+                        this.CellXml.TableCellProperties.TableCellVerticalAlignment 
+                            ??= new OpenXML.TableCellVerticalAlignment() { Val = OpenXML.TableVerticalAlignmentValues.Top };
+                        break;
+                    case VerticalAlignment.Center:
+                        this.CellXml.TableCellProperties.TableCellVerticalAlignment 
+                            ??= new OpenXML.TableCellVerticalAlignment() { Val = OpenXML.TableVerticalAlignmentValues.Center };
+                        break;
+                    case VerticalAlignment.Bottom:
+                        this.CellXml.TableCellProperties.TableCellVerticalAlignment 
+                            ??= new OpenXML.TableCellVerticalAlignment() { Val = OpenXML.TableVerticalAlignmentValues.Bottom };
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
 
         internal OpenXML.TableCell CellXml { get; set; }
 
 
         public Cell() => this.Create();
         
-        public Cell(Text text,int width = 0, VerticalMerge vMerge = VerticalMerge.Non)
+        public Cell(Text text, int width = 0, VerticalMerge vMerge = VerticalMerge.Non, VerticalAlignment vAlignment = VerticalAlignment.Top)
         {
             Create();
 
             this.Text = text;
             this.VMerge = vMerge;
             this.Width = width;
+            this.VerticalAlignment = vAlignment;
         }
 
         internal Cell(OpenXML.TableCell cell)
@@ -96,7 +122,20 @@ namespace OpenXMLight.Configurations.Elements.Table
             }
             else
                 this.vMerge = VerticalMerge.Non;
+
+            if(cell.TableCellProperties?.TableCellVerticalAlignment != null)
+            {
+                if (cell.TableCellProperties?.TableCellVerticalAlignment.Val == OpenXML.TableVerticalAlignmentValues.Top)
+                    this.verticalAlignment = VerticalAlignment.Top;
+                else if (cell.TableCellProperties?.TableCellVerticalAlignment.Val == OpenXML.TableVerticalAlignmentValues.Center)
+                    this.verticalAlignment = VerticalAlignment.Center;
+                else if (cell.TableCellProperties?.TableCellVerticalAlignment.Val == OpenXML.TableVerticalAlignmentValues.Bottom)
+                    this.verticalAlignment = VerticalAlignment.Bottom;
+            }
+            else 
+                this.verticalAlignment = VerticalAlignment.Top;
         }
+
 
 
         private void Create()
