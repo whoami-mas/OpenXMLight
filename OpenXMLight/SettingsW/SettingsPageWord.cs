@@ -71,23 +71,23 @@ namespace OpenXMLight.SettingsW
         public int MarginTop { get => marginTop / Configuration.TwipsInPixels;
             set { 
                 marginTop = value * Configuration.TwipsInPixels;
-                SectionPropXml.GetFirstChild<PageMargin>().Top = value;
+                SectionPropXml.GetFirstChild<PageMargin>().Top = marginTop;
             } 
         }
         public int MarginLeft { get => marginLeft / Configuration.TwipsInPixels;
             set {
                 marginLeft = value * Configuration.TwipsInPixels;
-                SectionPropXml.GetFirstChild<PageMargin>().Left = Convert.ToUInt32(value);
+                SectionPropXml.GetFirstChild<PageMargin>().Left = Convert.ToUInt32(marginLeft);
             } }
         public int MarginRight { get => marginRight / Configuration.TwipsInPixels;
             set {
                 marginRight = value * Configuration.TwipsInPixels;
-                SectionPropXml.GetFirstChild<PageMargin>().Right = Convert.ToUInt32(value);
+                SectionPropXml.GetFirstChild<PageMargin>().Right = Convert.ToUInt32(marginRight);
             } }
         public int MarginBottom { get => marginBottom / Configuration.TwipsInPixels;
             set {
                 marginBottom = value * Configuration.TwipsInPixels;
-                SectionPropXml.GetFirstChild<PageMargin>().Bottom = value;
+                SectionPropXml.GetFirstChild<PageMargin>().Bottom = marginBottom;
             } }
         public int MarginHeader { get; set; }
         public int MarginFooter { get; set; }

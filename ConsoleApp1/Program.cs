@@ -71,9 +71,9 @@ try
 
         //document.AddTable(table_date);
         document.SettingsDocument.Orientation = OrientationPage.Landscape;
-        document.SettingsDocument.MarginTop = 425;
-        document.SettingsDocument.MarginLeft = 1170;
-        document.SettingsDocument.MarginRight = 1170;
+        document.SettingsDocument.MarginTop = 50;
+        document.SettingsDocument.MarginLeft = 78;
+        document.SettingsDocument.MarginRight = 78;
 
         int width = document.SettingsDocument.WidthPage;
 
