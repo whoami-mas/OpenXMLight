@@ -11,9 +11,20 @@ Format support .docx, .xlsx
 
 ### Example of create table 📈
 
-```python
-def add(a, b):
-    return a + b
+```C#
+Row row1 = new Row();
+row1.Cells = new CellCollection(
+    new Cell(new Text("1")),
+    new Cell(new Text("2")),
+    new Cell(new Text("3"))
+    );
+Row row2 = new Row();
+row2.Cells = new CellCollection(
+    new Cell(new Text("4")),
+    new Cell(new Text("5")).Merge(1)
+    );
 
-print(add(2, 3))
+Table tbl = new TableBuilder().AppendRows(row1, row2);
+document.AddTable(tbl);
+```
 <h2>Excel</h2>
