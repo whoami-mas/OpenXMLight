@@ -37,7 +37,8 @@ namespace OpenXMLight.Configurations.Elements.Table
                 width = value;
 
                 CellXml.TableCellProperties?.RemoveAllChildren<OpenXML.TableCellWidth>();
-                CellXml.TableCellProperties?.AppendChild(new OpenXML.TableCellWidth() {Type = OpenXML.TableWidthUnitValues.Dxa, Width = width.ToString() });
+                CellXml.TableCellProperties?.AppendChild(new OpenXML.TableCellWidth()
+                    {Type = OpenXML.TableWidthUnitValues.Dxa, Width = (width * Configuration.TwipsInPixels ).ToString() });
             }
         }
         public int CellSpan => this.CellXml.TableCellProperties?.GridSpan?.Val ?? 0;
@@ -84,7 +85,7 @@ namespace OpenXMLight.Configurations.Elements.Table
             CellXml = cell;
 
             this.Text = new Text(cell.Elements<OpenXML.Paragraph>().First());
-            this.width = int.Parse(cell.TableCellProperties?.TableCellWidth?.Width);
+            this.width = int.Parse(cell.TableCellProperties?.TableCellWidth?.Width) / Configuration.TwipsInPixels;
             
             if (cell.TableCellProperties?.VerticalMerge != null)
             {

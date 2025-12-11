@@ -80,11 +80,10 @@ try
         Row row2 = new Row();
         row2.Cells = new CellCollection(
             new Cell(new Text("4")),
-            new Cell(new Text("5")).Merge(1),
-            new Cell(new Text("6"))
+            new Cell(new Text("5")).Merge(1)
             );
 
-        Table tbl = new TableBuilder().AppendRows(row1, row2);
+        Table tbl = new TableBuilder().AppendRows(row1, row2).SetTableGrid(200,250,100);
         document.AddTable(tbl);
 
     }
