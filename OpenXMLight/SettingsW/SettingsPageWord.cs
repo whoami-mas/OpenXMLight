@@ -134,17 +134,17 @@ namespace OpenXMLight.SettingsW
                             );
 
             PageSize pgSize = SectionPropXml.Elements<PageSize>().First();
-            WidthPage = (int)pgSize.Width.Value;
-            HeightPage = (int)pgSize.Height.Value;
+            width = (int)pgSize.Width.Value;
+            height = (int)pgSize.Height.Value;
 
             PageMargin pgMargin = SectionPropXml.Elements<PageMargin>().First();
-            MarginTop = pgMargin.Top;
-            MarginLeft = (int)pgMargin.Left.Value;
-            MarginRight = (int)pgMargin.Right.Value;
-            MarginBottom = (int)pgMargin.Bottom.Value;
-            MarginHeader = (int)pgMargin.Header.Value;
-            MarginFooter = (int)pgMargin.Footer.Value;
-            MarginGutter = (int)pgMargin.Gutter.Value;
+            marginTop = pgMargin.Top;
+            marginLeft = (int)pgMargin.Left.Value;
+            marginRight = (int)pgMargin.Right.Value;
+            marginBottom = (int)pgMargin.Bottom.Value;
+            marginHeader = (int)pgMargin.Header.Value;
+            marginFooter = (int)pgMargin.Footer.Value;
+            marginGutter = (int)pgMargin.Gutter.Value;
 
             Columns col = SectionPropXml.Elements<Columns>().First();
             Space = col.Space;
