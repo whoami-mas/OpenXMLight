@@ -70,6 +70,12 @@ try
         //    .SetTableGrid(100, 200, 200);
 
         //document.AddTable(table_date);
+        document.SettingsDocument.Orientation = OrientationPage.Landscape;
+        document.SettingsDocument.MarginTop = 425;
+        document.SettingsDocument.MarginLeft = 1170;
+        document.SettingsDocument.MarginRight = 1170;
+
+        int width = document.SettingsDocument.WidthPage;
 
         Row row1 = new Row();
         row1.Cells = new CellCollection(
@@ -83,7 +89,7 @@ try
             new Cell(new Text("5")).Merge(1)
             );
 
-        Table tbl = new TableBuilder().AppendRows(row1, row2).SetTableGrid(200,250,100);
+        Table tbl = new TableBuilder().AppendRows(row1, row2);
         document.AddTable(tbl);
 
     }

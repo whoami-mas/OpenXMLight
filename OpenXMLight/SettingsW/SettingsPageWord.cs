@@ -1,5 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Wordprocessing;
+using OpenXMLight.Configurations;
 using OpenXMLight.Configurations.Formatting;
 using System;
 using System.Collections.Generic;
@@ -22,17 +23,17 @@ namespace OpenXMLight.SettingsW
         private int height;
 
         //pgSz
-        public int WidthPage { get => width; 
+        public int WidthPage { get => width / Configuration.TwipsInPixels; 
             set {
-                width = value;
+                width = value * Configuration.TwipsInPixels;
 
-                SectionPropXml.GetFirstChild<PageSize>().Width = Convert.ToUInt32(value);
+                SectionPropXml.GetFirstChild<PageSize>().Width = Convert.ToUInt32(width);
             } }
-        public int HeightPage { get => height;
+        public int HeightPage { get => height / Configuration.TwipsInPixels;
             set {
-                height = value;
+                height = value * Configuration.TwipsInPixels;
 
-                SectionPropXml.GetFirstChild<PageSize>().Height = Convert.ToUInt32(value);
+                SectionPropXml.GetFirstChild<PageSize>().Height = Convert.ToUInt32(height);
             } }
 
         //Orient
@@ -45,47 +46,47 @@ namespace OpenXMLight.SettingsW
 
                 if (value.Value == PageOrientationValues.Landscape)
                 {
-                    MarginTop = 1701;
-                    MarginRight = 1134;
-                    MarginBottom = 850;
-                    MarginLeft = 1134;
+                    MarginTop = 113;
+                    MarginRight = 75;
+                    MarginBottom = 56;
+                    MarginLeft = 75;
 
-                    WidthPage = 16838;
-                    HeightPage = 11907;
+                    WidthPage = 1122;
+                    HeightPage = 793;
                 }
                 else if(value.Value == PageOrientationValues.Portrait)
                 {
-                    MarginTop = 1134;
-                    MarginRight = 850;
-                    MarginBottom = 1134;
-                    MarginLeft = 1701;
+                    MarginTop = 75;
+                    MarginRight = 56;
+                    MarginBottom = 75;
+                    MarginLeft = 113;
 
-                    WidthPage = 11907;
-                    HeightPage = 16838;
+                    WidthPage = 793;
+                    HeightPage = 1122;
                 }
             } 
         }
 
         //pgMar
-        public int MarginTop { get => marginTop;
+        public int MarginTop { get => marginTop / Configuration.TwipsInPixels;
             set { 
-                marginTop = value;
+                marginTop = value * Configuration.TwipsInPixels;
                 SectionPropXml.GetFirstChild<PageMargin>().Top = value;
             } 
         }
-        public int MarginLeft { get => marginLeft;
+        public int MarginLeft { get => marginLeft / Configuration.TwipsInPixels;
             set {
-                marginLeft = value;
+                marginLeft = value * Configuration.TwipsInPixels;
                 SectionPropXml.GetFirstChild<PageMargin>().Left = Convert.ToUInt32(value);
             } }
-        public int MarginRight { get => marginRight;
+        public int MarginRight { get => marginRight / Configuration.TwipsInPixels;
             set {
-                marginRight = value;
+                marginRight = value * Configuration.TwipsInPixels;
                 SectionPropXml.GetFirstChild<PageMargin>().Right = Convert.ToUInt32(value);
             } }
-        public int MarginBottom { get => marginBottom;
+        public int MarginBottom { get => marginBottom / Configuration.TwipsInPixels;
             set {
-                marginBottom = value;
+                marginBottom = value * Configuration.TwipsInPixels;
                 SectionPropXml.GetFirstChild<PageMargin>().Bottom = value;
             } }
         public int MarginHeader { get; set; }
