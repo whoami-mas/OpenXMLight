@@ -9,7 +9,8 @@ Format support .docx, .xlsx
 <p>document.BuildChart(builder);</p>
 <p>document.Save();</p>
 
-<h3>Example of create table 📈</h3>
+### Example of create table 📈
+
 ```python
 def add(a, b):
     return a + b
