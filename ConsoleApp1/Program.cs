@@ -10,7 +10,7 @@ try
     //string path = @"C:\Users\bushk\Desktop\Reportings risks\act_rep_4_2025.xlsx";
     string path = @"testingTable.docx";
 
-    using (WordDocument document = new WordDocument(path))
+    using (WordDocument document = new WordDocument(path, true))
     {
         document.SettingsDocument.Orientation = OrientationPage.Landscape;
         document.SettingsDocument.MarginTop = 50;
@@ -35,7 +35,7 @@ try
             new Cell(new Text("5")).Merge(1)
             );
 
-        Table tbl = new TableBuilder().AppendRows(row1, row2);
+        Table tbl = new TableBuilder().AppendRows(row1, row2).SetTableProperties(new TableProperties() { MarginCell = 17});
         document.AddTable(tbl);
 
     }

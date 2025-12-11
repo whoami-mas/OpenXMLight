@@ -43,7 +43,14 @@ namespace OpenXMLight.Configurations
                 TblPropXml.TableBorders.InsideHorizontalBorder.Val = value.Value;
                 TblPropXml.TableBorders.InsideVerticalBorder.Val = value.Value;
             } }
-        public int MarginCell { get; set; }
+        public int MarginCell { get => marginCell / Configuration.TwipsInPixels;
+            set {
+                marginCell = value * Configuration.TwipsInPixels;
+
+                TblPropXml.TableCellMarginDefault.TableCellLeftMargin.Width = Convert.ToInt16(marginCell);
+                TblPropXml.TableCellMarginDefault.TableCellRightMargin.Width = Convert.ToInt16(marginCell);
+            }
+        }
 
         /// <summary>
         /// 
