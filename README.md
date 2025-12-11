@@ -4,14 +4,14 @@ Format support .docx, .xlsx
 
 ## Word
 ### Example of creating a graph 📈
-```C#
+'''C#
 WordDocument document = new WordDocument("example.docx");
 ChartBuilder builder = new LineChart().SetTitle("Title chart").SetData(data);
 document.BuildChart(builder);
 document.Save();
-```
+'''
 ### Example of create table
-```C#
+'''C#
 Row row1 = new Row();
 row1.Cells = new CellCollection(
     new Cell(new Text("1")),
@@ -26,5 +26,5 @@ row2.Cells = new CellCollection(
 
 Table tbl = new TableBuilder().AppendRows(row1, row2);
 document.AddTable(tbl);
-```
+'''
 ##Excel
