@@ -3,14 +3,14 @@
 Format support .docx, .xlsx
 
 <h2>Word</h2>
-<h3>Example of creating a graph 📈</h3>
-<p>WordDocument document = new WordDocument("example.docx");</p>
-<p>ChartBuilder builder = new LineChart().SetTitle("Title chart").SetData(data);</p>
-<p>document.BuildChart(builder);</p>
-<p>document.Save();</p>
-
-### Example of create table 📈
-
+### Example of creating a graph 📈
+```C#
+WordDocument document = new WordDocument("example.docx");
+ChartBuilder builder = new LineChart().SetTitle("Title chart").SetData(data);
+document.BuildChart(builder);
+document.Save();
+```
+### Example of create table
 ```C#
 Row row1 = new Row();
 row1.Cells = new CellCollection(
