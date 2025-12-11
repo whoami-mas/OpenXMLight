@@ -2,7 +2,7 @@
 <h3>Library for easier work with XML Office</h3>
 Format support .docx, .xlsx
 
-<h2>Word</h2>
+## Word
 ### Example of creating a graph 📈
 ```C#
 WordDocument document = new WordDocument("example.docx");
@@ -27,4 +27,4 @@ row2.Cells = new CellCollection(
 Table tbl = new TableBuilder().AppendRows(row1, row2);
 document.AddTable(tbl);
 ```
-<h2>Excel</h2>
+##Excel
