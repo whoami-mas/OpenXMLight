@@ -51,13 +51,13 @@ namespace OpenXMLight.Configurations
         /// <param name="sizeBorder">size borders pt = (size / 8)</param>
         /// <param name="borderStyle"></param>
         /// <param name="paddingLR">pt margin cells left\right</param>
-        public TableProperties(uint sizeBorder = 4, BordersType borderStyle = default, int paddingLR = 7)
+        public TableProperties()
         {
             this.Create();
 
-            this.Size = sizeBorder;
-            this.Border = borderStyle;
-            this.MarginCell = paddingLR * Configuration.TwipsInPixels;
+            //this.Size = sizeBorder;
+            //this.Border = borderStyle;
+            //this.MarginCell = paddingLR * Configuration.TwipsInPixels;
         }
 
         private void Create()

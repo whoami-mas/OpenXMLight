@@ -11,18 +11,18 @@ namespace OpenXMLight.Configurations.Elements.Table
     public class Table
     {
         private RowCollection rows;
-        private TableGrid grid;
-        private TableProperties properties;
+        private TableGrid? grid;
+        private TableProperties? properties;
 
         public RowCollection Rows => rows;
-        public TableProperties Properties { get => properties; init
+        public TableProperties? Properties { get => properties; init
             {
                 properties = value;
 
                 this.TableXml.RemoveAllChildren<OpenXML.TableProperties>();
                 this.TableXml.AppendChild<OpenXML.TableProperties>(value.TblPropXml);
             } }
-        public TableGrid Grid { get => grid; init 
+        public TableGrid? Grid { get => grid; init 
             {
                 grid = value;
 

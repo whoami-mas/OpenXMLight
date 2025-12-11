@@ -90,9 +90,19 @@ namespace OpenXMLight
                         cell.Width = int.Parse(widthColumn);
             }
             else
-                foreach (var row in table.Rows)
-                    for (int i = 0; i < table.Grid.ColumnWidth.Length; i++)
-                        row.Cells[i].Width = table.Grid.ColumnWidth[i] * Configuration.TwipsInPixels;
+                foreach(var row in table.Rows)
+                {
+                    for(int i = 0; i < row.Cells.Count; i++)
+                    {
+                        if (row.Cells[i].CellSpan != 0)
+                            row.Cells[i].Width = table.Grid.ColumnWidth.Skip(i).Take(row.Cells[i].CellSpan).Sum();
+                        else
+                            row.Cells[i].Width = table.Grid.ColumnWidth[i];
+                    }
+                }
+                //foreach (var row in table.Rows)
+                //    for (int i = 0; i < table.Grid.ColumnWidth.Length; i++)
+                //        row.Cells[i].Width = table.Grid.ColumnWidth[i] * Configuration.TwipsInPixels;
 
 
             Doc.Body.AppendChild(table.TableXml);

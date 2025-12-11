@@ -22,5 +22,23 @@ namespace OpenXMLight.Configurations.Formatting
         {
             _value = jsValue;
         }
+
+        internal static HorizonatalAlignments Parse(object? value)
+        {
+            if (value == null)
+                return Left;
+
+            if(value is JustificationValues val)
+            {
+                if (val == JustificationValues.Left)
+                return Left;
+                else if (val == JustificationValues.Center)
+                    return Center;
+                else if (val == JustificationValues.Right)
+                    return Right;
+            }
+
+            return Left;
+        }
     }
 }

@@ -60,6 +60,12 @@ namespace OpenXMLight.Configurations.Elements
             this.Endnote = endnote;
         }
 
+        internal Text(OpenXML.Paragraph paragraph)
+        {
+            this.Properties = new TextProperties(paragraph);
+            this.Content = paragraph.InnerText;
+        }
+
         internal void Create(TextProperties? textProp = default)
         {
             this.Properties = textProp != null ? new TextProperties(textProp) : new();

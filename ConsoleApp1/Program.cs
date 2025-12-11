@@ -12,76 +12,81 @@ try
 
     using (WordDocument document = new WordDocument(path, true))
     {
-        document.SettingsDocument.Orientation = OrientationPage.Landscape;
+        //document.SettingsDocument.Orientation = OrientationPage.Landscape;
+
+        //Row row1 = new Row();
+        //row1.Cells = new CellCollection(
+        //    new Cell(new Text("", textProp: new TextProperties()
+        //    {
+        //        FontSize = 16,
+        //        Bold = true,
+        //        FontFamily = FontsFamily.TimesNewRoman,
+        //        HAlignment = HorizonatalAlignments.Center,
+        //        SpBetLines = new SpacingBetweenLines()
+        //        { After = 0, Before = 0 }
+        //    })),
+        //    new Cell(new Text("Начат:", textProp: new TextProperties()
+        //    {
+        //        FontSize = 16,
+        //        Bold = true,
+        //        FontFamily = FontsFamily.TimesNewRoman,
+        //        HAlignment = HorizonatalAlignments.Center,
+        //        SpBetLines = new SpacingBetweenLines()
+        //        { After = 0, Before = 0 }
+        //    }), mergeColumn: 2),
+        //    new Cell(new Text("hlkhkjhlkhlkhjk"))
+        //    );
+        //Row row2 = new Row();
+        //row2.Cells = new CellCollection(
+        //    new Cell(new Text("", textProp: new TextProperties()
+        //    {
+        //        FontSize = 16,
+        //        Bold = true,
+        //        FontFamily = FontsFamily.TimesNewRoman,
+        //        HAlignment = HorizonatalAlignments.Center,
+        //        SpBetLines = new SpacingBetweenLines()
+        //        { After = 0, Before = 0 }
+        //    })),
+        //    new Cell(new Text("Окончен:", textProp: new TextProperties()
+        //    {
+        //        FontSize = 16,
+        //        Bold = true,
+        //        FontFamily = FontsFamily.TimesNewRoman,
+        //        HAlignment = HorizonatalAlignments.Center,
+        //        SpBetLines = new SpacingBetweenLines()
+        //        { After = 0, Before = 0 }
+        //    })),
+        //    new Cell(new Text($"__.__.____", textProp: new TextProperties()
+        //    {
+        //        FontSize = 16,
+        //        FontFamily = FontsFamily.TimesNewRoman,
+        //        HAlignment = HorizonatalAlignments.Center,
+        //        SpBetLines = new SpacingBetweenLines()
+        //        { After = 0, Before = 0 }
+        //    }))
+        //    );
+
+        //Table table_date = new TableBuilder().AppendRows(row1, row2)
+        //    .SetTableGrid(100, 200, 200);
+
+        //document.AddTable(table_date);
 
         Row row1 = new Row();
         row1.Cells = new CellCollection(
-            new Cell(new Text("", textProp: new TextProperties()
-            {
-                FontSize = 16,
-                Bold = true,
-                FontFamily = FontsFamily.TimesNewRoman,
-                HAlignment = HorizonatalAlignments.Center,
-                SpBetLines = new SpacingBetweenLines()
-                { After = 0, Before = 0 }
-            })),
-            new Cell(new Text("Начат:", textProp: new TextProperties() 
-            {
-                FontSize = 16,
-                Bold = true,
-                FontFamily = FontsFamily.TimesNewRoman,
-                HAlignment = HorizonatalAlignments.Center,
-                SpBetLines = new SpacingBetweenLines()
-                { After = 0 , Before = 0 }
-            })),
-            new Cell(new Text($"{DateTime.Now.ToString("dd.MM.yyyy")}", textProp: new TextProperties() 
-            {
-                FontSize = 16,
-                FontFamily = FontsFamily.TimesNewRoman,
-                HAlignment = HorizonatalAlignments.Center,
-                SpBetLines = new SpacingBetweenLines()
-                { After = 0, Before = 0 }
-            }))
+            new Cell(new Text("1")),
+            new Cell(new Text("2")),
+            new Cell(new Text("3"))
             );
         Row row2 = new Row();
         row2.Cells = new CellCollection(
-            new Cell(new Text("", textProp: new TextProperties()
-            {
-                FontSize = 16,
-                Bold = true,
-                FontFamily = FontsFamily.TimesNewRoman,
-                HAlignment = HorizonatalAlignments.Center,
-                SpBetLines = new SpacingBetweenLines()
-                { After = 0, Before = 0 }
-            })),
-            new Cell(new Text("Окончен:", textProp: new TextProperties()
-            {
-                FontSize = 16,
-                Bold = true,
-                FontFamily = FontsFamily.TimesNewRoman,
-                HAlignment = HorizonatalAlignments.Center,
-                SpBetLines = new SpacingBetweenLines()
-                { After = 0, Before = 0 }
-            })),
-            new Cell(new Text($"__.__.____", textProp: new TextProperties()
-            {
-                FontSize = 16,
-                FontFamily = FontsFamily.TimesNewRoman,
-                HAlignment = HorizonatalAlignments.Center,
-                SpBetLines = new SpacingBetweenLines()
-                { After = 0, Before = 0 }
-            }))
+            new Cell(new Text("4")),
+            new Cell(new Text("5")).Merge(1),
+            new Cell(new Text("6"))
             );
 
-        Table table_date = new TableBuilder().AppendRows(row1, row2)
-            .SetTableGrid(100, 200,200)
-            .SetTableProperties(new TableProperties(4, BordersType.Single, 7));
-                
-        document.AddTable(table_date);
+        Table tbl = new TableBuilder().AppendRows(row1, row2);
+        document.AddTable(tbl);
 
-        document.BreakPage();
-
-        document.AddText(new Text("Hello new Page"));
     }
 }
 catch(Exception ex)

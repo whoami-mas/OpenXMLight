@@ -12,13 +12,16 @@ namespace OpenXMLight.Configurations.Elements.Table
     {
         private Text text;
         private int width;
-        private int mergeColumn;
         private VerticalMerge vMerge;
+
+        List<ICellObserver> observers = new();
+
+        public Row? Row { get; set; }
 
         public Text Text
         {
             get => text;
-            set
+            init
             {
                 text = value;
 
@@ -37,20 +40,7 @@ namespace OpenXMLight.Configurations.Elements.Table
                 CellXml.TableCellProperties?.AppendChild(new OpenXML.TableCellWidth() {Type = OpenXML.TableWidthUnitValues.Dxa, Width = width.ToString() });
             }
         }
-        public int MergeColumn
-        {
-            get => mergeColumn;
-            set
-            {
-                mergeColumn = value;
-
-                if(mergeColumn >= 1)
-                {
-                    CellXml.TableCellProperties?.RemoveAllChildren<OpenXML.GridSpan>();
-                    CellXml.TableCellProperties?.AppendChild(new OpenXML.GridSpan() { Val = mergeColumn });
-                }
-            }
-        }
+        public int CellSpan => this.CellXml.TableCellProperties?.GridSpan?.Val ?? 0;
         public VerticalMerge VMerge
         {
             get => vMerge;
@@ -74,18 +64,17 @@ namespace OpenXMLight.Configurations.Elements.Table
             }
         }
 
+
         internal OpenXML.TableCell CellXml { get; set; }
 
 
-
-        public Cell() => this.CreateCell();
+        public Cell() => this.Create();
         
-        public Cell(Text text,int width = 0, int mergeColumn = 0, VerticalMerge vMerge = VerticalMerge.Non)
+        public Cell(Text text,int width = 0, VerticalMerge vMerge = VerticalMerge.Non)
         {
-            CreateCell();
+            Create();
 
             this.Text = text;
-            this.MergeColumn = mergeColumn;
             this.VMerge = vMerge;
             this.Width = width;
         }
@@ -94,10 +83,9 @@ namespace OpenXMLight.Configurations.Elements.Table
         {
             CellXml = cell;
 
-            this.text = new Text(cell.InnerText);
+            this.Text = new Text(cell.Elements<OpenXML.Paragraph>().First());
             this.width = int.Parse(cell.TableCellProperties?.TableCellWidth?.Width);
-            this.mergeColumn = int.Parse(cell.TableCellProperties?.GridSpan?.Val ?? 0);
-
+            
             if (cell.TableCellProperties?.VerticalMerge != null)
             {
                 if (cell.TableCellProperties?.VerticalMerge.Val == OpenXML.MergedCellValues.Restart)
@@ -110,14 +98,52 @@ namespace OpenXMLight.Configurations.Elements.Table
         }
 
 
-        private void CreateCell()
+        private void Create()
         {
             CellXml = new OpenXML.TableCell();
 
             CellXml.Append(
-                new OpenXML.Paragraph(),
+                //new OpenXML.Paragraph(),
                 new OpenXML.TableCellProperties()
                 );
         }
+
+        public Cell Merge(int mergeOffset)
+        {
+            OpenXML.TableRow? parentRow = this.CellXml.Parent as OpenXML.TableRow;
+
+            HashSet<int> hashIndexRemove = new();
+            if (parentRow != null)
+            {
+                hashIndexRemove = Row.Skip(parentRow, this, mergeOffset);
+
+                NotifyObserver(hashIndexRemove);
+            }
+            else
+            {
+                this.CellXml.TableCellProperties.GridSpan ??= new OpenXML.GridSpan();
+                this.CellXml.TableCellProperties.GridSpan.Val = mergeOffset + 1;
+            }
+
+            return this;
+        }
+
+        #region observers
+        
+        internal void AddObserver(ICellObserver observer)
+        {
+            if(!observers.Contains(observer))
+                observers.Add(observer);
+        }
+        internal void RemoveObserver(ICellObserver observer)
+        {
+            observers.Remove(observer);
+        }
+        internal void NotifyObserver(HashSet<int> indexCellRemove)
+        {
+            foreach (var observer in observers)
+                observer.OnCellsMerged(indexCellRemove);
+        }
+        #endregion
     }
 }

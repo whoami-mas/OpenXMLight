@@ -100,14 +100,23 @@ namespace OpenXMLight.Configurations
             HAlignment = textProp.HAlignment;
             SpBetLines = textProp.SpBetLines;
         }
-
-        internal void Create()
+        internal TextProperties(OpenXML.Paragraph paragraph)
         {
-            Paragraph = new OpenXML.Paragraph(
-                new OpenXML.ParagraphProperties()
-                );
-            
-            Run = new OpenXML.Run(
+            Create(paragraph);
+
+            FontSize = Run.RunProperties.FontSize != null ? int.Parse(Run.RunProperties.FontSize.Val) / 2
+                : 11;
+            FontFamily = FontsFamily.Parse(Run.RunProperties.RunFonts?.HighAnsi.Value);
+            Bold = Run.RunProperties.Bold != null ? true : false;
+            HAlignment = HorizonatalAlignments.Parse(Paragraph.ParagraphProperties.Justification?.Val);
+        }
+        internal void Create(OpenXML.Paragraph? p = default)
+        {
+            Paragraph = p ?? new OpenXML.Paragraph();
+            Paragraph.ParagraphProperties ??= new OpenXML.ParagraphProperties();
+
+
+            Run = p?.Elements<OpenXML.Run>().FirstOrDefault() ?? new OpenXML.Run(
                 new OpenXML.RunProperties()
                 );
 

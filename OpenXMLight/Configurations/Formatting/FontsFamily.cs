@@ -39,5 +39,55 @@ namespace OpenXMLight.Configurations.Formatting
         {
             _value = fontFamily;
         }
+
+        internal static FontsFamily Parse(string value)
+        {
+            switch (value)
+            {
+                case "Arial":
+                    return Arial;
+                case "Times New Roman":
+                    return TimesNewRoman;
+                case "Calibri":
+                    return Calibri;
+                case "Verdana":
+                    return Verdana;
+                case "Tahoma":
+                    return Tahoma;
+                case "Courier New":
+                    return CourierNew;
+                case "Georgia":
+                    return Georgia;
+                case "Palatino Linotype":
+                    return PalatinoLinotype;
+                case "Garamond":
+                    return Garamond;
+                case "Trebuchet MS":
+                    return TrebuchetMS;
+                case "Comic Sans MS":
+                    return ComicSansMS;
+                case "Lucida Console":
+                    return LucidaConsole;
+                case "Consolas":
+                    return Consolas;
+                case "Cambria":
+                    return Cambria;
+                case "Gill Sans":
+                    return GillSans;
+                case "Impact":
+                    return Impact;
+                case "Kristen ITC":
+                    return KristenITC;
+                case "Lucida Sans Unicode":
+                    return LucidaSansUnicode;
+                case "Century Gothic":
+                    return CenturyGothic;
+                case "Franklin Gothic Medium":
+                    return FranklinGothicMedium;
+                default:
+                    return Arial;
+
+            }
+        }
     }
 }
