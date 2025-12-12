@@ -15,6 +15,7 @@ try
     {
         RowCollection rows = document.Tables[1].Rows;
 
+        rows[7].Cells[1].Text.Content = "hello";
     }
 }
 catch(Exception ex)

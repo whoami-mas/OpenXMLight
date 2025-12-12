@@ -116,9 +116,9 @@ namespace OpenXMLight.Configurations
             Paragraph.ParagraphProperties ??= new OpenXML.ParagraphProperties();
 
 
-            Run = p?.Elements<OpenXML.Run>().FirstOrDefault() ?? new OpenXML.Run(
+            Run = p?.Elements<OpenXML.Run>().FirstOrDefault() ?? p.AppendChild(new OpenXML.Run(
                 new OpenXML.RunProperties()
-                );
+                ));
 
             SpBetLines = new();
             SpBetLines.PropertyChanged += SpBetLines_PropertyChanged;
