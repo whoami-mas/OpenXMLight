@@ -21,6 +21,7 @@ namespace OpenXMLight.Configurations
         private HorizonatalAlignments hAlignment = HorizonatalAlignments.Left;
         private SpacingBetweenLines spBetLines;
 
+
         public int FontSize 
         {
             get => fontSize;
@@ -88,6 +89,8 @@ namespace OpenXMLight.Configurations
             }
         }
 
+
+
         public TextProperties() => this.Create();
 
         internal TextProperties(TextProperties textProp)
@@ -110,10 +113,13 @@ namespace OpenXMLight.Configurations
             Bold = Run.RunProperties.Bold != null ? true : false;
             HAlignment = HorizonatalAlignments.Parse(Paragraph.ParagraphProperties.Justification?.Val);
         }
+
+
+
         internal void Create(OpenXML.Paragraph? p = default)
         {
             Paragraph = p ?? new OpenXML.Paragraph();
-            Paragraph.ParagraphProperties ??= new OpenXML.ParagraphProperties();
+            Paragraph.ParagraphProperties = p.ParagraphProperties != null ? p.ParagraphProperties : p.ParagraphProperties = new OpenXML.ParagraphProperties();
 
 
             Run = p?.Elements<OpenXML.Run>().FirstOrDefault() ?? p.AppendChild(new OpenXML.Run(
