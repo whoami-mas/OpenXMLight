@@ -115,7 +115,8 @@ namespace OpenXMLight.Configurations.Elements.Table
             
             if (cell.TableCellProperties?.VerticalMerge != null)
             {
-                if (cell.TableCellProperties?.VerticalMerge.Val == OpenXML.MergedCellValues.Restart)
+                if (cell.TableCellProperties?.VerticalMerge.Val != null &&
+                    cell.TableCellProperties?.VerticalMerge.Val == OpenXML.MergedCellValues.Restart)
                     this.vMerge = VerticalMerge.Start;
                 else
                     this.vMerge = VerticalMerge.Continue;
