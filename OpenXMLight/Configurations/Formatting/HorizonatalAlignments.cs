@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenXMLight.config;
+using DocumentFormat.OpenXml;
 
 namespace OpenXMLight.Configurations.Formatting
 {
@@ -28,10 +29,10 @@ namespace OpenXMLight.Configurations.Formatting
             if (value == null)
                 return Left;
 
-            if(value is JustificationValues val)
+            if(value is EnumValue<JustificationValues> val)
             {
                 if (val == JustificationValues.Left)
-                return Left;
+                    return Left;
                 else if (val == JustificationValues.Center)
                     return Center;
                 else if (val == JustificationValues.Right)
