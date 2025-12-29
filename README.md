@@ -12,19 +12,58 @@ document.Save();
 ```
 ### Example of create table
 ```C#
-Row row1 = new Row();
-row1.Cells = new CellCollection(
-    new Cell(new Text("1")),
-    new Cell(new Text("2")),
-    new Cell(new Text("3"))
+Table tbl = document.AddTable()
+    .AddRows(row =>
+    row.AddCell(
+        cell => cell.AddParagraph(
+            p => p.SetRun(
+                new RunBuilder().SetText("1")
+                )
+            )
+        )
+    .AddCell(cell => cell.AddParagraph(
+            p => p.SetRun(
+                new RunBuilder().SetText("2")
+                )
+            )
+        )
+    )
+    .AddRows(
+    row => row.AddCell(
+        cell => cell.AddParagraph(
+            p => p.SetRun(
+                new RunBuilder().SetText("4")
+                )
+            )
+        ).AddCell(cell => cell.AddParagraph(
+            p => p.SetRun(
+                new RunBuilder().SetText("5")
+                )
+            )
+        )
+    )
+    .AddRows(row => row.AddCell(
+        cell => cell.AddParagraph(
+            p => p.SetRun(
+                new RunBuilder().SetText("7")
+                )
+            )
+        ).AddCell(cell => cell.AddParagraph(
+            p => p.SetRun(
+                new RunBuilder().SetText("8")
+                )
+            )
+        )
     );
-Row row2 = new Row();
-row2.Cells = new CellCollection(
-    new Cell(new Text("4")),
-    new Cell(new Text("5")).Merge(1)
-    );
+```
 
-Table tbl = new TableBuilder().AppendRows(row1, row2);
-document.AddTable(tbl);
+### Example added endnote
+```C#
+EndnoteTest endnote = document.AddEndnote("Hello World!");
+Paragraph p = document.AddParagraph()
+    .SetRun(
+        new RunBuilder().SetText("Testing endnote"),
+        new RunBuilder().SetEndnote(endnote)
+    );
 ```
 ##Excel
