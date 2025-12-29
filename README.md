@@ -12,6 +12,7 @@ document.Save();
 ```
 ### Example of create table
 ```C#
+WordDocument document = new WordDocument("example.docx");
 Table tbl = document.AddTable()
     .AddRows(row =>
     row.AddCell(
@@ -55,15 +56,18 @@ Table tbl = document.AddTable()
             )
         )
     );
+document.Save();
 ```
 
 ### Example added endnote
 ```C#
+WordDocument document = new WordDocument("example.docx");
 EndnoteTest endnote = document.AddEndnote("Hello World!");
 Paragraph p = document.AddParagraph()
     .SetRun(
         new RunBuilder().SetText("Testing endnote"),
         new RunBuilder().SetEndnote(endnote)
     );
+document.Save();
 ```
 ##Excel
