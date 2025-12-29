@@ -1,0 +1,125 @@
+﻿using OpenXMLight.Configurations.Elements.TableElements.Formattings;
+using OpenXMLight.Configurations.Elements.TableElements.Formattings.MarginComponents;
+using OpenXMLight.Configurations.Elements.TableElements.Formattings.WidthComponents;
+using OpenXMLight.Configurations.Formatting;
+using OpenXMLight.Tools;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using OpenXml = DocumentFormat.OpenXml.Wordprocessing;
+
+namespace OpenXMLight.Configurations.Elements.TableElements.Models
+{
+    public class Cell : Element<OpenXml.TableCell, OpenXml.TableCellProperties>
+    {
+        internal override OpenXml.TableCell ElementXml { get; set; }
+        internal override OpenXml.TableCellProperties ElementProperties
+        {
+            get
+            {
+                if (_elementProperties == null)
+                    _elementProperties = ElementXml.TableCellProperties ??= new OpenXml.TableCellProperties();
+
+                return _elementProperties;
+            }
+        }
+
+
+
+        internal Cell(OpenXml.TableCell c) => ElementXml = c;
+
+
+
+        #region Private properties
+        private OpenXml.TableCellProperties? _elementProperties;
+        private ElementCollection<Paragraph>? _p;
+        private TableCellWidth<CellWidth> _width;
+        private TableCellMargin<CellMargin> _margin;
+        #endregion
+
+        public ElementCollection<Paragraph> Paragraphs
+        {
+            get
+            {
+                if (_p == null)
+                    _p = new(ElementXml.Elements<OpenXml.Paragraph>().Select(s => new Paragraph(s))) { Parent = ElementXml };
+
+                return _p;
+            }
+        }
+        public VerticalAlignments Alignment
+        {
+            get
+            {
+                object? value = ElementProperties.TableCellVerticalAlignment?.Val;
+
+                return HelperData.TryParseTableCellVerticalAlignment(value, out VerticalAlignments alignment)
+                    ? alignment
+                    : Configuration.DEFAULT_VERTICAL_ALIGNMENT;
+            }
+            set
+            {
+                ElementProperties.TableCellVerticalAlignment ??= new OpenXml.TableCellVerticalAlignment();
+                ElementProperties.TableCellVerticalAlignment.Val = value.Value;
+            }
+        }
+        public int Merged
+        {
+            get
+            {
+                if (ElementProperties.GridSpan == null)
+                    return 0;
+
+                return ElementProperties.GridSpan.Val;
+            }
+        }
+        public TableCellWidth<CellWidth> Width
+        {
+            get
+            {
+                if (_width == null)
+                {
+                    var width = ElementProperties.TableCellWidth;
+
+                    _width = HelperData.TryParseCellWidth(width, out _width)
+                        ? _width
+                        : Configuration.DEFAULT_CELLWIDTH;
+
+                    if (width == null)
+                        ElementProperties.TableCellWidth = _width._value;
+                }
+
+                return _width;
+            }
+            set
+            {
+                if (_width == value)
+                    return;
+
+                _width = value;
+
+                ElementProperties.TableCellWidth = _width._value;
+            }
+        }
+        public TableCellMargin<CellMargin> Margin
+        {
+            get
+            {
+                if(_margin == null)
+                {
+                    var margin = ElementProperties.TableCellMargin;
+
+                    _margin = new(margin);
+
+                    if (margin == null)
+                        ElementProperties.TableCellMargin = _margin._value;
+                }
+
+                return _margin;
+            }
+        }
+    }
+}

@@ -27,5 +27,24 @@ namespace OpenXMLight.Configurations.Formatting
         {
             _value = value;
         }
+
+
+        internal static BordersType Parse(BorderValues? value)
+        {
+            if(!value.HasValue)
+                return BordersType.Single;
+
+            return value switch
+            {
+                var v when v == BorderValues.Single => BordersType.Single,
+                var v when v == BorderValues.None => BordersType.None,
+                var v when v == BorderValues.Double => BordersType.Double,
+                var v when v == BorderValues.Dotted => BordersType.Dotted,
+                var v when v == BorderValues.Dashed => BordersType.Dashed,
+                var v when v == BorderValues.DotDash => BordersType.DotDash,
+                var v when v == BorderValues.Triple => BordersType.Triple,
+                _ => throw new ArgumentNullException("NULL")
+            };
+        }
     }
 }

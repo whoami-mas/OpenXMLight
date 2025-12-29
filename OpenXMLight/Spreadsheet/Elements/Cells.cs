@@ -24,7 +24,7 @@ namespace OpenXMLight.Spreadsheet.Elements
 
                 _row = row;
                 _col = col;
-                _addressCell = $"{HalperData.GetColumnByIndex(_col)}{_row}";
+                _addressCell = $"{HelperData.GetColumnByIndex(_col)}{_row}";
 
                 GetData();
 
@@ -36,8 +36,8 @@ namespace OpenXMLight.Spreadsheet.Elements
             get
             {
                 ValidationExcel.ValidationAddress(address);
-                _row = HalperData.GetRowIndex(address);
-                _col = HalperData.GetColumnIndex(address);
+                _row = HelperData.GetRowIndex(address);
+                _col = HelperData.GetColumnIndex(address);
                 _addressCell = address;
 
                 GetData();

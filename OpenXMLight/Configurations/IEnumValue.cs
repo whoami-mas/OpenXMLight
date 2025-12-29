@@ -8,8 +8,6 @@ namespace OpenXMLight.config
 {
     internal interface IEnumValue<T>
     {
-        //bool IsValid { get; }
-
         T Value { get; }
     }
 }

@@ -41,8 +41,8 @@ namespace OpenXMLight.Validations
             if (!regex.IsMatch(address))
                 throw new ArgumentException("Данные адрес не является валидным");
 
-            int indexColumn = HalperData.GetColumnIndex(address);
-            int indexRow = HalperData.GetRowIndex(address);
+            int indexColumn = HelperData.GetColumnIndex(address);
+            int indexRow = HelperData.GetRowIndex(address);
             ValidationIndex(indexRow, indexColumn);
         }
 
@@ -62,17 +62,17 @@ namespace OpenXMLight.Validations
             {
                 string[] address = item.Reference.ToString().Split(":");
                 
-                int indexMinRow = HalperData.GetRowIndex(address[0]);
-                int indexMaxRow = HalperData.GetRowIndex(address[1]);
+                int indexMinRow = HelperData.GetRowIndex(address[0]);
+                int indexMaxRow = HelperData.GetRowIndex(address[1]);
 
-                int indexMinCol = HalperData.GetRowIndex(address[0]);
-                int indexMaxCol = HalperData.GetRowIndex(address[1]);
+                int indexMinCol = HelperData.GetRowIndex(address[0]);
+                int indexMaxCol = HelperData.GetRowIndex(address[1]);
 
                 bool isRangeCellFrom = rowFrom >= indexMinRow && rowFrom <= indexMaxRow &&
                     colFrom >= indexMinCol && colFrom <= indexMaxCol;
 
                 if (isRangeCellFrom)
-                    throw new ArgumentException($"Ячейка {HalperData.GetColumnByIndex(colFrom)}{rowFrom} уже объеденена");
+                    throw new ArgumentException($"Ячейка {HelperData.GetColumnByIndex(colFrom)}{rowFrom} уже объеденена");
             }
         }
         internal static void ValidationMerge(OpenXmlSpreadsheet.MergeCells mergeCells,  string findAddress)

@@ -10,16 +10,13 @@ namespace OpenXMLight.Configurations.Formatting
 {
     public class SpacingBetweenLines : INotifyPropertyChanged
     {
-        //private int after = 100;
-        //private int before = 100;
-        //private int line = 200;
         private int after = 5;
         private int before = 5;
         private int line = 12;
 
         public int After
         {
-            get => after * Configuration.InchInPixels;
+            get => after;
             set
             {
                 after = value;
@@ -29,7 +26,7 @@ namespace OpenXMLight.Configurations.Formatting
         }
         public int Before
         {
-            get => before * Configuration.InchInPixels;
+            get => before;
             set
             {
                 before = value;
@@ -39,7 +36,7 @@ namespace OpenXMLight.Configurations.Formatting
         }
         public int Line
         {
-            get => line * Configuration.InchInPixels;
+            get => line;
             set
             {
                 line = value;

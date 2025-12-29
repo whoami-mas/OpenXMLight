@@ -1,33 +1,36 @@
-﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
-using OpenXMLight.Configurations;
-using elements = OpenXMLight.Configurations.Elements;
-using table = OpenXMLight.Configurations.Elements.Table;
-using OpenXMLight.Configurations.Formatting;
-using OpenXMLight.SettingsW;
+﻿using OpenXMLight.Configurations.Formatting;
 using OpenXMLight.validations;
-using charts = OpenXMLight.Configurations.Elements.Charts;
-using DocumentFormat.OpenXml.Drawing.Wordprocessing;
-using OpenXmlDrawing = DocumentFormat.OpenXml.Drawing;
-using OpenXmlChart = DocumentFormat.OpenXml.Drawing.Charts;
 using System.Linq;
+
+using OpenXml = DocumentFormat.OpenXml;
+using OpenXmlElement = DocumentFormat.OpenXml.Wordprocessing;
+using OpenXmlPackaging = DocumentFormat.OpenXml.Packaging;
+using OpenXmlDrawing = DocumentFormat.OpenXml.Drawing;
+using OpenXmlDrawingWp = DocumentFormat.OpenXml.Drawing.Wordprocessing;
+using OpenXmlChart = DocumentFormat.OpenXml.Drawing.Charts;
+
+using OpenXMLight.Configurations.Elements.TableElements;
+using OpenXMLight.Configurations.Elements.TableElements.Models;
+using OpenXMLight.Configurations.Elements.Charts;
+using OpenXMLight.Configurations.Elements;
+using OpenXMLight.Configurations.WordContext;
+using OpenXMLight.Configurations.Parts;
 
 namespace OpenXMLight
 {
     public class WordDocument : IDisposable
     {
-        private table.Table tables;
-
-        private WordprocessingDocument? WordProc { get; set; }
-        private Document? Doc { get; set; }
-        public List<table.Table> Tables => Doc.Body.Elements<Table>().Select(tbl => new table.Table(tbl)).ToList();
+        private OpenXmlPackaging.WordprocessingDocument? WordProc { get; set; }
+        private OpenXmlElement.Document? Doc { get; set; }
 
 
-        #region Subject facade
+
+        public ElementCollection<Table> Tables => new(Doc.Body.Elements<OpenXmlElement.Table>().Select(s => new Table(s))) {Parent = Doc.Body };
         public SettingsPageWord SettingsDocument { get; protected set; }
-        private StylesWord StylesDocument { get; set; }
-        #endregion
+
+        private Context Context { get; init; }
+
+
 
         #region Dispose
         public void Dispose()
@@ -39,77 +42,59 @@ namespace OpenXMLight
         }
         #endregion
 
+
         public void Save()
         {
             WordProc?.MainDocumentPart?.Document.Save();
             WordProc?.Dispose();
         }
+        
+        
+        
         public WordDocument(string path, bool overwrite = false)
         {
             if (overwrite)
                 File.Delete(path);
 
-            WordProc = File.Exists(path) ? WordprocessingDocument.Open(path, true)
-                                                 : WordprocessingDocument.Create(path, WordprocessingDocumentType.Document);
+            WordProc = File.Exists(path) ? OpenXmlPackaging.WordprocessingDocument.Open(path, true)
+                                                 : OpenXmlPackaging.WordprocessingDocument.Create(path, OpenXml.WordprocessingDocumentType.Document);
 
             if (WordProc.MainDocumentPart == null)
-                WordProc.AddMainDocumentPart().Document = new Document(new Body());
+                WordProc.AddMainDocumentPart().Document = new OpenXmlElement.Document(new OpenXmlElement.Body());
 
             Doc = WordProc.MainDocumentPart?.Document;
 
+            Context = Context.GetInstance(WordProc.MainDocumentPart); ///TODO Testing
+
             SettingsDocument = new();
-            StylesDocument = new();
             
             SettingsDocument.GenerateDocumentSettings(Doc);
-            StylesDocument.GenerateStyles(WordProc.MainDocumentPart);
         }
 
-        public void BreakPage() => Doc.Body.AppendChild(new Paragraph(new Run(new Break() { Type = BreakValues.Page })));
 
-        public void AddText(elements.Text text)
+
+        public void BreakPage() => Doc.Body.AppendChild(new OpenXmlElement.Paragraph(new OpenXmlElement.Run(new OpenXmlElement.Break() { Type = OpenXmlElement.BreakValues.Page })));
+        //Testing new code
+        public ParagraphBuilder AddParagraph()
         {
-            ValidationDocument.ValidationWord(WordProc);
-
-            Doc.Body.AppendChild(text.Properties.Paragraph);
+            OpenXmlElement.Paragraph p = new();
+            Doc.Body.AppendChild(p);
+            return new ParagraphBuilder(p);
         }
-    
-        public void AddTable(table.Table table)
+        public ParagraphBuilder GetParagraph()
         {
-            if (table.Grid?.ColumnWidth == null)
-            {
-                int? maxCountCell = table.Rows?.Select(s => s?.Cells?.Count).DefaultIfEmpty(null).Max();
-                string widthColumn = ((SettingsDocument?.WidthPage - SettingsDocument?.MarginLeft - SettingsDocument?.MarginRight) / maxCountCell).ToString();
-
-                for (int i = 0; i < maxCountCell; i++)
-                    table.TableXml.Elements<TableGrid>().First().AppendChild(
-                        new GridColumn() { Width = widthColumn }
-                    );
-
-                foreach (var row in table.Rows)
-                    foreach (var cell in row.Cells)
-                        cell.Width = int.Parse(widthColumn);
-            }
-            else
-            {
-                foreach (var row in table.Rows)
-                {
-                    for (int i = 0; i < row.Cells.Count; i++)
-                    {
-                        if (row.Cells[i].CellSpan != 0)
-                            row.Cells[i].Width = table.Grid.ColumnWidth.Skip(i).Take(row.Cells[i].CellSpan).Sum();
-                        else
-                            row.Cells[i].Width = table.Grid.ColumnWidth[i];
-                    }
-                }
-
-                table.Properties.TblPropXml.TableWidth.Width = (table.Grid.ColumnWidth.Sum() * Configuration.TwipsInPixels).ToString();
-                table.Properties.TblPropXml.TableWidth.Type = TableWidthUnitValues.Dxa;
-            }
-
-            Doc.Body.AppendChild(table.TableXml);
+            Doc.Body.Elements<OpenXmlElement.Paragraph>().First();
+            return new ParagraphBuilder(Doc.Body.Elements<OpenXmlElement.Paragraph>().First());
+        }
+            
+        public TableBuilder AddTable()
+        {
+            OpenXmlElement.Table tbl = new();
+            Doc.Body.AppendChild(tbl);
+            return new TableBuilder(tbl, SettingsDocument);
         }
 
-        public void BuildChart(charts.ChartBuilder chartBuilder)
+        public void BuildChart(ChartBuilder chartBuilder)
         {
             chartBuilder.GeneratedTitle();
             chartBuilder.GeneratedAutoTitleDeleted();
@@ -117,20 +102,20 @@ namespace OpenXMLight
             chartBuilder.GeneratedLegend();
             chartBuilder.GeneratedPlotVisibleOnly();
 
-            ChartPart chartPart = Doc.MainDocumentPart.AddNewPart<ChartPart>();
+            OpenXmlPackaging.ChartPart chartPart = Doc.MainDocumentPart.AddNewPart<OpenXmlPackaging.ChartPart>();
             chartPart.ChartSpace = chartBuilder.Chart.ChartSpaceXml;
 
-            Paragraph p = new Paragraph();
-            Run r = new Run();
+            OpenXmlElement.Paragraph p = new OpenXmlElement.Paragraph();
+            OpenXmlElement.Run r = new OpenXmlElement.Run();
 
-            Drawing drawing = new Drawing();
-            Inline inline = new();
+            OpenXmlElement.Drawing drawing = new OpenXmlElement.Drawing();
+            OpenXmlDrawingWp.Inline inline = new();
 
             inline.Append(
-                new Extent() { Cx = chartBuilder.Chart.WidthLong, Cy = chartBuilder.Chart.HeightLong },
-                new EffectExtent() { LeftEdge = 0, TopEdge = 0, RightEdge = 0, BottomEdge = 0 },
-                new DocProperties() { Name = "Диаграмма 1", Id = 1 },
-                new NonVisualGraphicFrameDrawingProperties()
+                new OpenXmlDrawingWp.Extent() { Cx = chartBuilder.Chart.WidthLong, Cy = chartBuilder.Chart.HeightLong },
+                new OpenXmlDrawingWp.EffectExtent() { LeftEdge = 0, TopEdge = 0, RightEdge = 0, BottomEdge = 0 },
+                new OpenXmlDrawingWp.DocProperties() { Name = "Диаграмма 1", Id = 1 },
+                new OpenXmlDrawingWp.NonVisualGraphicFrameDrawingProperties()
                 );
             inline.AppendChild(
                 new OpenXmlDrawing.Graphic(
@@ -151,23 +136,6 @@ namespace OpenXMLight
             Doc.Body.AppendChild(p);
         }
 
-        public elements.Endnote AddEndnote(string content, TextProperties? textProp = default)
-        {
-            textProp ??= new TextProperties();
-            elements.Endnote endnote = new elements.Endnote(content, StylesDocument.CreateGetEndnoteStyle(), textProp);
-
-            EndnotesPart endnotesPart = Doc.MainDocumentPart.EndnotesPart ?? Doc.MainDocumentPart.AddNewPart<EndnotesPart>();
-            endnotesPart.Endnotes ??= new Endnotes();
-
-            int idEndnote = endnotesPart.Endnotes.Count() == 0 ? 0 : +1;
-            endnote.SetID(idEndnote);
-            Endnote endnoteXml = new Endnote() { Id = idEndnote };
-
-            endnoteXml.AppendChild(endnote.Properties.Paragraph);
-            endnotesPart.Endnotes.AppendChild(endnoteXml);
-            endnotesPart.Endnotes.Save();
-
-            return endnote;
-        }
+        public EndnoteBuilder AddEndnote(string content) => new EndnoteBuilder(Context.Endnotes.AddEndnote(content));
     }
 }

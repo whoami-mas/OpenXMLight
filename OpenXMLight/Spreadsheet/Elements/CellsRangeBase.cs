@@ -58,7 +58,7 @@ namespace OpenXMLight.Spreadsheet.Elements
 
             CellXml = rowFind.Elements<OpenXmlSpreadsheet.Cell>()
                                     .FirstOrDefault(f => string.Equals(f.CellReference, _addressCell)) 
-                                    ?? rowFind.AppendChild(new OpenXmlSpreadsheet.Cell() { CellReference = $"{HalperData.GetColumnByIndex(_col)}{_row}" });
+                                    ?? rowFind.AppendChild(new OpenXmlSpreadsheet.Cell() { CellReference = $"{HelperData.GetColumnByIndex(_col)}{_row}" });
 
             GetCellValue();
         }
@@ -182,7 +182,7 @@ namespace OpenXMLight.Spreadsheet.Elements
         {
             this.Merge();
 
-            string addressMergeCell = $"{HalperData.GetColumnByIndex(colTo)}{rowTo}";
+            string addressMergeCell = $"{HelperData.GetColumnByIndex(colTo)}{rowTo}";
             string address = $"{_addressCell}:{addressMergeCell}";
 
             ValidationExcel.ValidationMerge(MergeCells, _row, _col, rowTo, colTo, address);
@@ -194,7 +194,7 @@ namespace OpenXMLight.Spreadsheet.Elements
 
                 for (int j = _col + 1; j <= colTo; j++)
                 {
-                    string appendAddress = $"{HalperData.GetColumnByIndex(j)}{i}";
+                    string appendAddress = $"{HelperData.GetColumnByIndex(j)}{i}";
 
                     OpenXmlSpreadsheet.Cell cell = rowFind.Elements<OpenXmlSpreadsheet.Cell>().FirstOrDefault(f => string.Equals(f.CellReference, addressMergeCell)) 
                         ?? rowFind.AppendChild(new OpenXmlSpreadsheet.Cell() { CellReference = appendAddress });
@@ -207,8 +207,8 @@ namespace OpenXMLight.Spreadsheet.Elements
         }
         public void Merge(string addressCellTo)
         {
-            int rowTo = HalperData.GetRowIndex(addressCellTo);
-            int colTo = HalperData.GetColumnIndex(addressCellTo);
+            int rowTo = HelperData.GetRowIndex(addressCellTo);
+            int colTo = HelperData.GetColumnIndex(addressCellTo);
 
             this.Merge(rowTo, colTo);
         }
