@@ -11,5 +11,7 @@ namespace OpenXMLight.Configurations.Parts.InterfacesParts
     public interface IElementPart<T> where T : OpenXmlPackaging.OpenXmlPart 
     {
         T PartXml { get; set;  }
+
+        public void CheckedExists();
     }
 }

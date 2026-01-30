@@ -16,7 +16,12 @@ namespace OpenXMLight.Configurations.Parts
     {
         public OpenXmlPackaging.EndnotesPart PartXml { get; set; }
 
-        internal Endnotes(OpenXmlPackaging.EndnotesPart endnotesPart) => PartXml = endnotesPart;
+        internal Endnotes(OpenXmlPackaging.EndnotesPart endnotesPart)
+        {
+            PartXml = endnotesPart;
+
+            CheckedExists();
+        }
 
         internal long GetMaxId()
         {
@@ -29,7 +34,7 @@ namespace OpenXMLight.Configurations.Parts
         }
         public OpenXml.Endnote AddEndnote(string content)
         {
-            CheckedExists();
+            CheckedDefaultEndnote();
 
             OpenXml.Endnote endnote = new OpenXml.Endnote(
                 new OpenXml.Paragraph(
@@ -56,15 +61,17 @@ namespace OpenXMLight.Configurations.Parts
             return endnote;
         }
 
-        private void CheckedExists()
-        {
-            PartXml.Endnotes ??= new OpenXml.Endnotes();
 
+        public void CheckedExists() => PartXml.Endnotes ??= new OpenXml.Endnotes();
+
+
+        private void CheckedDefaultEndnote()
+        {
             PartXml.Endnotes.AppendChild(
                 new OpenXml.Endnote(
                      new OpenXml.Paragraph(
                         new OpenXml.ParagraphProperties(
-                            new OpenXml.SpacingBetweenLines() { After = "0", Line = "240", LineRule = OpenXml.LineSpacingRuleValues.Auto}
+                            new OpenXml.SpacingBetweenLines() { After = "0", Line = "240", LineRule = OpenXml.LineSpacingRuleValues.Auto }
                             ),
                         new OpenXml.Run(
                             new OpenXml.SeparatorMark()

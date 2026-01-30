@@ -34,6 +34,7 @@ namespace OpenXMLight.Configurations.Elements
 
         #region Private properties
         private OpenXml.RunProperties? _elementProperties;
+        private Color? _color;
         #endregion
 
         public string? Text { 
@@ -82,6 +83,35 @@ namespace OpenXMLight.Configurations.Elements
             }
             set => ElementProperties.Bold = value ? new OpenXml.Bold()
                                                        : null;
+        }
+        public Color? Color
+        {
+            get
+            {
+                object? tmpColor = ElementProperties.Color?.Val;
+
+                _color = HelperData.TryParseColorText(tmpColor, out Color? _result)
+                    ? _result
+                    : Configuration.DEFAULT_COLOR_TEXT;
+
+                return _color;
+            }
+            set
+            {
+                if (Color == value)
+                    return;
+
+                _color = value;
+
+                if(_color == null)
+                {
+                    ElementProperties.Color.Remove();
+                    return;
+                }
+
+                ElementProperties.Color ??= new OpenXml.Color();
+                ElementProperties.Color.Val = _color.Value.Hex.Substring(1);
+            }
         }
     }
 }

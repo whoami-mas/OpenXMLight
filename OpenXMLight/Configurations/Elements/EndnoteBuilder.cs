@@ -10,7 +10,7 @@ namespace OpenXMLight.Configurations.Elements
 {
     public class EndnoteBuilder
     {
-        EndnoteTest endnote;
+        Endnote endnote;
 
 
         internal EndnoteBuilder(OpenXml.Endnote endnote) => this.endnote = new(endnote);
@@ -27,6 +27,6 @@ namespace OpenXMLight.Configurations.Elements
         }
 
 
-        public static implicit operator EndnoteTest(EndnoteBuilder build) => build.endnote;
+        public static implicit operator Endnote(EndnoteBuilder build) => build.endnote;
     }
 }

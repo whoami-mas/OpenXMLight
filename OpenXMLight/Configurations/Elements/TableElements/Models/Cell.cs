@@ -38,6 +38,7 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
         private ElementCollection<Paragraph>? _p;
         private TableCellWidth<CellWidth> _width;
         private TableCellMargin<CellMargin> _margin;
+        private TextDirectionType? _textDirection;
         #endregion
 
         public ElementCollection<Paragraph> Paragraphs
@@ -119,6 +120,35 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
                 }
 
                 return _margin;
+            }
+        }
+        public TextDirectionType? TextDirection
+        {
+            get
+            {
+                object? _tmpTextDirection = ElementProperties.TextDirection?.Val?.Value;
+
+                _textDirection = HelperData.TryParseTextDirectionCell(_tmpTextDirection, out TextDirectionType? _result)
+                    ? _result
+                    : Configuration.DEFAULT_TEXTDIRECTION;
+
+                return _textDirection;
+            }
+            set
+            {
+                if (TextDirection == value)
+                    return;
+
+                _textDirection = value;
+
+                if (_textDirection == null)
+                {
+                    ElementProperties?.TextDirection?.Remove();
+                    return;
+                }
+
+                ElementProperties.TextDirection ??= new OpenXml.TextDirection();
+                ElementProperties.TextDirection.Val = _textDirection.Value.Value;
             }
         }
     }

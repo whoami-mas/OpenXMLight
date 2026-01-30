@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using OpenXML = DocumentFormat.OpenXml.Wordprocessing;
+using OpenXmlFormatte = DocumentFormat.OpenXml;
 
 namespace OpenXMLight.Tools
 {
@@ -149,6 +150,28 @@ namespace OpenXMLight.Tools
 
             alignment = VerticalAlignments.Parse(cellVerticalAlignment);
 
+            return true;
+        }
+        internal static bool TryParseTextDirectionCell(object? textDir, out TextDirectionType? textDirection)
+        {
+            textDirection = Configuration.DEFAULT_TEXTDIRECTION;
+
+            if (textDir is not OpenXML.TextDirectionValues _textDirection)
+                return false;
+
+            textDirection = TextDirectionType.Parse(_textDirection);
+
+            return true;
+        }
+        internal static bool TryParseColorText(object? colorXml, out Color? color)
+        {
+            color = Configuration.DEFAULT_COLOR_TEXT;
+
+            if (colorXml is not OpenXmlFormatte.StringValue hex)
+                return false;
+
+            color = Color.FromHex(hex.ToString().Insert(0, "#"));
+            
             return true;
         }
     }

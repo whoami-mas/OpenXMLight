@@ -37,7 +37,7 @@ namespace OpenXMLight.Configurations.Elements
         private OpenXml.ParagraphProperties? _elementProperties;
         private ElementCollection<Run>? _runs;
         private SpacingBetweenLines? _spacing;
-        private ElementCollection<EndnoteTest> _endnote;
+        private ElementCollection<Endnote> _endnote;
         #endregion
 
         //Properties
@@ -90,7 +90,7 @@ namespace OpenXMLight.Configurations.Elements
                 return _runs;
             }
         }
-        public ElementCollection<EndnoteTest> Endnotes
+        public ElementCollection<Endnote> Endnotes
         {
             get
             {
@@ -99,7 +99,7 @@ namespace OpenXMLight.Configurations.Elements
                     OpenXml.Run r = new();
                     
 
-                    _endnote = new(ElementXml.Elements<OpenXml.Run>().Where(w=> w.Elements<OpenXml.EndnoteReference>().Count() > 0).Select(s=> new EndnoteTest(s)));
+                    _endnote = new(ElementXml.Elements<OpenXml.Run>().Where(w=> w.Elements<OpenXml.EndnoteReference>().Count() > 0).Select(s=> new Endnote(s)));
                 }
 
                 return _endnote;

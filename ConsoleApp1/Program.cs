@@ -2,6 +2,7 @@
 using OpenXMLight;
 using OpenXMLight.Configurations;
 using OpenXMLight.Configurations.Elements;
+using OpenXMLight.Configurations.Elements.TableElements;
 using OpenXMLight.Configurations.Elements.TableElements.Formattings.MarginComponents;
 using OpenXMLight.Configurations.Elements.TableElements.Models;
 using OpenXMLight.Configurations.Formatting;
@@ -10,96 +11,147 @@ try
 {
     //string path = @"C:\Users\bushk\Desktop\Reportings risks\act_rep_4_2025.xlsx";
     //string path = @"testingTable.docx";
-    string path = @"F:\тестовые проекты\NewServiceRisksPlus\NewServiceRisksPlus\bin\Debug\net8.0-windows7.0\archives\a_44\2025\Журнал проведения обучений 2025.docx";
+    string path = @"F:\тестовые проекты\ConsoleApp1\тест\testing.docx";
 
-    using (WordDocument document = new WordDocument(path, true))
+    using (WordDocument word = new WordDocument(path, true))
     {
-        #region template
-        //TableTest tbl = document.AddTable()
-        //    .SetWidth(w =>
-        //    {
-        //        w.Width = "15";
-        //        w.Type = TypeWidthTable.Cm;
-        //    })
-        //    .SetBorders(b =>
-        //    {
-        //        b.LineWidth = 0.5;
-        //        b.LineType = BordersType.Single;
-        //    }).
-        //    SetMargin("0,19", "0", "0,19", "0")
-        //    .AddRows(
-        //    row =>
-        //    row.AddCell(
-        //        cell => cell.AddParagraph(
-        //            p => p.SetRun(
-        //                new RunBuilder().SetText("1")
-        //                )
-        //            )
-        //        )
-        //    .AddCell(cell => cell.AddParagraph(
-        //            p => p.SetRun(
-        //                new RunBuilder().SetText("2")
-        //                )
-        //            )
-        //        )
-        //    .AddCell(cell => cell.AddParagraph(
-        //            p => p.SetRun(
-        //                new RunBuilder().SetText("3")
-        //                )
-        //            )
-        //        )
-        //    )
-        //    .AddRows(
-        //    row => row.AddCell(
-        //        cell => cell.AddParagraph(
-        //            p => p.SetRun(
-        //                new RunBuilder().SetText("4")
-        //                )
-        //            )
-        //        ).AddCell(cell => cell.AddParagraph(
-        //            p => p.SetRun(
-        //                new RunBuilder().SetText("5")
-        //                )
-        //            )
-        //        ).AddCell(cell => cell.AddParagraph(
-        //            p => p.SetRun(
-        //                new RunBuilder().SetText("6")
-        //                )
-        //            )
-        //        )
-        //    )
-        //    .AddRows(row => row.AddCell(
-        //        cell => cell.AddParagraph(
-        //            p => p.SetRun(
-        //                new RunBuilder().SetText("7")
-        //                )
-        //            )
-        //        ).AddCell(cell => cell.AddParagraph(
-        //            p => p.SetRun(
-        //                new RunBuilder().SetText("8")
-        //                )
-        //            )
-        //        ).AddCell(cell => cell.AddParagraph(
-        //            p => p.SetRun(
-        //                new RunBuilder().SetText("9")
-        //                )
-        //            )
-        //        )
-        //    )
-        //    .Merge(0, 1, 0, 2)
-        //    .IsFixed(true);
-        #endregion
+        word.SettingsDocument.MarginTop = 49;
+        word.SettingsDocument.MarginLeft = 49;
+        word.SettingsDocument.MarginRight = 49;
+        word.SettingsDocument.MarginBottom = 49;
 
-        EndnoteTest endnote = document.AddEndnote("Hello World!");
 
-        Paragraph p = document.AddParagraph()
-            .SetRun(
-                new RunBuilder().SetText("Testing endnote"),
-                new RunBuilder().SetEndnote(endnote)
+        word.AddParagraph().SetRun(
+            new RunBuilder()
+                .SetText($"Сводный отчет ключевых нефинансовых индикаторов риска за 1 2026 года")
+                .SetBold(true)
+                .SetFontFamily(FontsFamily.TimesNewRoman)
+                .SetFontSize(12)
+            )
+            .SetAlignment(HorizontalAlignments.Center);
+
+        Table table = word.AddTable()
+            .IsFixed(true)
+            .SetWidth(w =>
+            {
+                w.Width = "100";
+                w.Type = TypeWidthTable.Pct;
+            })
+            .SetBorders(
+                b => new Borders()
+                {
+                    LineWidth = 1,
+                    LineType = BordersType.Single
+                }
+            )
+            .AddRows(
+                r =>
+                r.AddCell(
+                    c => c.AddParagraph(
+                        p => p.SetRun(
+                            new RunBuilder()
+                                .SetText("Риск")
+                                .SetBold(true)
+                                .SetFontSize(9)
+                                .SetFontFamily(FontsFamily.TimesNewRoman)
+                            )
+                        .SetAlignment(HorizontalAlignments.Center)
+                        )
+
+                    .SetVerticalAlignment(VerticalAlignments.Center)
+                    )
+                .AddCell(
+                    c => c.AddParagraph(
+                        p => p.SetRun(
+                            new RunBuilder()
+                            .SetText("Проверка перевернутого текста")
+                            .SetBold(true)
+                            .SetFontSize(9)
+                            .SetFontFamily(FontsFamily.TimesNewRoman)
+                            )
+                        .SetAlignment(HorizontalAlignments.Center)
+                        )
+                    .SetWidth(
+                        w =>
+                        {
+                            w.Width = "12";
+                            w.Type = TypeWidthTable.Pct;
+                        }
+                    )
+                    .SetVerticalAlignment(VerticalAlignments.Center)
+                    )
+                .AddCell(
+                    c => c.AddParagraph(
+                        p => p.SetRun(
+                            new RunBuilder()
+                            .SetText("№")
+                            .SetBold(true)
+                            .SetFontSize(9)
+                            .SetFontFamily(FontsFamily.TimesNewRoman)
+                            )
+                        .SetAlignment(HorizontalAlignments.Center)
+                        )
+
+                    .SetVerticalAlignment(VerticalAlignments.Center)
+                    )
             );
+
+        for (int i = 1; i <= 3; i++)
+        {
+            table.Rows.Add(
+                new RowBuilder()
+                    .AddCell(
+                        c => c.AddParagraph(
+                            p => p.SetRun(
+                                new RunBuilder()
+                                .SetText($"Тип_{i}")
+                                .SetFontSize(9)
+                                .SetFontFamily(FontsFamily.TimesNewRoman)
+                                )
+                            .SetAlignment(HorizontalAlignments.Center)
+                            )
+
+                    )
+                    .AddCell(
+                        c => c.AddParagraph(
+                            p => p.SetRun(
+                                new RunBuilder()
+                                .SetText($"Limit {i}")
+                                .SetFontSize(9)
+                                .SetFontFamily(FontsFamily.TimesNewRoman)
+                                )
+                            .SetAlignment(HorizontalAlignments.Center)
+                            )
+                        .SetWidth(
+                            w =>
+                            {
+                                w.Width = "2";
+                                w.Type = TypeWidthTable.Pct;
+                            }
+                            )
+                    )
+                    .AddCell(
+                        c => c.AddParagraph(
+                            p => p.SetRun(
+                                new RunBuilder()
+                                .SetText(i.ToString())
+                                .SetFontSize(9)
+                                .SetFontFamily(FontsFamily.TimesNewRoman)
+                                .SetColor(Color.FromHex("#12ff5f"))
+                                )
+                            .SetAlignment(HorizontalAlignments.Center)
+                            )
+
+                    )
+                );
+
+        }
+
+
+        table.Rows[0].Cells[1].Paragraphs[0].Runs[0].Color = Color.FromHex("#ff0000");
     }
 }
-catch(Exception ex)
+catch (Exception ex)
 {
     Console.WriteLine(ex.Message);
 }

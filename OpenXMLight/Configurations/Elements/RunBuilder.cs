@@ -62,7 +62,7 @@ namespace OpenXMLight.Configurations.Elements
 
             return this;
         }
-        public RunBuilder SetEndnote(EndnoteTest endnote)
+        public RunBuilder SetEndnote(Endnote endnote)
         {
             _run.ElementProperties.AppendChild(
                 new OpenXml.RunStyle() { Val = Context.GetInstance().Styles.CreateGetEndnoteRef() }
@@ -70,6 +70,12 @@ namespace OpenXMLight.Configurations.Elements
             _run.ElementXml.AppendChild(
                 new OpenXml.EndnoteReference() { Id = endnote.ElementXml.Id }
                 );
+
+            return this;
+        }
+        public RunBuilder SetColor(Color color)
+        {
+            _run.Color = color;
 
             return this;
         }

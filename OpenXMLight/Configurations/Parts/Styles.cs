@@ -16,15 +16,18 @@ namespace OpenXMLight.Configurations.Parts
         public OpenXmlPackaging.StyleDefinitionsPart PartXml { get; set; }
         private int CountStyles => PartXml.Styles.ChildElements.Count();
 
-        internal Styles(OpenXmlPackaging.StyleDefinitionsPart stylesPart) => PartXml = stylesPart;
+        internal Styles(OpenXmlPackaging.StyleDefinitionsPart stylesPart)
+        {
+            PartXml = stylesPart;
+            
+            CheckedExists();
+        }
 
 
-        private void CheckedExists() => PartXml.Styles ??= new OpenXml.Styles();
-
+        public void CheckedExists() => PartXml.Styles ??= new OpenXml.Styles();
+         
         internal string CreateGetEndnoteRef()
         {
-            CheckedExists();
-
             OpenXml.Style? style = PartXml.Styles?.OfType<OpenXml.Style>().FirstOrDefault(f=> string.Equals(f.Elements<OpenXml.Name>().FirstOrDefault()?.Val, "endnote reference"));
             
             if(style == null)
@@ -47,8 +50,6 @@ namespace OpenXMLight.Configurations.Parts
         }
         internal string CreateGetEndnoteText()
         {
-            CheckedExists();
-
             OpenXml.Style style = PartXml.Styles?.OfType<OpenXml.Style>().FirstOrDefault(f => string.Equals(f.Elements<OpenXml.Name>().FirstOrDefault()?.Val, "endnote text"));
 
             if (style == null)

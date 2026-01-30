@@ -24,8 +24,11 @@ namespace OpenXMLight
         private OpenXmlElement.Document? Doc { get; set; }
 
 
+        private string _tmp_path;
+
 
         public ElementCollection<Table> Tables => new(Doc.Body.Elements<OpenXmlElement.Table>().Select(s => new Table(s))) {Parent = Doc.Body };
+        public string FullPath => Path.GetFullPath(_tmp_path);
         public SettingsPageWord SettingsDocument { get; protected set; }
 
         private Context Context { get; init; }
@@ -69,31 +72,42 @@ namespace OpenXMLight
             SettingsDocument = new();
             
             SettingsDocument.GenerateDocumentSettings(Doc);
+
+            _tmp_path = path;
         }
 
 
-
+        /// <summary>
+        /// Break page and go over next page
+        /// </summary>
         public void BreakPage() => Doc.Body.AppendChild(new OpenXmlElement.Paragraph(new OpenXmlElement.Run(new OpenXmlElement.Break() { Type = OpenXmlElement.BreakValues.Page })));
-        //Testing new code
+        
+        /// <summary>
+        /// Add new paragraph
+        /// </summary>
+        /// <returns></returns>
         public ParagraphBuilder AddParagraph()
         {
             OpenXmlElement.Paragraph p = new();
             Doc.Body.AppendChild(p);
             return new ParagraphBuilder(p);
         }
-        public ParagraphBuilder GetParagraph()
-        {
-            Doc.Body.Elements<OpenXmlElement.Paragraph>().First();
-            return new ParagraphBuilder(Doc.Body.Elements<OpenXmlElement.Paragraph>().First());
-        }
-            
+
+        /// <summary>
+        /// Add new table
+        /// </summary>
+        /// <returns></returns>
         public TableBuilder AddTable()
         {
             OpenXmlElement.Table tbl = new();
             Doc.Body.AppendChild(tbl);
-            return new TableBuilder(tbl, SettingsDocument);
+            return new TableBuilder(tbl);
         }
 
+        /// <summary>
+        /// Add new chart
+        /// </summary>
+        /// <param name="chartBuilder">Created chart</param>
         public void BuildChart(ChartBuilder chartBuilder)
         {
             chartBuilder.GeneratedTitle();
@@ -136,6 +150,11 @@ namespace OpenXMLight
             Doc.Body.AppendChild(p);
         }
 
+        /// <summary>
+        /// Add new endnote
+        /// </summary>
+        /// <param name="content">text for endnote reference</param>
+        /// <returns></returns>
         public EndnoteBuilder AddEndnote(string content) => new EndnoteBuilder(Context.Endnotes.AddEndnote(content));
     }
 }

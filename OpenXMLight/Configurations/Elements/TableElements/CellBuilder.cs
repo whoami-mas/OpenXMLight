@@ -1,4 +1,6 @@
-﻿using OpenXMLight.Configurations.Elements.TableElements.Models;
+﻿using OpenXMLight.Configurations.Elements.TableElements.Formattings;
+using OpenXMLight.Configurations.Elements.TableElements.Formattings.WidthComponents;
+using OpenXMLight.Configurations.Elements.TableElements.Models;
 using OpenXMLight.Configurations.Formatting;
 using System;
 using System.Collections.Generic;
@@ -40,6 +42,21 @@ namespace OpenXMLight.Configurations.Elements.TableElements
         public CellBuilder SetVerticalAlignment(VerticalAlignments alignment)
         {
             _cell.Alignment = alignment;
+
+            return this;
+        }
+        public CellBuilder SetWidth(Action<TableCellWidth<CellWidth>>? configuration = null)
+        {
+            TableCellWidth<CellWidth> width = new();
+            configuration?.Invoke(width);
+
+            _cell.Width = width;
+
+            return this;
+        }
+        public CellBuilder SetTextDirection(TextDirectionType textDirection)
+        {
+            _cell.TextDirection = textDirection;
 
             return this;
         }

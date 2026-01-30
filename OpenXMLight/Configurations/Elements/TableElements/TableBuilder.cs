@@ -18,18 +18,13 @@ namespace OpenXMLight.Configurations.Elements
     public class TableBuilder
     {
         private readonly Table table;
-        private readonly SettingsPageWord? settingsDocument;
 
 
         //public TableBuilderTest() : this(new OpenXml.Table())
         //{
 
         //}
-        internal TableBuilder(OpenXml.Table tbl, SettingsPageWord? settingsDocument = null)
-        {
-            table = new(tbl);
-            this.settingsDocument = settingsDocument; 
-        }
+        internal TableBuilder(OpenXml.Table tbl) => table = new(tbl);
 
 
 
@@ -41,10 +36,7 @@ namespace OpenXMLight.Configurations.Elements
             var builder = new RowBuilder(r);
             configuration?.Invoke(builder);
 
-            if(
-               table.Width.Type != TypeWidthTable.Auto ||
-               !string.Equals(table.Width.Width, "0")
-               )
+            if(table.Width.Type == TypeWidthTable.Auto) //|| !string.Equals(table.Width.Width, "0"
                 UpdateWidthCells((Row)builder);
 
             return this;

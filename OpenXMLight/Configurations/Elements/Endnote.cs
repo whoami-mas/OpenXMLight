@@ -9,7 +9,7 @@ using OpenXml = DocumentFormat.OpenXml.Wordprocessing;
 
 namespace OpenXMLight.Configurations.Elements
 {
-    public class EndnoteTest : Element<OpenXml.Endnote, OpenXml.EndnoteProperties>
+    public class Endnote : Element<OpenXml.Endnote, OpenXml.EndnoteProperties>
     {
         internal override OpenXml.Endnote ElementXml { get; set; }
         internal override OpenXml.EndnoteProperties ElementProperties
@@ -29,13 +29,13 @@ namespace OpenXMLight.Configurations.Elements
         }
 
 
-        internal EndnoteTest(OpenXml.Run r)
+        internal Endnote(OpenXml.Run r)
         {
             long id_endnote = r.Elements<OpenXml.EndnoteReference>().First().Id;
 
 
         }
-        internal EndnoteTest(OpenXml.Endnote e) => ElementXml = e;
+        internal Endnote(OpenXml.Endnote e) => ElementXml = e;
 
 
         #region Private properties

@@ -24,8 +24,8 @@ namespace OpenXMLight.Configurations.WordContext
 
 
         public Styles Styles { get; init; }
-        public Endnotes Endnotes { get; init; }
-
+        public Endnotes? Endnotes { get; init; }
+        
 
         protected Context(OpenXmlPackaging.MainDocumentPart? mainDoc = null)
         {
