@@ -1,4 +1,5 @@
-﻿using OpenXMLight.Configurations.Elements.TableElements.Formattings;
+﻿using OpenXMLight.Configurations.Elements.Interfaces;
+using OpenXMLight.Configurations.Elements.TableElements.Formattings;
 using OpenXMLight.Configurations.Elements.TableElements.Formattings.MarginComponents;
 using OpenXMLight.Configurations.Elements.TableElements.Formattings.WidthComponents;
 using OpenXMLight.Configurations.Formatting;
@@ -14,7 +15,7 @@ using OpenXml = DocumentFormat.OpenXml.Wordprocessing;
 
 namespace OpenXMLight.Configurations.Elements.TableElements.Models
 {
-    public class Table : Element<OpenXml.Table, OpenXml.TableProperties>
+    public class Table : Element<OpenXml.Table, OpenXml.TableProperties>, IObservable
     {
         internal override OpenXml.Table ElementXml { get; set; }
         internal override OpenXml.TableProperties ElementProperties
@@ -35,6 +36,7 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
         }
 
 
+        List<IObserver> observers;
 
         internal Table(OpenXml.Table tbl) => ElementXml = tbl;
 
@@ -53,7 +55,11 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
             {
                 if (_rows == null)
                 {
+                    observers = new();
+
                     _rows = new(ElementXml.Elements<OpenXml.TableRow>().Select(s => new Row(s))) { Parent = ElementXml };
+
+                    observers.AddRange(_rows);
                 }
 
                 return _rows;
@@ -216,6 +222,14 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
                     row.Cells[indexPost].ElementProperties.VerticalMerge ??= new OpenXml.VerticalMerge();
                 }
             }
+
+            ((IObservable)this).NotifyObservers();
+        }
+
+        void IObservable.NotifyObservers()
+        {
+            foreach (var observer in observers)
+                observer.RefreashCached();
         }
     }
 }

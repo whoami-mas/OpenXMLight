@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenXMLight.Configurations.Elements.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ using OpenXml = DocumentFormat.OpenXml.Wordprocessing;
 
 namespace OpenXMLight.Configurations.Elements.TableElements.Models
 {
-    public class Row : Element<OpenXml.TableRow, OpenXml.TableRowProperties>
+    public class Row : Element<OpenXml.TableRow, OpenXml.TableRowProperties>, IObserver
     {
         internal override OpenXml.TableRow ElementXml { get; set; }
         internal override OpenXml.TableRowProperties ElementProperties
@@ -23,7 +24,10 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
         }
 
 
-
+        bool IObserver.IsInitializedCache { get; set; } = false;
+        List<IObserver> observers;
+        
+        
         internal Row(OpenXml.TableRow r) => ElementXml = r;
 
 
@@ -37,11 +41,26 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
         {
             get
             {
-                if (_cells == null)
+                if (_cells == null && !((IObserver)this).IsInitializedCache)
+                {
+                    observers = new();
+
                     _cells = new(ElementXml.Elements<OpenXml.TableCell>().Select(s => new Cell(s))) { Parent = ElementXml };
+                    observers.AddRange(_cells);
+
+                     ((IObserver)this).IsInitializedCache = true;
+                }
 
                 return _cells;
             }
+        }
+
+        void IObserver.RefreashCached()
+        {
+            ((IObserver)this).IsInitializedCache = false;
+
+            foreach (IObserver observer in observers)
+                observer.RefreashCached();
         }
     }
 }

@@ -77,7 +77,7 @@ namespace OpenXMLight.Configurations.Elements
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public IEnumerator<T> GetEnumerator() => _collection.GetEnumerator();

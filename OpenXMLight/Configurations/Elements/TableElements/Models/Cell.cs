@@ -1,4 +1,5 @@
-﻿using OpenXMLight.Configurations.Elements.TableElements.Formattings;
+﻿using OpenXMLight.Configurations.Elements.Interfaces;
+using OpenXMLight.Configurations.Elements.TableElements.Formattings;
 using OpenXMLight.Configurations.Elements.TableElements.Formattings.MarginComponents;
 using OpenXMLight.Configurations.Elements.TableElements.Formattings.WidthComponents;
 using OpenXMLight.Configurations.Formatting;
@@ -13,7 +14,7 @@ using OpenXml = DocumentFormat.OpenXml.Wordprocessing;
 
 namespace OpenXMLight.Configurations.Elements.TableElements.Models
 {
-    public class Cell : Element<OpenXml.TableCell, OpenXml.TableCellProperties>
+    public class Cell : Element<OpenXml.TableCell, OpenXml.TableCellProperties>, IObserver
     {
         internal override OpenXml.TableCell ElementXml { get; set; }
         internal override OpenXml.TableCellProperties ElementProperties
@@ -28,7 +29,8 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
         }
 
 
-
+        bool IObserver.IsInitializedCache { get; set; } = false;
+        
         internal Cell(OpenXml.TableCell c) => ElementXml = c;
 
 
@@ -45,8 +47,7 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
         {
             get
             {
-                if (_p == null)
-                    _p = new(ElementXml.Elements<OpenXml.Paragraph>().Select(s => new Paragraph(s))) { Parent = ElementXml };
+                _p = new(ElementXml.Elements<OpenXml.Paragraph>().Select(s => new Paragraph(s))) { Parent = ElementXml };
 
                 return _p;
             }
@@ -150,6 +151,12 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
                 ElementProperties.TextDirection ??= new OpenXml.TextDirection();
                 ElementProperties.TextDirection.Val = _textDirection.Value.Value;
             }
+        }
+
+
+        void IObserver.RefreashCached()
+        {
+            ((IObserver)this).IsInitializedCache = false;
         }
     }
 }
