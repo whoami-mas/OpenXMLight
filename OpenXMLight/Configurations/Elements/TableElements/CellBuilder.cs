@@ -60,6 +60,12 @@ namespace OpenXMLight.Configurations.Elements.TableElements
 
             return this;
         }
+        public CellBuilder SetColor(Color color)
+        {
+            _cell.Color = color;
+
+            return this;
+        }
 
 
 

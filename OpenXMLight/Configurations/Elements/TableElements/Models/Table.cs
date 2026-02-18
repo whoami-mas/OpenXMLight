@@ -193,7 +193,8 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
                 for (int j = c2_c; j != c1_c; j--)
                 {
                     foreach (Paragraph paragraph in row.Cells[j].Paragraphs)
-                        row.Cells[indexPost].Paragraphs.Add(paragraph, true);
+                        if(!string.IsNullOrWhiteSpace(paragraph.AllText))
+                            row.Cells[indexPost].Paragraphs.Add(paragraph, true);
 
                     row.Cells[j].ElementXml.Remove();
                     indexPost--;
@@ -215,7 +216,8 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
                 else
                 {
                     foreach (Paragraph paragraph in row.Cells[indexPost].Paragraphs)
-                        Rows[indexFirstRow].Cells[indexPost].Paragraphs.Add(paragraph, true);
+                        if (!string.IsNullOrWhiteSpace(paragraph.AllText))
+                            Rows[indexFirstRow].Cells[indexPost].Paragraphs.Add(paragraph, true);
 
                     row.Cells[indexPost].Paragraphs.Clear();
 

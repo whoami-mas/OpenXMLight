@@ -27,5 +27,6 @@ namespace OpenXMLight.Configurations
         internal static VerticalAlignments DEFAULT_VERTICAL_ALIGNMENT => VerticalAlignments.Top;
         internal static TextDirectionType? DEFAULT_TEXTDIRECTION => null;
         internal static Color? DEFAULT_COLOR_TEXT => null;
+        internal static Color? DEFAULT_COLOR_SHADE => null;
     }
 }

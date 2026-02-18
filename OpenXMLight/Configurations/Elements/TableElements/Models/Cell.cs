@@ -41,6 +41,7 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
         private TableCellWidth<CellWidth> _width;
         private TableCellMargin<CellMargin> _margin;
         private TextDirectionType? _textDirection;
+        private Color? _color;
         #endregion
 
         public ElementCollection<Paragraph> Paragraphs
@@ -150,6 +151,36 @@ namespace OpenXMLight.Configurations.Elements.TableElements.Models
 
                 ElementProperties.TextDirection ??= new OpenXml.TextDirection();
                 ElementProperties.TextDirection.Val = _textDirection.Value.Value;
+            }
+        }
+        public Color? Color { 
+            get
+            {
+                object? shdColor = ElementProperties.Shading;
+
+                _color = HelperData.TryParseColorShade(shdColor, out Color? _result)
+                    ? _result
+                    : Configuration.DEFAULT_COLOR_SHADE;
+
+                return _color;
+            }
+            set
+            {
+                if (Color == value)
+                    return;
+
+                _color = value;
+
+                if (_color == null)
+                {
+                    ElementProperties.Shading.Remove();
+                    return;
+                }
+
+                ElementProperties.Shading ??= new();
+                ElementProperties.Shading.Val = OpenXml.ShadingPatternValues.Clear;
+                ElementProperties.Shading.Color = "auto";
+                ElementProperties.Shading.Fill = _color.Value.Hex;
             }
         }
 

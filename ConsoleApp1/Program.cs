@@ -23,6 +23,13 @@ try
                                 w.Type = TypeWidthTable.Cm;
                             }
                         )
+                        .SetBorders(
+                        b=>
+                        {
+                            b.LineWidth = 1;
+                            b.LineType = BordersType.Single;
+                        }
+                        )
                         .IsFixed(true)
                         .AddRows(
                             r => r
@@ -128,21 +135,7 @@ try
                             r => r
                             .AddCell(
                                     c => c
-                                    .AddParagraph(
-                                        p => p.SetRun(
-                                            new RunBuilder()
-                                            .SetText("Ответственное лицо")
-                                            .SetFontSize(9)
-                                            .SetFontFamily(FontsFamily.TimesNewRoman)
-                                            .SetBold(true)
-                                            )
-                                        .SetSpacingBetweenLines(new SpacingBetweenLines()
-                                        {
-                                            After = 0,
-                                            Before = 0,
-                                            Line = 250
-                                        })
-                                        )
+                                    .AddParagraph()
                                     .SetWidth(
                                         w =>
                                         {
@@ -154,26 +147,6 @@ try
                             .AddCell(
                                     c => c
                                     .AddParagraph(
-                                        p => p.SetRun(
-                                            new RunBuilder()
-                                            .SetText("__________")
-                                            .SetFontSize(9)
-                                            .SetFontFamily(FontsFamily.TimesNewRoman)
-                                            )
-                                        .SetSpacingBetweenLines(new SpacingBetweenLines()
-                                        {
-                                            After = 0,
-                                            Before = 0,
-                                            Line = 250
-                                        })
-                                        .SetAlignment(HorizontalAlignments.Center)
-                                        )
-                                    .SetWidth(
-                                        w =>
-                                        {
-                                            w.Width = "2,25";
-                                            w.Type = TypeWidthTable.Cm;
-                                        }
                                         )
                                 )
                             .AddCell(
@@ -181,50 +154,15 @@ try
                                     .AddParagraph(
                                         p => p.SetRun(
                                             new RunBuilder()
-                                            .SetText("__________")
+                                            .SetText("123")
                                             .SetFontSize(9)
                                             .SetFontFamily(FontsFamily.TimesNewRoman)
-                                            )
-                                        .SetSpacingBetweenLines(new SpacingBetweenLines()
-                                        {
-                                            After = 0,
-                                            Before = 0,
-                                            Line = 250
-                                        })
-                                        .SetAlignment(HorizontalAlignments.Center)
-                                        )
-                                    .SetWidth(
-                                        w =>
-                                        {
-                                            w.Width = "2,25";
-                                            w.Type = TypeWidthTable.Cm;
-                                        }
-                                        )
+                                            .SetBold(true)
+                                            ))
                                 )
                             .AddCell(
                                     c => c
-                                    .AddParagraph(
-                                        p => p.SetRun(
-                                            new RunBuilder()
-                                            .SetText("_______________")
-                                            .SetFontSize(9)
-                                            .SetFontFamily(FontsFamily.TimesNewRoman)
-                                            )
-                                        .SetSpacingBetweenLines(new SpacingBetweenLines()
-                                        {
-                                            After = 0,
-                                            Before = 0,
-                                            Line = 250
-                                        })
-                                        .SetAlignment(HorizontalAlignments.Center)
-                                        )
-                                    .SetWidth(
-                                        w =>
-                                        {
-                                            w.Width = "3,75";
-                                            w.Type = TypeWidthTable.Cm;
-                                        }
-                                        )
+                                    .AddParagraph()
                                 )
                         )
                         .AddRows(
@@ -234,7 +172,7 @@ try
                                     .AddParagraph(
                                         p => p.SetRun(
                                             new RunBuilder()
-                                            .SetText("")
+                                            .SetText("546")
                                             .SetFontSize(9)
                                             .SetFontFamily(FontsFamily.TimesNewRoman)
                                             )
@@ -245,6 +183,7 @@ try
                                             Line = 250
                                         })
                                         )
+                                    .SetColor(Color.FromHex("#00ef80"))
                                     .SetWidth(
                                         w =>
                                         {
@@ -329,12 +268,8 @@ try
                                         )
                                 )
                         )
-                        .Merge(0, 1, 0, 3)
                         .SetMargin("0,15", "0", "0,15", "0");
 
-        //for (int i = tableSign.Rows[0].Cells[1].Paragraphs.Count - 1; i != 0; i--)
-        //    if (string.IsNullOrWhiteSpace(tableSign.Rows[0].Cells[1].Paragraphs[i].AllText))
-        //        tableSign.Rows[0].Cells[1].Paragraphs.Remove(tableSign.Rows[0].Cells[1].Paragraphs[i]);
     }
 }
 catch (Exception ex)

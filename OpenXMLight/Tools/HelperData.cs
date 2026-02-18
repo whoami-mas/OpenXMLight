@@ -174,5 +174,16 @@ namespace OpenXMLight.Tools
             
             return true;
         }
+        internal static bool TryParseColorShade(object? shdCellXml, out Color? color)
+        {
+            color = Configuration.DEFAULT_COLOR_SHADE;
+
+            if (shdCellXml is not OpenXML.Shading shd)
+                return false;
+
+            color = Color.FromHex(shd.Fill);
+
+            return true;
+        }
     }
 }
