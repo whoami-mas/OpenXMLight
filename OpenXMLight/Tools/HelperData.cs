@@ -51,6 +51,7 @@ namespace OpenXMLight.Tools
             }
             return columnName;
         }
+        internal static double GetMaxLengthWidthCell(string input) => input.Length * 1.2;
 
 
         internal static bool TryParseFontSize(string value, out int fontSize)

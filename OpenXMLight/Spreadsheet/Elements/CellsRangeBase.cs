@@ -16,19 +16,18 @@ namespace OpenXMLight.Spreadsheet.Elements
     {
         private object? _value = null;
 
+
         internal int _row;
         internal int _col;
         internal string? _addressCell;
         
+
         internal override OpenXmlPackaging.WorksheetPart WorksheetPart { get; init; }
         internal override OpenXmlPackaging.WorkbookPart WorkbookPart { get; init; }
         internal override OpenXmlSpreadsheet.SheetData SheetData => WorksheetPart.Worksheet.Elements<OpenXmlSpreadsheet.SheetData>().First();
-
-
         internal OpenXmlSpreadsheet.MergeCells MergeCells => WorksheetPart.Worksheet.Elements<OpenXmlSpreadsheet.MergeCells>().FirstOrDefault();
-
-
         internal OpenXmlSpreadsheet.Cell? CellXml { get; private set; }
+
 
 
         internal CellsRangeBase(OpenXmlPackaging.WorksheetPart worksheetPart, OpenXmlPackaging.WorkbookPart workbookPart)
@@ -36,6 +35,7 @@ namespace OpenXMLight.Spreadsheet.Elements
             this.WorkbookPart = workbookPart;
             this.WorksheetPart = worksheetPart;
         }
+
 
         public object? Value
         {
@@ -50,6 +50,8 @@ namespace OpenXMLight.Spreadsheet.Elements
                 _value = value;
             }
         }
+
+
 
         internal void GetData()
         {

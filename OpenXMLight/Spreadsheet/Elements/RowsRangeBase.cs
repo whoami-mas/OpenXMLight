@@ -15,14 +15,18 @@ namespace OpenXMLight.Spreadsheet.Elements
         internal int _rowFrom;
         internal int _rowTo;
 
+
         internal override OpenXmlPackaging.WorksheetPart WorksheetPart { get; init; }
         internal override OpenXmlPackaging.WorkbookPart WorkbookPart { get; init; }
         internal override OpenXmlSpreadsheet.SheetData SheetData => WorksheetPart.Worksheet.Elements<OpenXmlSpreadsheet.SheetData>().First();
+        internal List<OpenXmlSpreadsheet.Row> RowsXml { get; init; }
+
+
 
         public int Count => RowsXml.Count;
         public int CountCell => RowsXml.Sum(s=> s.Elements<OpenXmlSpreadsheet.Cell>().Count());
         
-        internal List<OpenXmlSpreadsheet.Row> RowsXml { get; init; }
+
 
         internal RowsRangeBase(OpenXmlPackaging.WorksheetPart worksheetPart, OpenXmlPackaging.WorkbookPart workbookPart)
         {
@@ -31,6 +35,7 @@ namespace OpenXMLight.Spreadsheet.Elements
 
             RowsXml = new();
         }
+
 
         internal void GetData()
         {
