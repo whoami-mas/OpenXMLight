@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenXMLDrawing = DocumentFormat.OpenXml.Drawing;
 using OpenXmlChart = DocumentFormat.OpenXml.Drawing.Charts;
-using OpenXMLight.Spreadsheet.Formatting;
+using OpenXMLight.Configurations.Formatting;
 
 namespace OpenXMLight.Configurations.Elements.Charts
 {

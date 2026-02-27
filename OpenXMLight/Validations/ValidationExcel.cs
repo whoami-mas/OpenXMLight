@@ -29,7 +29,14 @@ namespace OpenXMLight.Validations
             ValidationIndexRow(row);
             ValidationIndexColumn(col);
         }
+        internal static void ValidationIndex(int row, int col, int rowTo, int colTo)
+        {
+            ValidationIndexRow(row);
+            ValidationIndexColumn(col);
 
+            if (row > rowTo || col > colTo)
+                throw new ArgumentOutOfRangeException("Неверный диапазон ячеек");
+        }
 
 
         internal static void ValidationAddress(string address)

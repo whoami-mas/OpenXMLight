@@ -16,6 +16,7 @@ namespace OpenXMLight.Configurations.Parts
         public OpenXmlPackaging.StyleDefinitionsPart PartXml { get; set; }
         private int CountStyles => PartXml.Styles.ChildElements.Count();
 
+
         internal Styles(OpenXmlPackaging.StyleDefinitionsPart stylesPart)
         {
             PartXml = stylesPart;

@@ -11,6 +11,9 @@ namespace OpenXMLight.Spreadsheet.Elements
 {
     public class Sheet
     {
+        private OpenXmlSpreadsheet.SheetData? _sheetData;
+
+
         public string? Name
         {
             get => SheetXml.Name;
@@ -20,34 +23,43 @@ namespace OpenXMLight.Spreadsheet.Elements
         public Rows Rows { get; private set; }
 
 
+
         internal OpenXmlSpreadsheet.Sheet SheetXml { get; private set; }
         internal OpenXmlPackaging.WorksheetPart WorksheetPart { get; set; }
-        internal OpenXmlPackaging.WorkbookPart WorkbookPart { get; set; }
-        
-
-        internal Sheet(OpenXmlPackaging.WorkbookPart workbookPart, OpenXmlPackaging.WorksheetPart worksheetPart, string? name = null)
+        internal OpenXmlSpreadsheet.SheetData SheetDataXml
         {
-            Create(workbookPart, worksheetPart: worksheetPart);
+            get
+            {
+                if(_sheetData == null)
+                {
+                    _sheetData = WorksheetPart.Worksheet.GetFirstChild<OpenXmlSpreadsheet.SheetData>();
+                }
+
+                return _sheetData;
+            }
+        }
+
+
+        internal Sheet(OpenXmlPackaging.WorksheetPart worksheetPart, string? name = null)
+        {
+            Create(worksheetPart: worksheetPart);
 
             this.Name = name;
         }
 
-        
         internal Sheet(OpenXmlSpreadsheet.Sheet sheetXml,
-            OpenXmlPackaging.WorkbookPart workbookPart,
-            OpenXmlPackaging.WorksheetPart worksheetPart = default) => this.Create(workbookPart, sheetXml, worksheetPart);
+            OpenXmlPackaging.WorksheetPart worksheetPart = default) => this.Create(sheetXml, worksheetPart);
 
 
-        internal void Create(OpenXmlPackaging.WorkbookPart workbookPart,
-                             OpenXmlSpreadsheet.Sheet sheetXml = default,
+
+        internal void Create(OpenXmlSpreadsheet.Sheet sheetXml = default,
                              OpenXmlPackaging.WorksheetPart worksheetPart = default)
         {
-            SheetXml = sheetXml ?? new();
+            this.SheetXml = sheetXml ?? new();
             this.WorksheetPart = worksheetPart;
-            this.WorkbookPart = workbookPart;
 
-            Cells = new Cells(this.WorksheetPart, this.WorkbookPart);
-            Rows = new Rows(this.WorksheetPart, this.WorkbookPart);
+            Cells = new Cells(this);
+            Rows = new Rows(this);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using OpenXMLight.Spreadsheet.ExcelContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,11 @@ namespace OpenXMLight
     public class ExcelDocument : IDisposable
     {
         private SpreadsheetDocument? ExcelDoc { get; set; }
+        
+        
         public elements.Sheets Sheets { get; private set; }
+        private Context Context { get; init;}
+
 
         #region Dispose
         public void Dispose()
@@ -41,11 +46,9 @@ namespace OpenXMLight
                                          : SpreadsheetDocument.Create(path, SpreadsheetDocumentType.Workbook);
 
             if (ExcelDoc.WorkbookPart == null)
-            {
-                ExcelDoc.AddWorkbookPart().Workbook = new Workbook();
-                ExcelDoc.WorkbookPart.AddNewPart<SharedStringTablePart>().SharedStringTable = new SharedStringTable();
-                ExcelDoc.WorkbookPart.Workbook.AppendChild(new Sheets());
-            }
+                ExcelDoc.AddWorkbookPart().Workbook = new Workbook(new Sheets());
+
+            Context = Context.GetInstance(ExcelDoc.WorkbookPart);
 
             Sheets = new elements.Sheets(ExcelDoc);
 

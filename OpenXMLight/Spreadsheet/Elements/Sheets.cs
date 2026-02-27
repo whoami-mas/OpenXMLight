@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenXMLight.Spreadsheet.ExcelContext;
+
 using OpenXmlPackaging = DocumentFormat.OpenXml.Packaging;
 using OpenXmlSpreadsheet = DocumentFormat.OpenXml.Spreadsheet;
 using OpenXml = DocumentFormat.OpenXml;
@@ -16,11 +18,15 @@ namespace OpenXMLight.Spreadsheet.Elements
         public bool IsReadOnly => false;
 
 
+
         private List<Sheet> sheets;
+
+
 
         internal OpenXmlPackaging.SpreadsheetDocument Excel { get; set; }
         internal OpenXmlSpreadsheet.Sheets SheetsXml => Excel.WorkbookPart.Workbook.Sheets;
-        internal OpenXmlSpreadsheet.SharedStringTable SharedStringTable => Excel.WorkbookPart.SharedStringTablePart.SharedStringTable;
+        
+
 
         public Sheet this[int index]
         {
@@ -36,7 +42,6 @@ namespace OpenXMLight.Spreadsheet.Elements
             this.sheets = SheetsXml.Select(
                     s => new Sheet(
                                    (OpenXmlSpreadsheet.Sheet)s,
-                                   (OpenXmlPackaging.WorkbookPart)Excel.WorkbookPart,
                                    (OpenXmlPackaging.WorksheetPart)Excel.WorkbookPart.GetPartById(((OpenXmlSpreadsheet.Sheet)s).Id)
                     )
                 ).ToList();
@@ -47,11 +52,11 @@ namespace OpenXMLight.Spreadsheet.Elements
         public void Add(string nameSheet)
         {
             OpenXmlPackaging.WorksheetPart worksheetPart = Excel.WorkbookPart.AddNewPart<OpenXmlPackaging.WorksheetPart>();
-            Sheet item = new Sheet(Excel.WorkbookPart, worksheetPart, nameSheet); 
-
-            item.WorksheetPart.Worksheet = new OpenXmlSpreadsheet.Worksheet(
-                new OpenXmlSpreadsheet.SheetDimension() { Reference = "A1"},
+            worksheetPart.Worksheet = new OpenXmlSpreadsheet.Worksheet(
+                new OpenXmlSpreadsheet.SheetDimension() { Reference = "A1" },
                 new OpenXmlSpreadsheet.SheetData());
+
+            Sheet item = new Sheet(worksheetPart, nameSheet);
 
             OpenXml.UInt32Value maxIdSheet = sheets.Select(s => s.SheetXml.SheetId).Cast<OpenXml.UInt32Value>().DefaultIfEmpty((OpenXml.UInt32Value)0).Max();
             item.SheetXml.SheetId = maxIdSheet + 1;
