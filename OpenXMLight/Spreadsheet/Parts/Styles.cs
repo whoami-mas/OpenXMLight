@@ -24,7 +24,13 @@ namespace OpenXMLight.Spreadsheet.Parts
         }
 
 
-        public void CheckedExists() => PartXml.Stylesheet ??= new OpenXmlSpreadsheet.Stylesheet();
+        public void CheckedExists()
+        {
+            PartXml.Stylesheet ??= new OpenXmlSpreadsheet.Stylesheet();
+
+            GetFormatteId();
+            AddStyle(TypeValue.General);
+        }
 
 
         public TypeValue GetFormatteCell(int indexStyle)
@@ -37,22 +43,25 @@ namespace OpenXMLight.Spreadsheet.Parts
             return TypeValue.Parse(format.NumberFormatId);
         }
 
-        public int AddStyle(TypeValue typeFormatte)
+        public uint AddStyle(TypeValue typeFormatte)
         {
             PartXml.Stylesheet.CellFormats ??= new OpenXmlSpreadsheet.CellFormats();
 
             OpenXmlSpreadsheet.CellFormat format = new()
             {
-                NumberFormatId = Convert.ToUInt32(typeFormatte.Value),
-                FontId = 0,
-                FillId = 0,
-                BorderId = 0,
-                FormatId = 0
+                NumberFormatId = GetNumberungFormatte(typeFormatte),
+                FontId = GetFontId(),
+                FillId = GetFillId(),
+                BorderId = GetBorderId(),
+                FormatId = GetFormatteId(),
+                ApplyNumberFormat = GetNumberFormatte(typeFormatte)
             };
 
-            return PartXml.Stylesheet.CellFormats.OfType<OpenXmlSpreadsheet.CellFormat>().ToList().IndexOf(format);
+            PartXml.Stylesheet.CellFormats.AppendChild(format);
+
+            return Convert.ToUInt32(PartXml.Stylesheet.CellFormats.OfType<OpenXmlSpreadsheet.CellFormat>().ToList().IndexOf(format));
         }
-        public int GetFormatteCellIndex(TypeValue typeFormatte)
+        public uint GetFormatteCellIndex(TypeValue typeFormatte)
         {
             if (PartXml.Stylesheet.CellFormats == null)
                 return AddStyle(typeFormatte);
@@ -63,7 +72,124 @@ namespace OpenXMLight.Spreadsheet.Parts
             if (cellFormatte == null)
                 return AddStyle(typeFormatte);
 
-            return PartXml.Stylesheet.CellFormats.OfType<OpenXmlSpreadsheet.CellFormat>().ToList().IndexOf(cellFormatte);
+            return Convert.ToUInt32(PartXml.Stylesheet.CellFormats.OfType<OpenXmlSpreadsheet.CellFormat>().ToList().IndexOf(cellFormatte));
+        }
+
+
+        private uint GetFontId()
+        {
+            PartXml.Stylesheet.Fonts ??= new OpenXmlSpreadsheet.Fonts();
+
+            if(PartXml.Stylesheet.Fonts?.ChildElements.Count > 0)
+                return 0;
+
+            OpenXmlSpreadsheet.Font defaultFont = new OpenXmlSpreadsheet.Font()
+            {
+                FontSize = new OpenXmlSpreadsheet.FontSize() { Val = 11},
+                FontName = new OpenXmlSpreadsheet.FontName() { Val = "Calibri"},
+                FontFamilyNumbering = new OpenXmlSpreadsheet.FontFamilyNumbering() { Val = 2 },
+                FontCharSet = new OpenXmlSpreadsheet.FontCharSet() { Val = 204 },
+                FontScheme = new OpenXmlSpreadsheet.FontScheme() { Val = OpenXmlSpreadsheet.FontSchemeValues.Minor }
+            };
+
+            PartXml.Stylesheet.Fonts?.AppendChild(defaultFont);
+
+            return 0;
+        }
+        private uint GetFillId()
+        {
+            PartXml.Stylesheet.Fills ??= new OpenXmlSpreadsheet.Fills();
+
+            if (PartXml.Stylesheet.Fills?.ChildElements.Count > 0)
+                return 0;
+
+            OpenXmlSpreadsheet.Fill defaultFill = new OpenXmlSpreadsheet.Fill()
+            {
+                PatternFill = new OpenXmlSpreadsheet.PatternFill() { PatternType = OpenXmlSpreadsheet.PatternValues.None }
+            };
+
+            PartXml.Stylesheet.Fills?.AppendChild(defaultFill);
+
+            return 0;
+        }
+        private uint GetBorderId()
+        {
+            PartXml.Stylesheet.Borders ??= new OpenXmlSpreadsheet.Borders();
+
+            if (PartXml.Stylesheet.Borders?.ChildElements.Count > 0)
+                return 0;
+
+            OpenXmlSpreadsheet.Border defaultBorder = new OpenXmlSpreadsheet.Border()
+            {
+                LeftBorder = new OpenXmlSpreadsheet.LeftBorder(),
+                RightBorder = new OpenXmlSpreadsheet.RightBorder(),
+                TopBorder = new OpenXmlSpreadsheet.TopBorder(),
+                BottomBorder = new OpenXmlSpreadsheet.BottomBorder(),
+                DiagonalBorder = new OpenXmlSpreadsheet.DiagonalBorder()
+            };
+
+            PartXml.Stylesheet.Borders?.AppendChild(defaultBorder);
+
+            return 0;
+        }
+        private uint GetFormatteId()
+        {
+            PartXml.Stylesheet.CellStyleFormats ??= new OpenXmlSpreadsheet.CellStyleFormats();
+
+            if (PartXml.Stylesheet.CellStyleFormats?.ChildElements.Count > 0)
+                return 0;
+
+            OpenXmlSpreadsheet.CellFormat cellFormat = new OpenXmlSpreadsheet.CellFormat()
+            {
+                NumberFormatId = 0,
+                FontId = GetFontId(),
+                FillId = GetFillId(),
+                BorderId = GetBorderId(),
+            };
+
+            PartXml.Stylesheet.CellStyleFormats?.AppendChild(cellFormat);
+            //PartXml.Stylesheet.CellStyleFormats?.Count = ;
+
+            return 0;
+        }
+        
+
+        private bool GetNumberFormatte(TypeValue typeCell)
+        {
+            bool result = false;
+
+            if (typeCell == TypeValue.Date
+                ||
+                typeCell == TypeValue.Number
+                ||
+                typeCell == TypeValue.Percent)
+                result = true;
+
+
+            return result;
+        }
+        private uint GetNumberungFormatte(TypeValue typeCell)
+        {
+            PartXml.Stylesheet.NumberingFormats ??= new OpenXmlSpreadsheet.NumberingFormats();
+
+            switch (typeCell)
+            {
+                case var type when type == TypeValue.Date:
+                    OpenXmlSpreadsheet.NumberingFormat? nmbFormat = PartXml.Stylesheet.NumberingFormats.Elements<OpenXmlSpreadsheet.NumberingFormat>().FirstOrDefault(f => f.NumberFormatId == typeCell.Value);
+                    if(nmbFormat == null)
+                    {
+                        nmbFormat = new OpenXmlSpreadsheet.NumberingFormat()
+                        {
+                            NumberFormatId = Convert.ToUInt32(typeCell.Value),
+                            FormatCode = "dd.mm.yyyy"
+                        };
+
+                        PartXml.Stylesheet.NumberingFormats.AppendChild(nmbFormat);
+                    }
+                    break;
+            }
+
+            return Convert.ToUInt32(typeCell.Value);
         }
     }
 }

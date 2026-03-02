@@ -93,7 +93,9 @@ namespace OpenXMLight.Spreadsheet.Elements
                                     CustomWidth = true
                                 });
 
-                        double width = HelperData.GetMaxLengthWidthCell(this[indexRow, indexCell].Value.ToString());
+                        string valueCell = this[indexRow, indexCell].Value.ToString();
+
+                        double width = HelperData.GetMaxLengthWidthCell(valueCell);
 
                         if(column.Width == null || column.Width == 0 || column.Width < width)
                             column.Width = width;

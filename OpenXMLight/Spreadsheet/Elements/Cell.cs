@@ -97,7 +97,7 @@ namespace OpenXMLight.Spreadsheet.Elements
                 {
                     case var f when f == TypeValue.Date:
                         Style.Type = TypeValue.Date;
-                        _value = DateTime.FromOADate(Convert.ToInt32(cellXml.CellValue.Text));
+                        _value = DateTime.FromOADate(Convert.ToDouble(cellXml.CellValue.Text));
                         break;
                     case var f when f == TypeValue.Number:
                         Style.Type = TypeValue.Number;
@@ -135,7 +135,7 @@ namespace OpenXMLight.Spreadsheet.Elements
                     throw new ArgumentException("дата не может быть пустой");
 
                 cellXml.CellValue.Text = (date.ToOADate()).ToString();
-                cellXml.StyleIndex = Convert.ToUInt32(Context.Styles.GetFormatteCellIndex(TypeValue.Date));
+                cellXml.StyleIndex = Context.Styles.GetFormatteCellIndex(TypeValue.Date);
             }
             else if (string.Equals("String", input.GetType().Name))
             {
