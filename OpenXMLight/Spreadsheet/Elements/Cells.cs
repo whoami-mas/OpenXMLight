@@ -22,6 +22,10 @@ namespace OpenXMLight.Spreadsheet.Elements
             get
             {
                 ValidationExcel.ValidationIndex(row, col);
+                _row = row;
+                _col = col;
+                _rowTo = row;
+                _colTo = col;
 
                 return new Cell(Sheet, row, col);
             }
@@ -44,12 +48,8 @@ namespace OpenXMLight.Spreadsheet.Elements
         {
             get
             {
-                ValidationExcel.ValidationAddress(address);
-                _row = HelperData.GetRowIndex(address);
-                _col = HelperData.GetColumnIndex(address);
+                ValidationExcel.ValidationFullAddress(address, ref _row, ref _col, ref _rowTo, ref _colTo);
                 _addressCell = address;
-
-                GetData();
 
                 return this;
             }

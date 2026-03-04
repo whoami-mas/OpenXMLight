@@ -9,6 +9,7 @@ namespace OpenXMLight.Configurations.Formatting
     public readonly record struct Color
     {
         public string Hex => _hex;
+        public string RGB => GetRdgHex(_hex);
         public byte R => GetComponent(0);
         public byte G => GetComponent(1);
         public byte B => GetComponent(2);
@@ -33,12 +34,11 @@ namespace OpenXMLight.Configurations.Formatting
         }
         public static Color FromRgb(byte red, byte green, byte blue) =>
             new Color($"#{red:X2}{green:X2}{blue:X2}");
-
         public static Color FromArgb(byte alpha, byte red, byte green, byte blue) =>
             new Color($"#{alpha:X2}{red:X2}{green:X2}{blue:X2}");
 
 
-
+        private static string GetRdgHex(string hexCode) => hexCode.Remove(0, 1);
         private static void ValidationHex(string hexCode)
         {
             if (string.IsNullOrWhiteSpace(hexCode))

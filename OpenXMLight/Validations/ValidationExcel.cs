@@ -4,6 +4,7 @@ using OpenXMLight.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -41,9 +42,6 @@ namespace OpenXMLight.Validations
 
         internal static void ValidationAddress(string address)
         {
-            if (string.IsNullOrWhiteSpace(address))
-                throw new ArgumentNullException("Адрес не может быть пустым");
-
             Regex regex = new Regex(@"^[A-Z]+[0-9]+$", RegexOptions.IgnoreCase);
             if (!regex.IsMatch(address))
                 throw new ArgumentException("Данные адрес не является валидным");
@@ -52,7 +50,32 @@ namespace OpenXMLight.Validations
             int indexRow = HelperData.GetRowIndex(address);
             ValidationIndex(indexRow, indexColumn);
         }
+        internal static void ValidationFullAddress(string fullAddress, ref int rowFrom, ref int colFrom, ref int rowTo, ref int colTo)
+        {
+            if (string.IsNullOrWhiteSpace(fullAddress))
+                throw new ArgumentNullException("Адрес не может быть пустым");
 
+            string[] addresses = fullAddress.Split(':');
+
+            foreach(var address in addresses)
+                ValidationAddress(address);
+
+            colFrom = HelperData.GetColumnIndex(addresses[0]);
+            rowFrom = HelperData.GetRowIndex(addresses[0]);
+            ValidationIndex(rowFrom, colFrom);
+
+            if (addresses.Count() > 1)
+            {
+                colTo = HelperData.GetColumnIndex(addresses[1]);
+                rowTo = HelperData.GetRowIndex(addresses[1]);
+                ValidationIndex(rowTo, colTo);
+            }
+            else
+            {
+                colTo = colFrom;
+                rowTo = rowFrom;
+            }
+        }
 
 
         internal static void ValidationMerge(int rowFrom, int colFrom, int rowTo, int colTo)

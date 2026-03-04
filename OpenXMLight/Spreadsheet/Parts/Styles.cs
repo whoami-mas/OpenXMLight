@@ -1,4 +1,5 @@
 ﻿using OpenXMLight.Configurations.Parts.InterfacesParts;
+using OpenXMLight.Spreadsheet.Elements;
 using OpenXMLight.Spreadsheet.Formatting;
 using System;
 using System.Collections.Generic;
@@ -28,42 +29,13 @@ namespace OpenXMLight.Spreadsheet.Parts
         {
             PartXml.Stylesheet ??= new OpenXmlSpreadsheet.Stylesheet();
 
-            GetFormatteId();
+            GetDefaultFormatteId();
             AddStyle(TypeValue.General);
         }
 
-
-        public TypeValue GetFormatteCell(int indexStyle)
-        {
-            if (PartXml.Stylesheet.CellFormats == null)
-                throw new Exception("Пустой список форматов ячеек");
-
-            var format = PartXml.Stylesheet.CellFormats.OfType<OpenXmlSpreadsheet.CellFormat>().ToList()[indexStyle];
-
-            return TypeValue.Parse(format.NumberFormatId);
-        }
-
-        public uint AddStyle(TypeValue typeFormatte)
-        {
-            PartXml.Stylesheet.CellFormats ??= new OpenXmlSpreadsheet.CellFormats();
-
-            OpenXmlSpreadsheet.CellFormat format = new()
-            {
-                NumberFormatId = GetNumberungFormatte(typeFormatte),
-                FontId = GetFontId(),
-                FillId = GetFillId(),
-                BorderId = GetBorderId(),
-                FormatId = GetFormatteId(),
-                ApplyNumberFormat = GetNumberFormatte(typeFormatte)
-            };
-
-            PartXml.Stylesheet.CellFormats.AppendChild(format);
-
-            return Convert.ToUInt32(PartXml.Stylesheet.CellFormats.OfType<OpenXmlSpreadsheet.CellFormat>().ToList().IndexOf(format));
-        }
         public uint GetFormatteCellIndex(TypeValue typeFormatte)
         {
-            if (PartXml.Stylesheet.CellFormats == null)
+            if (PartXml.Stylesheet.CellFormats == null || PartXml.Stylesheet.CellFormats.ChildElements.Count <= 1)
                 return AddStyle(typeFormatte);
 
             OpenXmlSpreadsheet.CellFormat cellFormatte =
@@ -76,7 +48,212 @@ namespace OpenXMLight.Spreadsheet.Parts
         }
 
 
-        private uint GetFontId()
+
+        private void ExistsFormatte()
+        {
+            if (PartXml.Stylesheet.CellFormats == null)
+                throw new Exception("Пустой список форматов ячеек");
+        }
+
+        public OpenXmlSpreadsheet.CellFormat? GetFormatteCell(uint indexStyle)
+        {
+            ExistsFormatte();
+
+            return PartXml.Stylesheet.CellFormats.OfType<OpenXmlSpreadsheet.CellFormat>().ToList()[(int)indexStyle];
+        }
+        public OpenXmlSpreadsheet.Font GetStyleFont(uint indexStyle)
+        {
+            OpenXmlSpreadsheet.CellFormat format = GetFormatteCell(indexStyle);
+
+            return PartXml.Stylesheet.Fonts.Elements<OpenXmlSpreadsheet.Font>().ToList()[(int)format.FontId.Value];
+        }
+        public OpenXmlSpreadsheet.Border GetStyleBorder(uint indexStyle)
+        {
+            OpenXmlSpreadsheet.CellFormat format = GetFormatteCell(indexStyle);
+
+            return PartXml.Stylesheet.Borders.Elements<OpenXmlSpreadsheet.Border>().ToList()[(int)format.BorderId.Value];
+        }
+
+
+        public uint AddStyle(TypeValue typeFormatte)
+        {
+            PartXml.Stylesheet.CellFormats ??= new OpenXmlSpreadsheet.CellFormats();
+
+            OpenXmlSpreadsheet.CellFormat format = new()
+            {
+                NumberFormatId = GetNumberungFormatte(typeFormatte),
+                FontId = GetDefaultFontId(),
+                FillId = GetDefaultFillId(),
+                BorderId = GetDefaultBorderId(),
+                FormatId = GetDefaultFormatteId(),
+                ApplyNumberFormat = GetNumberFormatte(typeFormatte) ? true : null
+            };
+            
+            PartXml.Stylesheet.CellFormats.AppendChild(format);
+
+            return Convert.ToUInt32(PartXml.Stylesheet.CellFormats.OfType<OpenXmlSpreadsheet.CellFormat>().ToList().IndexOf(format));
+        }
+        public OpenXmlSpreadsheet.CellFormat AddStyle()
+        {
+            OpenXmlSpreadsheet.CellFormat? cellFormat = PartXml.Stylesheet.CellFormats.ToList()[0] as OpenXmlSpreadsheet.CellFormat;
+            
+            OpenXmlSpreadsheet.CellFormat format = new()
+            {
+                NumberFormatId = (cellFormat?.NumberFormatId ?? 0),
+                FontId = (cellFormat?.FontId ?? 0),
+                FillId = (cellFormat?.FillId ?? 0),
+                BorderId = (cellFormat?.BorderId ?? 0),
+                FormatId = (cellFormat?.FormatId ?? 0),
+            };
+
+            return format;
+        }
+
+
+        public void CheckStyleFont(ref StyleCell style, ref OpenXmlSpreadsheet.Font fontNew)
+        {
+            var fonts = PartXml.Stylesheet.Fonts;
+            OpenXmlSpreadsheet.CellFormat format = AddStyle();
+
+            int hashFontNew = GetHashCodeFont(fontNew);
+            for(int i = 0; i < fonts.ChildElements.Count; i++)
+            {
+                if (fonts.ChildElements[i] is OpenXmlSpreadsheet.Font font && 
+                    GetHashCodeFont(font) == hashFontNew)
+                {
+                    format.FontId = (uint)i;
+
+                    format = CheckFormatteCell(ref format, ref style);
+                    return;
+                }
+            }
+
+            fonts.AppendChild(fontNew);
+            format.FontId = Convert.ToUInt32(fonts.ToList().IndexOf(fontNew));
+            format = CheckFormatteCell(ref format, ref style);
+        }
+        public void CheckStyleBorder(ref StyleCell style, ref OpenXmlSpreadsheet.Border borderNew)
+        {
+            var borders = PartXml.Stylesheet.Borders;
+            OpenXmlSpreadsheet.CellFormat format = AddStyle();
+
+            int hashBorderNew = GetHashCodeBorder(borderNew);
+            for(int i = 0; i < borders.ChildElements.Count; i++)
+            {
+                if (borders.ChildElements[i] is OpenXmlSpreadsheet.Border border &&
+                    GetHashCodeBorder(border) == hashBorderNew)
+                {
+                    format.BorderId = (uint)i;
+
+                    format.ApplyBorder = true;
+
+                    format = CheckFormatteCell(ref format, ref style);
+                    return;
+                }
+            }
+
+            borders.AppendChild(borderNew);
+            format.BorderId = Convert.ToUInt32(borders.ToList().IndexOf(borderNew));
+            format.ApplyBorder = true;
+            format = CheckFormatteCell(ref format, ref style);
+        }      
+        private OpenXmlSpreadsheet.CellFormat CheckFormatteCell(ref OpenXmlSpreadsheet.CellFormat format, ref StyleCell style)
+        {
+            var cellFormatts = PartXml.Stylesheet.CellFormats;
+
+            int hashCellFormat = GetHashCodeCellFormatte(format);
+            for(int i = 0; i < cellFormatts.ChildElements.Count; i++)
+            {
+                if (cellFormatts.ChildElements[i] is OpenXmlSpreadsheet.CellFormat formatOld &&
+                    GetHashCodeCellFormatte(formatOld) == hashCellFormat)
+                {
+                    style.cellXml.StyleIndex = (uint)i;
+                    return formatOld;
+                }
+            }
+
+            cellFormatts.AppendChild(format);
+            style.cellXml.StyleIndex = (uint)cellFormatts.ToList().IndexOf(format);
+            return format;
+        }
+
+        #region Hash code
+        private int GetHashCodeFont(OpenXmlSpreadsheet.Font font)
+        {
+            unchecked
+            {
+                int hash = 17;
+
+                hash = hash * 23 + font.FontSize.Val.GetHashCode();
+                hash = hash * 23 + (font.Bold != null ? 1 : 0);
+                hash = hash * 23 + font.FontName.Val.GetHashCode();
+
+                return hash;
+            }
+        }
+        private int GetHashCodeBorder(OpenXmlSpreadsheet.Border border)
+        {
+            unchecked
+            {
+                int hash = 17;
+
+                //Left
+                hash = hash * 23 + (border.LeftBorder?.Style?.HasValue == true ? border.LeftBorder.Style.GetHashCode() : 0);
+                hash = hash * 23 + GetHashCodeBorderColor(border.LeftBorder?.Color);
+
+                //Right
+                hash = hash * 23 + (border.RightBorder?.Style?.HasValue == true ? border.RightBorder.Style.GetHashCode() : 0);
+                hash = hash * 23 + GetHashCodeBorderColor(border.RightBorder?.Color);
+
+                //Top
+                hash = hash * 23 + (border.TopBorder?.Style?.HasValue == true ? border.TopBorder.Style.GetHashCode() : 0);
+                hash = hash * 23 + GetHashCodeBorderColor(border.TopBorder?.Color);
+
+                //Bottom
+                hash = hash * 23 + (border.BottomBorder?.Style?.HasValue == true ? border.BottomBorder.Style.GetHashCode() : 0);
+                hash = hash * 23 + GetHashCodeBorderColor(border.BottomBorder?.Color);
+
+                return hash;
+            }
+        }
+        private int GetHashCodeCellFormatte(OpenXmlSpreadsheet.CellFormat format)
+        {
+            unchecked
+            {
+                int hash = 17;
+
+                hash = hash * 23 + format.NumberFormatId.GetHashCode();
+                hash = hash * 23 + format.FontId.GetHashCode();
+                hash = hash * 23 + format.FillId.GetHashCode();
+                hash = hash * 23 + format.BorderId.GetHashCode();
+                hash = hash * 23 + format.FormatId.GetHashCode();
+
+                return hash;
+            }
+        }
+
+
+        private int GetHashCodeBorderColor(OpenXmlSpreadsheet.Color? color)
+        {
+            unchecked
+            {
+                if (color == null)
+                    return 0;
+
+                if (color.Rgb != null && !string.IsNullOrWhiteSpace(color.Rgb.Value))
+                    return color.Rgb.Value.GetHashCode();
+
+                if (!color.Indexed.HasValue)
+                    return color.Indexed.Value.GetHashCode();
+
+                return 0;
+            }
+        }
+        #endregion
+
+        #region Default
+
+        private uint GetDefaultFontId()
         {
             PartXml.Stylesheet.Fonts ??= new OpenXmlSpreadsheet.Fonts();
 
@@ -96,7 +273,7 @@ namespace OpenXMLight.Spreadsheet.Parts
 
             return 0;
         }
-        private uint GetFillId()
+        private uint GetDefaultFillId()
         {
             PartXml.Stylesheet.Fills ??= new OpenXmlSpreadsheet.Fills();
 
@@ -112,7 +289,7 @@ namespace OpenXMLight.Spreadsheet.Parts
 
             return 0;
         }
-        private uint GetBorderId()
+        private uint GetDefaultBorderId()
         {
             PartXml.Stylesheet.Borders ??= new OpenXmlSpreadsheet.Borders();
 
@@ -132,7 +309,7 @@ namespace OpenXMLight.Spreadsheet.Parts
 
             return 0;
         }
-        private uint GetFormatteId()
+        private uint GetDefaultFormatteId()
         {
             PartXml.Stylesheet.CellStyleFormats ??= new OpenXmlSpreadsheet.CellStyleFormats();
 
@@ -142,9 +319,9 @@ namespace OpenXMLight.Spreadsheet.Parts
             OpenXmlSpreadsheet.CellFormat cellFormat = new OpenXmlSpreadsheet.CellFormat()
             {
                 NumberFormatId = 0,
-                FontId = GetFontId(),
-                FillId = GetFillId(),
-                BorderId = GetBorderId(),
+                FontId = GetDefaultFontId(),
+                FillId = GetDefaultFillId(),
+                BorderId = GetDefaultBorderId(),
             };
 
             PartXml.Stylesheet.CellStyleFormats?.AppendChild(cellFormat);
@@ -152,7 +329,8 @@ namespace OpenXMLight.Spreadsheet.Parts
 
             return 0;
         }
-        
+
+        #endregion
 
         private bool GetNumberFormatte(TypeValue typeCell)
         {

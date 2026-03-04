@@ -11,13 +11,12 @@ using OpenXml = DocumentFormat.OpenXml;
 using OpenXmlPackaging = DocumentFormat.OpenXml.Packaging;
 using OpenXmlSpreadsheet = DocumentFormat.OpenXml.Spreadsheet;
 
+using OpenXMLight.Spreadsheet.Formatting;
+
 namespace OpenXMLight.Spreadsheet.Elements
 {
     public class CellsRangeBase : RangeBase
     {
-        private object? _value = null;
-
-
         internal int _row;
         internal int _col;
         internal int _rowTo;
@@ -27,13 +26,8 @@ namespace OpenXMLight.Spreadsheet.Elements
 
         internal override Context Context => Context.Instance;
         internal override Sheet Sheet { get; }
-
-        //internal override OpenXmlPackaging.WorksheetPart WorksheetPart { get; init; }
         internal override OpenXmlSpreadsheet.SheetData SheetData { get; }
-        internal OpenXmlSpreadsheet.MergeCells? MergeCells { get; }
-        internal OpenXmlSpreadsheet.Cell? CellXml { get; private set; }
-
-
+        internal OpenXmlSpreadsheet.MergeCells? MergeCells { get; private set; }
 
         internal CellsRangeBase(Sheet sheet)
         {
@@ -42,139 +36,24 @@ namespace OpenXMLight.Spreadsheet.Elements
             MergeCells = sheet.WorksheetPart.Worksheet.Elements<OpenXmlSpreadsheet.MergeCells>().FirstOrDefault();
         }
 
-
-        public object? Value
-        {
-            get
-            {
-                return _value;
-            }
-            set 
-            {
-                ChangeCellValue(value);
-
-                _value = value;
-            }
-        }
-
-
-
-        internal void GetData()
-        {
-            OpenXmlSpreadsheet.Row rowFind = SheetData.Elements<OpenXmlSpreadsheet.Row>().FirstOrDefault(f => f.RowIndex == _row)
-                ?? SheetData.AppendChild(new OpenXmlSpreadsheet.Row() { RowIndex = Convert.ToUInt32(_row) });
-
-            CellXml = rowFind.Elements<OpenXmlSpreadsheet.Cell>()
-                                    .FirstOrDefault(f => string.Equals(f.CellReference, _addressCell)) 
-                                    ?? rowFind.AppendChild(new OpenXmlSpreadsheet.Cell() { CellReference = $"{HelperData.GetColumnByIndex(_col)}{_row}" });
-
-            //GetCellValue();
-        }
-
-        internal void ChangeCellValue(object input)
-        {
-            if(CellXml == null)
-            {
-                OpenXmlSpreadsheet.Row rowFind = SheetData.Elements<OpenXmlSpreadsheet.Row>().FirstOrDefault(f => f.RowIndex == _row);
-                if(rowFind == null)
-                {
-                    rowFind = new OpenXmlSpreadsheet.Row() { RowIndex = Convert.ToUInt32(_row) };
-                    SheetData.AppendChild(rowFind);
-                }
-
-                CellXml = new OpenXmlSpreadsheet.Cell(
-                    new OpenXmlSpreadsheet.CellValue()
-                    ) { CellReference = _addressCell };
-                
-                rowFind.AppendChild(CellXml);
-            }
-
-            if (CellXml.CellValue == null)
-                CellXml.CellValue = new OpenXmlSpreadsheet.CellValue();
-
-            if (string.Equals("Int32", input.GetType().Name))
-            {
-                CellXml.CellValue.Text = input.ToString();
-            }
-            else if(string.Equals("String", input.GetType().Name))
-            {
-                CellXml.DataType = OpenXmlSpreadsheet.CellValues.SharedString;
-
-                int index = Context.SharedStrings.AppendValue(input.ToString());
-
-                CellXml.CellValue.Text = index.ToString();
-            }
-        }
-
-        //internal void GetCellValue()
-        //{
-        //    if (CellXml == null)
-        //        return;
-
-        //    if(CellXml.CellValue == null)
-        //    {
-        //        _value = null;
-
-        //        return;
-        //    }
-
-        //    if (CellXml.DataType != null && CellXml.DataType == OpenXmlSpreadsheet.CellValues.SharedString)
-        //    {
-        //        int index = int.Parse(CellXml.CellValue.Text);
-
-        //        _value = Context.SharedStrings.GetValueOfIndex(index);
-        //    }
-        //    else if(CellXml.StyleIndex != null)
-        //    {
-        //        int indexStyle = Convert.ToInt32(CellXml.StyleIndex.Value);
-
-        //        Context.Styles.GetFormatteCell(indexStyle);
-        //    }
-        //    else
-        //        _value = CellXml.CellValue?.InnerText;
-        //}
-
-
-        public void Remove()
-        {
-            if (CellXml == null) 
-                return;
-
-            OpenXmlSpreadsheet.Row rowFind = SheetData.Elements<OpenXmlSpreadsheet.Row>().FirstOrDefault(f => f.RowIndex == _row);
-            if (rowFind == null)
-                return;
-
-            if(CellXml.DataType != null && CellXml.DataType == OpenXmlSpreadsheet.CellValues.SharedString)
-            {
-                int index = int.Parse(CellXml.CellValue.Text);
-                Context.SharedStrings.RemoveElementOfIndex(index);
-            }
-
-            CellXml.Remove();
-            CellXml = null;
-        }
-
         #region Merge cells
-        internal void Merge()
+        public void Merge()
         {
+            //this.Merge();
             if (MergeCells == null)
-                Sheet.WorksheetPart.Worksheet.AppendChild(new OpenXmlSpreadsheet.MergeCells());
-        }
-        public void Merge(int rowTo, int colTo)
-        {
-            this.Merge();
+                MergeCells = Sheet.WorksheetPart.Worksheet.AppendChild<OpenXmlSpreadsheet.MergeCells>(new OpenXmlSpreadsheet.MergeCells());
 
-            string addressMergeCell = $"{HelperData.GetColumnByIndex(colTo)}{rowTo}";
-            string address = $"{_addressCell}:{addressMergeCell}";
+            string addressMergeCell = $"{HelperData.GetColumnByIndex(_colTo)}{_rowTo}";
+            //string address = $"{_addressCell}:{addressMergeCell}";
 
-            ValidationExcel.ValidationMerge(MergeCells, _row, _col, rowTo, colTo, address);
+            ValidationExcel.ValidationMerge(MergeCells, _row, _col, _rowTo, _colTo, _addressCell);
             
-            for(int i = _row; i <= rowTo; i++)
+            for(int i = _row; i <= _rowTo; i++)
             {
                 OpenXmlSpreadsheet.Row rowFind = SheetData.Elements<OpenXmlSpreadsheet.Row>().FirstOrDefault(f => f.RowIndex == Convert.ToUInt32(i)) 
                     ?? SheetData.AppendChild(new OpenXmlSpreadsheet.Row() { RowIndex = Convert.ToUInt32(i)});
 
-                for (int j = _col + 1; j <= colTo; j++)
+                for (int j = _col + 1; j <= _colTo; j++)
                 {
                     string appendAddress = $"{HelperData.GetColumnByIndex(j)}{i}";
 
@@ -184,15 +63,40 @@ namespace OpenXMLight.Spreadsheet.Elements
             }
 
             MergeCells.AppendChild(
-                new OpenXmlSpreadsheet.MergeCell() { Reference = address }
+                new OpenXmlSpreadsheet.MergeCell() { Reference = _addressCell }
             );
         }
-        public void Merge(string addressCellTo)
-        {
-            int rowTo = HelperData.GetRowIndex(addressCellTo);
-            int colTo = HelperData.GetColumnIndex(addressCellTo);
+        #endregion
 
-            this.Merge(rowTo, colTo);
+        #region Styles
+        public void SetFont(Action<Font> conf)
+        {
+            for(int i = _row; i <= _rowTo; i++)
+            {
+                for(int j = _col; j <= _colTo; j++)
+                {
+                    var cell = new Cell(Sheet, i, j);
+                    
+                    conf.Invoke(cell.Style.Font);
+
+                    cell.Style.Font.CommitChange();
+                }
+            }
+        }
+
+        public void SetBorder(Action<Border> conf)
+        {
+            for (int i = _row; i <= _rowTo; i++)
+            {
+                for (int j = _col; j <= _colTo; j++)
+                {
+                    var cell = new Cell(Sheet, i, j);
+
+                    conf.Invoke(cell.Style.Borders);
+
+                    cell.Style.Borders.CommitChange();
+                }
+            }
         }
         #endregion
     }

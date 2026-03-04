@@ -1,6 +1,9 @@
 ﻿using ConsoleApp1;
 using OpenXMLight;
+using OpenXMLight.Configurations.Formatting;
 using OpenXMLight.Spreadsheet.Elements;
+using OpenXMLight.Spreadsheet.Formatting;
+
 
 try
 {
@@ -8,7 +11,6 @@ try
     //string path = @"testingTable.docx";
     string path = @"F:\тестовые проекты\ConsoleApp1\тест\testing.docx";
     string pathexc = @"F:\тестовые проекты\ConsoleApp1\тест\test.xlsx";
-    //string pathexc = @"F:\тестовые проекты\ConsoleApp1\тест\template_import.xlsx";
 
 
     using (ExcelDocument document = new ExcelDocument(pathexc, true))
@@ -16,19 +18,23 @@ try
         Sheet activeSheet = document.Sheets[0];
         activeSheet.Name = "Сотрудники";
 
-        activeSheet.Cells[1, 1].Value = "ФИО сотрудника";
-        activeSheet.Cells[1, 2].Value = "Должность сотрудника";
-        activeSheet.Cells[1, 3].Value = "Дата рождения сотрудника";
-        activeSheet.Cells[1, 4].Value = "Дата приема сотрудника на работу";
+        var range = activeSheet.Cells["A1:C3"];
+        range.SetBorder(f =>
+        {
+            f.Left.Type = BorderStyle.Single;
+            f.Left.Color = Color.FromHex("#fff");
 
-        activeSheet.Cells[2, 1].Value = "Иванов Иван Иванович";
-        activeSheet.Cells[2, 2].Value = "Фронтенщик";
-        activeSheet.Cells[2, 3].Value = DateTime.Parse("12.12.1999");
-        activeSheet.Cells[2, 4].Value = DateTime.Now;
+            f.Right.Type = BorderStyle.Single;
+            f.Right.Color = Color.FromHex("#fff");
 
-        activeSheet.Cells.AutoFitColumns();
+            f.Top.Type = BorderStyle.Single;
+            f.Top.Color = Color.FromHex("#fff");
 
-        //Console.WriteLine(activeSheet.Cells[2, 4].Value);
+            f.Bottom.Type = BorderStyle.Single;
+            f.Bottom.Color = Color.FromHex("#fff");
+        });
+
+        range[1, 1].Value = "Hello World!";
     }
 }
 catch (Exception ex)

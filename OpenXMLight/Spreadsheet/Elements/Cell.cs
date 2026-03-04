@@ -21,7 +21,6 @@ namespace OpenXMLight.Spreadsheet.Elements
         internal Sheet _sheet;
 
         private object? _value = null;
-        private TypeValue _typeValue;
         private int _row;
         private int _col;
         private StyleCell _style;
@@ -38,8 +37,8 @@ namespace OpenXMLight.Spreadsheet.Elements
             }
             set
             {
-                if(cellXml == null)
-                    GetCreateCell();
+                //if(cellXml == null)
+                //    GetCreateCell();
                 
                 ChangeCellValue(value);
             }
@@ -49,34 +48,33 @@ namespace OpenXMLight.Spreadsheet.Elements
             get => _style;
         }
 
+
         internal Cell(Sheet sheet, int _row, int _col)
         {
             this._sheet = sheet;
             this._row = _row;
             this._col = _col;
 
-            GetCellXml();
+            GetCreateCellXml();
         }
-
-
-        private void GetCellXml()
+        internal Cell(OpenXmlSpreadsheet.Cell cellXml, Sheet sheet, int _row, int _col) : this(sheet, _row, _col)
         {
-            OpenXmlSpreadsheet.Row? rowXml = _sheet.SheetDataXml.Elements<OpenXmlSpreadsheet.Row>().FirstOrDefault(f => f.RowIndex == Convert.ToUInt32(_row));
-
-            if(rowXml != null)
-                this.cellXml = rowXml.Elements<OpenXmlSpreadsheet.Cell>().FirstOrDefault(f => string.Equals(f.CellReference, $"{HelperData.GetColumnByIndex(_col)}{_row}"));
-        
-            _style = new StyleCell(cellXml);
+            this.cellXml = cellXml;
         }
-        private void GetCreateCell()
+
+        private void GetCreateCellXml()
         {
             OpenXmlSpreadsheet.Row? rowXml = _sheet.SheetDataXml.Elements<OpenXmlSpreadsheet.Row>().FirstOrDefault(f => f.RowIndex == Convert.ToUInt32(_row))
                 ?? _sheet.SheetDataXml.AppendChild(new OpenXmlSpreadsheet.Row() { RowIndex = Convert.ToUInt32(_row) });
 
-            this.cellXml = rowXml.AppendChild(new OpenXmlSpreadsheet.Cell() { CellReference = $"{HelperData.GetColumnByIndex(_col)}{_row}" });
+            this.cellXml = rowXml.Elements<OpenXmlSpreadsheet.Cell>().FirstOrDefault(f => string.Equals(f.CellReference, $"{HelperData.GetColumnByIndex(_col)}{_row}")) 
+                ?? rowXml.AppendChild(new OpenXmlSpreadsheet.Cell() { CellReference = $"{HelperData.GetColumnByIndex(_col)}{_row}", StyleIndex = (uint)0 });
+        
+            _style = new StyleCell(cellXml);
         }
 
-        internal void GetCellValue()
+
+        private void GetCellValue()
         {
             if (cellXml == null || cellXml.CellValue == null)
                 return;
@@ -89,11 +87,9 @@ namespace OpenXMLight.Spreadsheet.Elements
             }
             else if (cellXml.StyleIndex != null)
             {
-                int indexStyle = Convert.ToInt32(cellXml.StyleIndex.Value);
-
-                TypeValue format = Context.Styles.GetFormatteCell(indexStyle);
-
-                switch (format)
+                OpenXmlSpreadsheet.CellFormat format = Context.Styles.GetFormatteCell(cellXml.StyleIndex);
+                
+                switch (TypeValue.Parse(format.NumberFormatId))
                 {
                     case var f when f == TypeValue.Date:
                         Style.Type = TypeValue.Date;
@@ -120,7 +116,7 @@ namespace OpenXMLight.Spreadsheet.Elements
             else
                 _value = cellXml.CellValue?.InnerText;
         }
-        internal void ChangeCellValue(object? input)
+        private void ChangeCellValue(object? input)
         {
             if (cellXml.CellValue == null)
                 cellXml.CellValue = new OpenXmlSpreadsheet.CellValue();
@@ -144,6 +140,9 @@ namespace OpenXMLight.Spreadsheet.Elements
                 int index = Context.SharedStrings.AppendValue(input.ToString());
 
                 cellXml.CellValue.Text = index.ToString();
+                
+                if(cellXml.StyleIndex == null)
+                    cellXml.StyleIndex = Context.Styles.GetFormatteCellIndex(TypeValue.General);
             }
         }
     }
