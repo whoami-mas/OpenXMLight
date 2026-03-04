@@ -98,6 +98,43 @@ namespace OpenXMLight.Spreadsheet.Elements
                 }
             }
         }
+
+        public void SetWrapText(bool wrapText)
+        {
+            for (int i = _row; i <= _rowTo; i++)
+            {
+                for (int j = _col; j <= _colTo; j++)
+                {
+                    var cell = new Cell(Sheet, i, j);
+
+                    cell.Style.IsWrap = wrapText;
+                }
+            }
+        }
+        public void SetHorizontalAlignment(HorizontalAlignments alignment)
+        {
+            for (int i = _row; i <= _rowTo; i++)
+            {
+                for (int j = _col; j <= _colTo; j++)
+                {
+                    var cell = new Cell(Sheet, i, j);
+
+                    cell.Style.Horizontal = alignment;
+                }
+            }
+        }
+        public void SetVerticalAlignment(VerticalAlignments alignment)
+        {
+            for (int i = _row; i <= _rowTo; i++)
+            {
+                for (int j = _col; j <= _colTo; j++)
+                {
+                    var cell = new Cell(Sheet, i, j);
+
+                    cell.Style.Vertical = alignment;
+                }
+            }
+        }
         #endregion
     }
 }

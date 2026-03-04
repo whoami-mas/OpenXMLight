@@ -12,7 +12,7 @@ namespace OpenXMLight.Spreadsheet.Elements
     public class Sheet
     {
         private OpenXmlSpreadsheet.SheetData? _sheetData;
-
+        private OpenXmlSpreadsheet.Columns? _columns;
 
         public string? Name
         {
@@ -38,7 +38,19 @@ namespace OpenXMLight.Spreadsheet.Elements
                 return _sheetData;
             }
         }
+        public OpenXmlSpreadsheet.Columns? Columns
+        {
+            get
+            {
+                if(_columns == null)
+                {
+                    _columns = WorksheetPart.Worksheet.GetFirstChild<OpenXmlSpreadsheet.Columns>() ??
+                        WorksheetPart.Worksheet.InsertAt<OpenXmlSpreadsheet.Columns>(new OpenXmlSpreadsheet.Columns(), 1);
+                }
 
+                return _columns;
+            }
+        }
 
         internal Sheet(OpenXmlPackaging.WorksheetPart worksheetPart, string? name = null)
         {

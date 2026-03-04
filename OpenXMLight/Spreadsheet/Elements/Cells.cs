@@ -71,9 +71,6 @@ namespace OpenXMLight.Spreadsheet.Elements
 
                 List<int> indexColumns = new();
 
-                OpenXmlSpreadsheet.Columns columns = Sheet.WorksheetPart.Worksheet.GetFirstChild<OpenXmlSpreadsheet.Columns>()
-                   ?? Sheet.WorksheetPart.Worksheet.InsertAt<OpenXmlSpreadsheet.Columns>(new OpenXmlSpreadsheet.Columns(), 1);
-                columns.RemoveAllChildren<OpenXmlSpreadsheet.Column>();
 
                 foreach (var row in rows)
                 {
@@ -84,8 +81,8 @@ namespace OpenXMLight.Spreadsheet.Elements
                         int indexRow = Convert.ToInt32(row.RowIndex.Value);
                         int indexCell = HelperData.GetColumnIndex(cell.CellReference);
 
-                        var column = columns.Elements<OpenXmlSpreadsheet.Column>().FirstOrDefault(f => indexCell >= f.Min && indexCell <= f.Max)
-                            ?? columns.AppendChild(new OpenXmlSpreadsheet.Column() 
+                        var column = Sheet.Columns.Elements<OpenXmlSpreadsheet.Column>().FirstOrDefault(f => indexCell >= f.Min && indexCell <= f.Max)
+                            ?? Sheet.Columns.AppendChild(new OpenXmlSpreadsheet.Column() 
                                 {
                                     Min = Convert.ToUInt32(indexCell),
                                     Max = Convert.ToUInt32(indexCell),
@@ -93,9 +90,12 @@ namespace OpenXMLight.Spreadsheet.Elements
                                     CustomWidth = true
                                 });
 
-                        string valueCell = this[indexRow, indexCell].Value.ToString();
+                        object valueCell = this[indexRow, indexCell].Value;
 
-                        double width = HelperData.GetMaxLengthWidthCell(valueCell);
+                        if (valueCell == null)
+                            continue;
+
+                        double width = HelperData.GetMaxLengthWidthCell(valueCell.ToString());
 
                         if(column.Width == null || column.Width == 0 || column.Width < width)
                             column.Width = width;

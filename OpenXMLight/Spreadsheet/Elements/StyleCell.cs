@@ -21,12 +21,15 @@ namespace OpenXMLight.Spreadsheet.Elements
 
         internal OpenXmlSpreadsheet.Cell? cellXml;
         internal uint? styleIndexCell => cellXml?.StyleIndex;
+        internal OpenXmlSpreadsheet.CellFormat? cellFormat => Context.Styles.GetFormatteCell(cellXml?.StyleIndex);
 
 
         private TypeValue _typeValue = TypeValue.General;
         private HorizontalAlignments? _hAlignment;
+        private VerticalAlignments? _vAlignment;
         private Font _font;
         private Border _borders;
+        private bool _isWrap;
 
         public TypeValue Type
         {
@@ -42,23 +45,40 @@ namespace OpenXMLight.Spreadsheet.Elements
             {
                 if(_hAlignment == null)
                 {
-                    var formatte = Context.Styles.GetFormatteCell(styleIndexCell.Value);
-
-                    _hAlignment = HorizontalAlignments.Parse(formatte.Alignment?.Horizontal);
+                    _hAlignment = HorizontalAlignments.Parse(cellFormat.Alignment?.Horizontal);
                 }
 
                 return _hAlignment;
             }
             set
             {
-                var formatte = Context.Styles.GetFormatteCell(styleIndexCell.Value);
-                
-                formatte.Alignment ??= new OpenXmlSpreadsheet.Alignment();
-                formatte.Alignment.Horizontal = value.Value.Value;
-                formatte.ApplyAlignment = true;
-
+                cellFormat.Alignment ??= new OpenXmlSpreadsheet.Alignment();
+                cellFormat.Alignment.Horizontal = value.Value.Value;
+                cellFormat.ApplyAlignment = true;
 
                 _hAlignment = value;
+            }
+        }
+        public VerticalAlignments? Vertical
+        {
+            get
+            {
+                if(_vAlignment == null)
+                {
+                    _vAlignment = VerticalAlignments.Parse(cellFormat.Alignment?.Vertical);
+                }
+
+                return _vAlignment;
+            }
+            set
+            {
+                //var formatte = Context.Styles.GetFormatteCell(styleIndexCell.Value);
+
+                cellFormat.Alignment ??= new OpenXmlSpreadsheet.Alignment();
+                cellFormat.Alignment.Vertical = value.Value.Value;
+                cellFormat.ApplyAlignment = true;
+
+                _vAlignment = value;
             }
         }
         public Font Font
@@ -81,7 +101,35 @@ namespace OpenXMLight.Spreadsheet.Elements
                 return _borders;
             }
         }
+        public bool IsWrap
+        {
+            get
+            {
+                _isWrap = cellFormat?.Alignment?.WrapText?.Value ?? false;
 
+                return _isWrap;
+            }
+            set
+            {
+                if (_isWrap == value) 
+                    return;
+
+                if (value)
+                {
+                    if (cellFormat.Alignment == null)
+                        cellFormat.Alignment = new OpenXmlSpreadsheet.Alignment();
+
+                    cellFormat.Alignment.WrapText = new OpenXml.BooleanValue(value);
+                }
+                else
+                {
+                    if (cellFormat.Alignment != null)
+                    {
+                        cellFormat.Alignment.WrapText = new OpenXml.BooleanValue(false);
+                    }
+                }
+            }
+        }
 
         internal StyleCell(OpenXmlSpreadsheet.Cell? cellXml)
         {

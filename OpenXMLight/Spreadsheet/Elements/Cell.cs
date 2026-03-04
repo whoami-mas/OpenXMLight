@@ -20,12 +20,17 @@ namespace OpenXMLight.Spreadsheet.Elements
         internal OpenXmlSpreadsheet.Cell? cellXml;
         internal Sheet _sheet;
 
+
         private object? _value = null;
         private int _row;
         private int _col;
         private StyleCell _style;
+        private double _width = 8.43;
+
 
         private Context Context => Context.Instance;
+
+
 
         public object? Value
         {
@@ -47,6 +52,40 @@ namespace OpenXMLight.Spreadsheet.Elements
         {
             get => _style;
         }
+        public double Width
+        {
+            get
+            {
+                var column = _sheet.Columns.Elements<OpenXmlSpreadsheet.Column>().FirstOrDefault(f => f.Min == HelperData.GetColumnIndex(cellXml.CellReference));
+
+                if (column != null)
+                    _width = column.Width.Value;
+
+                return _width;
+            }
+            set
+            {
+                if (_width == value)
+                    return;
+
+                var column = _sheet.Columns.Elements<OpenXmlSpreadsheet.Column>().FirstOrDefault(f => f.Min == HelperData.GetColumnIndex(cellXml.CellReference));
+
+                if(column == null)
+                {
+                    column = new OpenXmlSpreadsheet.Column()
+                    {
+                        Min = (uint)HelperData.GetColumnIndex(cellXml.CellReference),
+                        Max = (uint)HelperData.GetColumnIndex(cellXml.CellReference),
+                    };
+
+                    _sheet.Columns.AppendChild(column);
+                }
+
+                column.Width = value;
+                column.CustomWidth = true;
+            }
+        }
+
 
 
         internal Cell(Sheet sheet, int _row, int _col)

@@ -54,6 +54,7 @@ namespace OpenXMLight.Spreadsheet.Elements
             OpenXmlPackaging.WorksheetPart worksheetPart = Excel.WorkbookPart.AddNewPart<OpenXmlPackaging.WorksheetPart>();
             worksheetPart.Worksheet = new OpenXmlSpreadsheet.Worksheet(
                 new OpenXmlSpreadsheet.SheetDimension() { Reference = "A1" },
+                new OpenXmlSpreadsheet.Columns(),
                 new OpenXmlSpreadsheet.SheetData());
 
             Sheet item = new Sheet(worksheetPart, nameSheet);
