@@ -15,11 +15,14 @@ namespace OpenXMLight
     public class ExcelDocument : IDisposable
     {
         private SpreadsheetDocument? ExcelDoc { get; set; }
-        
-        
+
+
+        private string _tmp_path;
+
+
         public elements.Sheets Sheets { get; private set; }
         private Context Context { get; init;}
-
+        public string FullPath => Path.GetFullPath(_tmp_path);
 
         #region Dispose
         public void Dispose()
@@ -54,6 +57,8 @@ namespace OpenXMLight
 
             if (Sheets.Count < 1)
                 Sheets.Add("Лист1");
+
+            _tmp_path = path;
         }
     }
 }
