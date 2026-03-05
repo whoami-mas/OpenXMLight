@@ -16,10 +16,12 @@ namespace OpenXMLight.Spreadsheet.Elements
 {
     public class StyleCell
     {
-        private Context Context => Context.Instance;
+        internal Context Context => _cell.Context;
 
 
-        internal OpenXmlSpreadsheet.Cell? cellXml;
+        internal Cell _cell;
+
+        internal OpenXmlSpreadsheet.Cell? cellXml => _cell.cellXml;
         internal uint? styleIndexCell => cellXml?.StyleIndex;
         internal OpenXmlSpreadsheet.CellFormat? cellFormat => Context.Styles.GetFormatteCell(cellXml?.StyleIndex);
 
@@ -131,9 +133,9 @@ namespace OpenXMLight.Spreadsheet.Elements
             }
         }
 
-        internal StyleCell(OpenXmlSpreadsheet.Cell? cellXml)
+        internal StyleCell(Cell cell)
         {
-            this.cellXml = cellXml;
+            this._cell = cell;
         }
     }
 }

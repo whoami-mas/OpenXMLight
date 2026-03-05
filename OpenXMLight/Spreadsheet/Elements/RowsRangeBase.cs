@@ -18,7 +18,7 @@ namespace OpenXMLight.Spreadsheet.Elements
 
 
 
-        internal override Context Context => Context.Instance;
+        internal override Context Context => Sheet._context;
         internal override Sheet Sheet { get; }
         internal override OpenXmlSpreadsheet.SheetData SheetData { get; }
         internal List<OpenXmlSpreadsheet.Row> RowsXml { get; init; }

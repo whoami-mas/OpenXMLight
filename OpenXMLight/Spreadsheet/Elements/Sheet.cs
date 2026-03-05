@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OpenXmlPackaging = DocumentFormat.OpenXml.Packaging;
 using OpenXmlSpreadsheet = DocumentFormat.OpenXml.Spreadsheet;
 using OpenXml = DocumentFormat.OpenXml;
+using OpenXMLight.Spreadsheet.ExcelContext;
 
 namespace OpenXMLight.Spreadsheet.Elements
 {
@@ -21,7 +22,6 @@ namespace OpenXMLight.Spreadsheet.Elements
         }
         public Cells Cells { get; private set; }
         public Rows Rows { get; private set; }
-
 
 
         internal OpenXmlSpreadsheet.Sheet SheetXml { get; private set; }
@@ -51,8 +51,13 @@ namespace OpenXMLight.Spreadsheet.Elements
                 return _columns;
             }
         }
+        internal readonly Context _context;
 
-        internal Sheet(OpenXmlPackaging.WorksheetPart worksheetPart, string? name = null)
+        internal Sheet(Context _context)
+        {
+            this._context = _context;
+        }
+        internal Sheet(OpenXmlPackaging.WorksheetPart worksheetPart, Context _context, string? name = null) : this(_context)
         {
             Create(worksheetPart: worksheetPart);
 
@@ -60,7 +65,8 @@ namespace OpenXMLight.Spreadsheet.Elements
         }
 
         internal Sheet(OpenXmlSpreadsheet.Sheet sheetXml,
-            OpenXmlPackaging.WorksheetPart worksheetPart = default) => this.Create(sheetXml, worksheetPart);
+            Context _context,
+            OpenXmlPackaging.WorksheetPart worksheetPart = default) : this(_context) => this.Create(sheetXml, worksheetPart);
 
 
 

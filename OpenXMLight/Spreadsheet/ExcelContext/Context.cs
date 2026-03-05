@@ -13,23 +13,21 @@ namespace OpenXMLight.Spreadsheet.ExcelContext
 {
     internal class Context: IContext
     {
-        private static Context? _instance = null;
+        //internal static Context GetInstance(OpenXmlPackaging.WorkbookPart workbook)
+        //{
+        //    if (_instance == null)
+        //        _instance = new(workbook);
 
-        internal static Context GetInstance(OpenXmlPackaging.WorkbookPart workbook)
-        {
-            if (_instance == null)
-                _instance = new(workbook);
-
-            return _instance;
-        }
-        public static Context Instance { get => _instance; }
+        //    return _instance;
+        //}
+        //public static Context Instance { get => _instance; }
 
 
         public Styles Styles { get; init; }
         public SharedStrings SharedStrings { get; init; }
 
 
-        protected Context(OpenXmlPackaging.WorkbookPart workbookPart)
+        internal Context(OpenXmlPackaging.WorkbookPart workbookPart)
         {
             if(workbookPart != null)
             {

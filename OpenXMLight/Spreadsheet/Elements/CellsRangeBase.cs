@@ -24,7 +24,7 @@ namespace OpenXMLight.Spreadsheet.Elements
         internal string? _addressCell;
 
 
-        internal override Context Context => Context.Instance;
+        internal override Context Context => Sheet._context;
         internal override Sheet Sheet { get; }
         internal override OpenXmlSpreadsheet.SheetData SheetData { get; }
         internal OpenXmlSpreadsheet.MergeCells? MergeCells { get; private set; }

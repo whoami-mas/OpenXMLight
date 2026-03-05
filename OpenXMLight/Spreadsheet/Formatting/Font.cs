@@ -15,9 +15,10 @@ namespace OpenXMLight.Spreadsheet.Formatting
 {
     public class Font
     {
-        private Context Context => Context.Instance;
-        internal OpenXmlSpreadsheet.Font? fontXml;
         internal StyleCell style;
+        internal OpenXmlSpreadsheet.Font? fontXml;
+
+        private Context Context => style.Context;
 
         private int _size;
         private bool _bold;

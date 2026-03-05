@@ -20,7 +20,7 @@ namespace OpenXMLight.Spreadsheet.Elements
 
 
         private List<Sheet> sheets;
-
+        private readonly Context _context;
 
 
         internal OpenXmlPackaging.SpreadsheetDocument Excel { get; set; }
@@ -35,13 +35,15 @@ namespace OpenXMLight.Spreadsheet.Elements
         }
 
 
-        internal Sheets(OpenXmlPackaging.SpreadsheetDocument excel)
+        internal Sheets(OpenXmlPackaging.SpreadsheetDocument excel, Context _context)
         {
             this.Excel = excel;
+            this._context = _context;
 
             this.sheets = SheetsXml.Select(
                     s => new Sheet(
                                    (OpenXmlSpreadsheet.Sheet)s,
+                                   _context,
                                    (OpenXmlPackaging.WorksheetPart)Excel.WorkbookPart.GetPartById(((OpenXmlSpreadsheet.Sheet)s).Id)
                     )
                 ).ToList();
@@ -57,7 +59,7 @@ namespace OpenXMLight.Spreadsheet.Elements
                 new OpenXmlSpreadsheet.Columns(),
                 new OpenXmlSpreadsheet.SheetData());
 
-            Sheet item = new Sheet(worksheetPart, nameSheet);
+            Sheet item = new Sheet(worksheetPart, _context, nameSheet);
 
             OpenXml.UInt32Value maxIdSheet = sheets.Select(s => s.SheetXml.SheetId).Cast<OpenXml.UInt32Value>().DefaultIfEmpty((OpenXml.UInt32Value)0).Max();
             item.SheetXml.SheetId = maxIdSheet + 1;

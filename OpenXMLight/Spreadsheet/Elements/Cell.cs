@@ -28,7 +28,7 @@ namespace OpenXMLight.Spreadsheet.Elements
         private double _width = 8.43;
 
 
-        private Context Context => Context.Instance;
+        internal Context Context => _sheet._context;
 
 
 
@@ -109,7 +109,7 @@ namespace OpenXMLight.Spreadsheet.Elements
             this.cellXml = rowXml.Elements<OpenXmlSpreadsheet.Cell>().FirstOrDefault(f => string.Equals(f.CellReference, $"{HelperData.GetColumnByIndex(_col)}{_row}")) 
                 ?? rowXml.AppendChild(new OpenXmlSpreadsheet.Cell() { CellReference = $"{HelperData.GetColumnByIndex(_col)}{_row}", StyleIndex = (uint)0 });
         
-            _style = new StyleCell(cellXml);
+            _style = new StyleCell(this);
         }
 
 

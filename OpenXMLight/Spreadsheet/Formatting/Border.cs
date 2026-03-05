@@ -14,9 +14,10 @@ namespace OpenXMLight.Spreadsheet.Formatting
 {
     public class Border
     {
-        private Context Context => Context.Instance;
-        internal OpenXmlSpreadsheet.Border? borderXml;
         internal StyleCell style;
+        internal OpenXmlSpreadsheet.Border? borderXml;
+
+        private Context Context => style.Context;
 
 
         private TopBorder _top;

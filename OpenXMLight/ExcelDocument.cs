@@ -51,9 +51,9 @@ namespace OpenXMLight
             if (ExcelDoc.WorkbookPart == null)
                 ExcelDoc.AddWorkbookPart().Workbook = new Workbook(new Sheets());
 
-            Context = Context.GetInstance(ExcelDoc.WorkbookPart);
+            Context = new Context(ExcelDoc.WorkbookPart);
 
-            Sheets = new elements.Sheets(ExcelDoc);
+            Sheets = new elements.Sheets(ExcelDoc, Context);
 
             if (Sheets.Count < 1)
                 Sheets.Add("Лист1");
