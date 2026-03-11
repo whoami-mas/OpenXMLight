@@ -29,6 +29,7 @@ namespace OpenXMLight.Spreadsheet.Elements
         private TypeValue _typeValue = TypeValue.General;
         private HorizontalAlignments? _hAlignment;
         private VerticalAlignments? _vAlignment;
+        private int _textRotation;
         private Font _font;
         private Border _borders;
         private bool _isWrap;
@@ -54,6 +55,8 @@ namespace OpenXMLight.Spreadsheet.Elements
             }
             set
             {
+                cellXml.StyleIndex = Context.Styles.IsFirstFormatteCell(cellXml?.StyleIndex);
+
                 cellFormat.Alignment ??= new OpenXmlSpreadsheet.Alignment();
                 cellFormat.Alignment.Horizontal = value.Value.Value;
                 cellFormat.ApplyAlignment = true;
@@ -74,13 +77,33 @@ namespace OpenXMLight.Spreadsheet.Elements
             }
             set
             {
-                //var formatte = Context.Styles.GetFormatteCell(styleIndexCell.Value);
+                cellXml.StyleIndex = Context.Styles.IsFirstFormatteCell(cellXml?.StyleIndex);
 
                 cellFormat.Alignment ??= new OpenXmlSpreadsheet.Alignment();
                 cellFormat.Alignment.Vertical = value.Value.Value;
                 cellFormat.ApplyAlignment = true;
 
                 _vAlignment = value;
+            }
+        }
+        public int TextRotation
+        {
+            get
+            {
+                _textRotation = (int)cellFormat.Alignment?.TextRotation.Value;
+
+                return _textRotation;
+            }
+            set
+            {
+                cellXml.StyleIndex = Context.Styles.IsFirstFormatteCell(cellXml?.StyleIndex);
+
+                _textRotation = value;
+
+                cellFormat.Alignment ??= new OpenXmlSpreadsheet.Alignment();
+                cellFormat.Alignment.TextRotation = (uint)_textRotation;
+                cellFormat.ApplyAlignment = true;
+
             }
         }
         public Font Font

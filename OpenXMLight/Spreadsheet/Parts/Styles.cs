@@ -75,6 +75,7 @@ namespace OpenXMLight.Spreadsheet.Parts
         }
 
 
+
         public uint AddStyle(TypeValue typeFormatte)
         {
             PartXml.Stylesheet.CellFormats ??= new OpenXmlSpreadsheet.CellFormats();
@@ -93,27 +94,27 @@ namespace OpenXMLight.Spreadsheet.Parts
 
             return Convert.ToUInt32(PartXml.Stylesheet.CellFormats.OfType<OpenXmlSpreadsheet.CellFormat>().ToList().IndexOf(format));
         }
-        public OpenXmlSpreadsheet.CellFormat AddStyle()
+        public OpenXmlSpreadsheet.CellFormat AddStyle(uint styleIndex)
         {
-            OpenXmlSpreadsheet.CellFormat? cellFormat = PartXml.Stylesheet.CellFormats.ToList()[0] as OpenXmlSpreadsheet.CellFormat;
+            OpenXmlSpreadsheet.CellFormat? cellFormat = PartXml.Stylesheet.CellFormats.ToList()[(int)styleIndex] as OpenXmlSpreadsheet.CellFormat;
             
-            OpenXmlSpreadsheet.CellFormat format = new()
-            {
-                NumberFormatId = (cellFormat?.NumberFormatId ?? 0),
-                FontId = (cellFormat?.FontId ?? 0),
-                FillId = (cellFormat?.FillId ?? 0),
-                BorderId = (cellFormat?.BorderId ?? 0),
-                FormatId = (cellFormat?.FormatId ?? 0),
-            };
-
-            return format;
+            return (OpenXmlSpreadsheet.CellFormat)cellFormat.CloneNode(true);
         }
+        public uint AddStyle(OpenXmlSpreadsheet.CellFormat template)
+        {
+            OpenXmlSpreadsheet.CellFormat cellFormat = (OpenXmlSpreadsheet.CellFormat)template.CloneNode(true);
+            PartXml.Stylesheet.CellFormats.AppendChild(cellFormat);
+
+
+            return Convert.ToUInt32(PartXml.Stylesheet.CellFormats.OfType<OpenXmlSpreadsheet.CellFormat>().ToList().IndexOf(cellFormat));
+        }
+
 
 
         public void CheckStyleFont(ref StyleCell style, ref OpenXmlSpreadsheet.Font fontNew)
         {
             var fonts = PartXml.Stylesheet.Fonts;
-            OpenXmlSpreadsheet.CellFormat format = AddStyle();
+            OpenXmlSpreadsheet.CellFormat format = AddStyle(style.styleIndexCell.Value);
 
             int hashFontNew = GetHashCodeFont(fontNew);
             for(int i = 0; i < fonts.ChildElements.Count; i++)
@@ -135,7 +136,7 @@ namespace OpenXMLight.Spreadsheet.Parts
         public void CheckStyleBorder(ref StyleCell style, ref OpenXmlSpreadsheet.Border borderNew)
         {
             var borders = PartXml.Stylesheet.Borders;
-            OpenXmlSpreadsheet.CellFormat format = AddStyle();
+            OpenXmlSpreadsheet.CellFormat format = AddStyle(style.styleIndexCell.Value);
 
             int hashBorderNew = GetHashCodeBorder(borderNew);
             for(int i = 0; i < borders.ChildElements.Count; i++)
@@ -167,14 +168,28 @@ namespace OpenXMLight.Spreadsheet.Parts
                 if (cellFormatts.ChildElements[i] is OpenXmlSpreadsheet.CellFormat formatOld &&
                     GetHashCodeCellFormatte(formatOld) == hashCellFormat)
                 {
-                    style.cellXml.StyleIndex = (uint)i;
-                    return formatOld;
+                    if(GetHashCodeAlignment(formatOld.Alignment) == GetHashCodeAlignment(format.Alignment))
+                    {
+                        style.cellXml.StyleIndex = (uint)i;
+                        return formatOld;
+                    }
+
+                    continue;
                 }
             }
 
             cellFormatts.AppendChild(format);
             style.cellXml.StyleIndex = (uint)cellFormatts.ToList().IndexOf(format);
             return format;
+        }
+        
+        
+        public uint IsFirstFormatteCell(uint indexStyle)
+        {
+            if (indexStyle != 0)
+                return indexStyle;
+
+            return AddStyle(GetFormatteCell(indexStyle));
         }
 
         #region Hash code
@@ -231,7 +246,22 @@ namespace OpenXMLight.Spreadsheet.Parts
                 return hash;
             }
         }
+        private int GetHashCodeAlignment(OpenXmlSpreadsheet.Alignment alignment)
+        {
+            if (alignment == null)
+                return 0;
 
+            unchecked
+            {
+                int hash = 17;
+
+                hash = hash * 23 + (alignment.TextRotation?.HasValue == true ? alignment.TextRotation.Value.GetHashCode() : 0);
+                hash = hash * 23 + (alignment.Vertical?.HasValue == true ? alignment.Vertical.Value.GetHashCode() : 0);
+                hash = hash * 23 + (alignment.Horizontal?.HasValue == true ? alignment.Horizontal.Value.GetHashCode() : 0);
+
+                return hash;
+            }
+        }
 
         private int GetHashCodeBorderColor(OpenXmlSpreadsheet.Color? color)
         {

@@ -39,34 +39,115 @@ namespace OpenXMLight.Spreadsheet.Elements
         #region Merge cells
         public void Merge()
         {
-            //this.Merge();
+            // Инициализация MergeCells
             if (MergeCells == null)
-                MergeCells = Sheet.WorksheetPart.Worksheet.AppendChild<OpenXmlSpreadsheet.MergeCells>(new OpenXmlSpreadsheet.MergeCells());
+                MergeCells = Sheet.WorksheetPart.Worksheet.AppendChild<OpenXmlSpreadsheet.MergeCells>(
+                    new OpenXmlSpreadsheet.MergeCells());
 
             string addressMergeCell = $"{HelperData.GetColumnByIndex(_colTo)}{_rowTo}";
-            //string address = $"{_addressCell}:{addressMergeCell}";
 
+            // Валидация
             ValidationExcel.ValidationMerge(MergeCells, _row, _col, _rowTo, _colTo, _addressCell);
-            
-            for(int i = _row; i <= _rowTo; i++)
+
+            OpenXmlSpreadsheet.Cell? firstCell = null;
+
+            // Проходим по всем ячейкам диапазона
+            for (int i = _row; i <= _rowTo; i++)
             {
-                OpenXmlSpreadsheet.Row rowFind = SheetData.Elements<OpenXmlSpreadsheet.Row>().FirstOrDefault(f => f.RowIndex == Convert.ToUInt32(i)) 
-                    ?? SheetData.AppendChild(new OpenXmlSpreadsheet.Row() { RowIndex = Convert.ToUInt32(i)});
-
-                for (int j = _col + 1; j <= _colTo; j++)
+                // Получаем или создаем строку
+                OpenXmlSpreadsheet.Row rowFind = SheetData.Elements<OpenXmlSpreadsheet.Row>()
+                    .FirstOrDefault(f => f.RowIndex == (uint)i)
+                    ?? SheetData.AppendChild(new OpenXmlSpreadsheet.Row() { RowIndex = (uint)i });
+                
+                for (int j = _col; j <= _colTo; j++)
                 {
-                    string appendAddress = $"{HelperData.GetColumnByIndex(j)}{i}";
+                    string cellAddress = $"{HelperData.GetColumnByIndex(j)}{i}";
 
-                    OpenXmlSpreadsheet.Cell cell = rowFind.Elements<OpenXmlSpreadsheet.Cell>().FirstOrDefault(f => string.Equals(f.CellReference, addressMergeCell)) 
-                        ?? rowFind.AppendChild(new OpenXmlSpreadsheet.Cell() { CellReference = appendAddress });
+                    // Получаем или создаем ячейку
+                    OpenXmlSpreadsheet.Cell cell = rowFind.Elements<OpenXmlSpreadsheet.Cell>()
+                        .FirstOrDefault(f => string.Equals(f.CellReference, cellAddress))
+                        ?? rowFind.AppendChild(new OpenXmlSpreadsheet.Cell() { CellReference = cellAddress, StyleIndex = 0 });
+                    
+                    
+                     // First cell ?  - Save
+                    if (i == _row && j == _col)
+                    {
+                        firstCell = cell;
+                        continue;
+                    }
+
+                    // Если первая ячейка пуста, а текущая имеет значение - копируем
+                    if (firstCell?.CellValue == null && cell.CellValue != null &&
+                        !string.IsNullOrEmpty(cell.CellValue.Text))
+                    {
+                        firstCell.CellValue = (OpenXmlSpreadsheet.CellValue)cell.CellValue.CloneNode(true);
+                        firstCell.StyleIndex = cell.StyleIndex;
+                        firstCell.DataType = cell.DataType;
+                    }
+
+                    // Применяем стиль первой ячейки
+                    if (firstCell.StyleIndex != null && firstCell.StyleIndex.HasValue)
+                    {
+                        cell.StyleIndex = firstCell.StyleIndex.Value;
+                    }
+
+                    // Очищаем значение во всех ячейках кроме первой
+                    if (cell != firstCell)
+                    {
+                        cell.CellValue?.RemoveAllChildren();
+                        cell.CellValue = null;
+                    }
                 }
             }
 
+            Sorted();
+
             MergeCells.AppendChild(
-                new OpenXmlSpreadsheet.MergeCell() { Reference = _addressCell }
-            );
+               new OpenXmlSpreadsheet.MergeCell() { Reference = _addressCell }
+           );
         }
         #endregion
+
+        private void Sorted()
+        {
+            foreach (var row in SheetData.Elements<OpenXmlSpreadsheet.Row>())
+            {
+                SortRow(row);
+            }
+        }
+        private void SortRow(OpenXmlSpreadsheet.Row row)
+        {
+            var cells = row.Elements<OpenXmlSpreadsheet.Cell>().ToList();
+
+            // Проверяем, нужно ли сортировать
+            bool needSort = false;
+            int prevIndex = 0;
+
+            foreach (var cell in cells)
+            {
+                int currentIndex = HelperData.GetColumnIndex(cell.CellReference);
+                if (currentIndex < prevIndex)
+                {
+                    needSort = true;
+                    break;
+                }
+                prevIndex = currentIndex;
+            }
+
+            if (needSort)
+            {
+                // Сортируем ячейки по индексу колонки
+                var sortedCells = cells.OrderBy(c => HelperData.GetColumnIndex(c.CellReference)).ToList();
+
+                // Удаляем все ячейки
+                foreach (var cell in cells)
+                    cell.Remove();
+
+                // Добавляем в правильном порядке
+                foreach (var cell in sortedCells)
+                    row.AppendChild(cell);
+            }
+        }
 
         #region Styles
         public void SetFont(Action<Font> conf)
