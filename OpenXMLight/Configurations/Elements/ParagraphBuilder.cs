@@ -35,6 +35,12 @@ namespace OpenXMLight.Configurations.Elements
             {
                 Run r = run;
                 _paragraph.ElementXml.Append(r.ElementXml);
+
+                if (run.endnotes.Any())
+                {
+                    foreach (var endnote in run.endnotes)
+                        run.SetEndnote(endnote);
+                }
             }
 
             return this;
