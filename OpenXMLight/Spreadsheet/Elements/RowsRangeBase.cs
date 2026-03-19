@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using OpenXmlPackaging = DocumentFormat.OpenXml.Packaging;
 using OpenXmlSpreadsheet = DocumentFormat.OpenXml.Spreadsheet;
 using OpenXml = DocumentFormat.OpenXml;
+using OpenXMLight.Spreadsheet.ExcelContext;
 
 namespace OpenXMLight.Spreadsheet.Elements
 {
@@ -16,9 +17,10 @@ namespace OpenXMLight.Spreadsheet.Elements
         internal int _rowTo;
 
 
-        internal override OpenXmlPackaging.WorksheetPart WorksheetPart { get; init; }
-        internal override OpenXmlPackaging.WorkbookPart WorkbookPart { get; init; }
-        internal override OpenXmlSpreadsheet.SheetData SheetData => WorksheetPart.Worksheet.Elements<OpenXmlSpreadsheet.SheetData>().First();
+
+        internal override Context Context => Sheet._context;
+        internal override Sheet Sheet { get; }
+        internal override OpenXmlSpreadsheet.SheetData SheetData { get; }
         internal List<OpenXmlSpreadsheet.Row> RowsXml { get; init; }
 
 
@@ -28,10 +30,9 @@ namespace OpenXMLight.Spreadsheet.Elements
         
 
 
-        internal RowsRangeBase(OpenXmlPackaging.WorksheetPart worksheetPart, OpenXmlPackaging.WorkbookPart workbookPart)
+        internal RowsRangeBase(Sheet sheet)
         {
-            this.WorkbookPart = workbookPart;
-            this.WorksheetPart = worksheetPart;
+            SheetData = sheet.WorksheetPart.Worksheet.Elements<OpenXmlSpreadsheet.SheetData>().First();
 
             RowsXml = new();
         }

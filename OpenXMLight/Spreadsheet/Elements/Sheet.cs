@@ -6,11 +6,15 @@ using System.Threading.Tasks;
 using OpenXmlPackaging = DocumentFormat.OpenXml.Packaging;
 using OpenXmlSpreadsheet = DocumentFormat.OpenXml.Spreadsheet;
 using OpenXml = DocumentFormat.OpenXml;
+using OpenXMLight.Spreadsheet.ExcelContext;
 
 namespace OpenXMLight.Spreadsheet.Elements
 {
     public class Sheet
     {
+        private OpenXmlSpreadsheet.SheetData? _sheetData;
+        private OpenXmlSpreadsheet.Columns? _columns;
+
         public string? Name
         {
             get => SheetXml.Name;
@@ -22,32 +26,58 @@ namespace OpenXMLight.Spreadsheet.Elements
 
         internal OpenXmlSpreadsheet.Sheet SheetXml { get; private set; }
         internal OpenXmlPackaging.WorksheetPart WorksheetPart { get; set; }
-        internal OpenXmlPackaging.WorkbookPart WorkbookPart { get; set; }
-        
-
-        internal Sheet(OpenXmlPackaging.WorkbookPart workbookPart, OpenXmlPackaging.WorksheetPart worksheetPart, string? name = null)
+        internal OpenXmlSpreadsheet.SheetData SheetDataXml
         {
-            Create(workbookPart, worksheetPart: worksheetPart);
+            get
+            {
+                if(_sheetData == null)
+                {
+                    _sheetData = WorksheetPart.Worksheet.GetFirstChild<OpenXmlSpreadsheet.SheetData>();
+                }
+
+                return _sheetData;
+            }
+        }
+        public OpenXmlSpreadsheet.Columns? Columns
+        {
+            get
+            {
+                if(_columns == null)
+                {
+                    _columns = WorksheetPart.Worksheet.GetFirstChild<OpenXmlSpreadsheet.Columns>() ??
+                        WorksheetPart.Worksheet.InsertAt<OpenXmlSpreadsheet.Columns>(new OpenXmlSpreadsheet.Columns(), 1);
+                }
+
+                return _columns;
+            }
+        }
+        internal readonly Context _context;
+
+        internal Sheet(Context _context)
+        {
+            this._context = _context;
+        }
+        internal Sheet(OpenXmlPackaging.WorksheetPart worksheetPart, Context _context, string? name = null) : this(_context)
+        {
+            Create(worksheetPart: worksheetPart);
 
             this.Name = name;
         }
 
-        
         internal Sheet(OpenXmlSpreadsheet.Sheet sheetXml,
-            OpenXmlPackaging.WorkbookPart workbookPart,
-            OpenXmlPackaging.WorksheetPart worksheetPart = default) => this.Create(workbookPart, sheetXml, worksheetPart);
+            Context _context,
+            OpenXmlPackaging.WorksheetPart worksheetPart = default) : this(_context) => this.Create(sheetXml, worksheetPart);
 
 
-        internal void Create(OpenXmlPackaging.WorkbookPart workbookPart,
-                             OpenXmlSpreadsheet.Sheet sheetXml = default,
+
+        internal void Create(OpenXmlSpreadsheet.Sheet sheetXml = default,
                              OpenXmlPackaging.WorksheetPart worksheetPart = default)
         {
-            SheetXml = sheetXml ?? new();
+            this.SheetXml = sheetXml ?? new();
             this.WorksheetPart = worksheetPart;
-            this.WorkbookPart = workbookPart;
 
-            Cells = new Cells(this.WorksheetPart, this.WorkbookPart);
-            Rows = new Rows(this.WorksheetPart, this.WorkbookPart);
+            Cells = new Cells(this);
+            Rows = new Rows(this);
         }
     }
 }

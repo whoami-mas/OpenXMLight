@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenXMLight.Spreadsheet.ExcelContext;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,8 +14,7 @@ namespace OpenXMLight.Spreadsheet.Elements
     public abstract class RangeBase
     {
         internal abstract OpenXmlSpreadsheet.SheetData SheetData { get; }
-        internal abstract OpenXmlPackaging.WorksheetPart WorksheetPart { get; init; }
-        internal abstract OpenXmlPackaging.WorkbookPart WorkbookPart { get; init; }
-
+        internal abstract Context Context { get; }
+        internal abstract Sheet Sheet { get; }
     }
 }

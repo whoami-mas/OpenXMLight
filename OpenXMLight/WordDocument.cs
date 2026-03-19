@@ -30,7 +30,6 @@ namespace OpenXMLight
         public ElementCollection<Table> Tables => new(Doc.Body.Elements<OpenXmlElement.Table>().Select(s => new Table(s))) {Parent = Doc.Body };
         public string FullPath => Path.GetFullPath(_tmp_path);
         public SettingsPageWord SettingsDocument { get; protected set; }
-
         private Context Context { get; init; }
 
 

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using OpenXMLight.Tools;
 using OpenXMLight.Validations;
+using OpenXMLight.Spreadsheet.Elements;
 
 using OpenXmlPackaging = DocumentFormat.OpenXml.Packaging;
 using OpenXmlSpreadsheet = DocumentFormat.OpenXml.Spreadsheet;
@@ -16,17 +17,29 @@ namespace OpenXMLight.Spreadsheet.Elements
 {
     public class Cells : CellsRangeBase
     {
-        public Cells this[int row, int col]
+        public Cell this[int row, int col]
         {
             get
             {
                 ValidationExcel.ValidationIndex(row, col);
-
                 _row = row;
                 _col = col;
-                _addressCell = $"{HelperData.GetColumnByIndex(_col)}{_row}";
+                _rowTo = row;
+                _colTo = col;
 
-                GetData();
+                return new Cell(Sheet, row, col);
+            }
+        }
+        public Cells this[int rowFrom, int colFrom, int rowTo, int colTo]
+        {
+            get
+            {
+                ValidationExcel.ValidationIndex(rowFrom, colFrom, rowTo, colTo);
+                _row = rowFrom;
+                _col = colFrom;
+                _rowTo = rowTo;
+                _colTo = colTo;
+                _addressCell = $"{HelperData.GetColumnByIndex(_col)}{_row}:{HelperData.GetColumnByIndex(_colTo)}{_rowTo}";
 
                 return this;
             }
@@ -35,23 +48,17 @@ namespace OpenXMLight.Spreadsheet.Elements
         {
             get
             {
-                ValidationExcel.ValidationAddress(address);
-                _row = HelperData.GetRowIndex(address);
-                _col = HelperData.GetColumnIndex(address);
+                ValidationExcel.ValidationFullAddress(address, ref _row, ref _col, ref _rowTo, ref _colTo);
                 _addressCell = address;
-
-                GetData();
 
                 return this;
             }
         }
 
-        internal Cells(OpenXmlPackaging.WorksheetPart worksheetPart, OpenXmlPackaging.WorkbookPart workbookPart)
-            : base(worksheetPart, workbookPart)
+        internal Cells(Sheet sheet)
+            : base(sheet)
         {
-
         }
-
 
         #region AutoFitColumns
 
@@ -64,9 +71,6 @@ namespace OpenXMLight.Spreadsheet.Elements
 
                 List<int> indexColumns = new();
 
-                OpenXmlSpreadsheet.Columns columns = WorksheetPart.Worksheet.GetFirstChild<OpenXmlSpreadsheet.Columns>()
-                   ?? WorksheetPart.Worksheet.InsertAt<OpenXmlSpreadsheet.Columns>(new OpenXmlSpreadsheet.Columns(), 1);
-                columns.RemoveAllChildren<OpenXmlSpreadsheet.Column>();
 
                 foreach (var row in rows)
                 {
@@ -77,8 +81,8 @@ namespace OpenXMLight.Spreadsheet.Elements
                         int indexRow = Convert.ToInt32(row.RowIndex.Value);
                         int indexCell = HelperData.GetColumnIndex(cell.CellReference);
 
-                        var column = columns.Elements<OpenXmlSpreadsheet.Column>().FirstOrDefault(f => indexCell >= f.Min && indexCell <= f.Max)
-                            ?? columns.AppendChild(new OpenXmlSpreadsheet.Column() 
+                        var column = Sheet.Columns.Elements<OpenXmlSpreadsheet.Column>().FirstOrDefault(f => indexCell >= f.Min && indexCell <= f.Max)
+                            ?? Sheet.Columns.AppendChild(new OpenXmlSpreadsheet.Column() 
                                 {
                                     Min = Convert.ToUInt32(indexCell),
                                     Max = Convert.ToUInt32(indexCell),
@@ -86,7 +90,12 @@ namespace OpenXMLight.Spreadsheet.Elements
                                     CustomWidth = true
                                 });
 
-                        double width = HelperData.GetMaxLengthWidthCell(this[indexRow, indexCell].Value.ToString());
+                        object valueCell = this[indexRow, indexCell].Value;
+
+                        if (valueCell == null)
+                            continue;
+
+                        double width = HelperData.GetMaxLengthWidthCell(valueCell.ToString());
 
                         if(column.Width == null || column.Width == 0 || column.Width < width)
                             column.Width = width;

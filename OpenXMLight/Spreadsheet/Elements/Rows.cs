@@ -44,10 +44,11 @@ namespace OpenXMLight.Spreadsheet.Elements
             }
         }
 
+
         public int Count => SheetData.Elements<OpenXmlSpreadsheet.Row>().Count();
 
-        internal Rows(OpenXmlPackaging.WorksheetPart worksheetPart, OpenXmlPackaging.WorkbookPart workbookPart) 
-            : base(worksheetPart, workbookPart)
+        internal Rows(Sheet sheet) 
+            : base(sheet)
         {
 
         }

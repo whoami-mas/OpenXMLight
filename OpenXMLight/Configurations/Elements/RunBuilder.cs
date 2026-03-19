@@ -15,6 +15,7 @@ namespace OpenXMLight.Configurations.Elements
     {
         Run _run;
 
+        internal readonly List<Endnote> endnotes = new();
 
 
         public RunBuilder() => _run = new();
@@ -64,12 +65,22 @@ namespace OpenXMLight.Configurations.Elements
         }
         public RunBuilder SetEndnote(Endnote endnote)
         {
-            _run.ElementProperties.AppendChild(
-                new OpenXml.RunStyle() { Val = Context.GetInstance().Styles.CreateGetEndnoteRef() }
+            if (_run.ElementXml.Parent == null)
+                endnotes.Add(endnote);
+            else
+            {
+                OpenXml.Run _runEndnote = new OpenXml.Run();
+                _runEndnote.RunProperties ??= new OpenXml.RunProperties();
+
+                _runEndnote.RunProperties.AppendChild(
+                    new OpenXml.RunStyle() { Val = Context.GetInstance().Styles.CreateGetEndnoteRef() }
+                    );
+                _runEndnote.AppendChild(
+                    new OpenXml.EndnoteReference() { Id = endnote.ElementXml.Id }
                 );
-            _run.ElementXml.AppendChild(
-                new OpenXml.EndnoteReference() { Id = endnote.ElementXml.Id }
-                );
+
+                _run.ElementXml.InsertAfterSelf(_runEndnote);
+            }
 
             return this;
         }

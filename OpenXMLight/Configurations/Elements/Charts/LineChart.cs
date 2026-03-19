@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using OpenXMLight.Configurations.Formatting;
 using OpenXMLDrawing = DocumentFormat.OpenXml.Drawing;
 using OpenXmlChart = DocumentFormat.OpenXml.Drawing.Charts;
 using System.Globalization;
-using OpenXMLight.Spreadsheet.Formatting;
 
 namespace OpenXMLight.Configurations.Elements.Charts
 {
