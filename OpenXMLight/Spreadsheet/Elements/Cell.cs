@@ -169,7 +169,7 @@ namespace OpenXMLight.Spreadsheet.Elements
                 if (!DateTime.TryParse(input.ToString(), out DateTime date))
                     throw new ArgumentException("дата не может быть пустой");
 
-                cellXml.CellValue.Text = (date.ToOADate()).ToString();
+                cellXml.CellValue.Text = ((int)date.ToOADate()).ToString();
                 cellXml.StyleIndex = Context.Styles.GetFormatteCellIndex(TypeValue.Date);
             }
             else if (string.Equals("String", input.GetType().Name))

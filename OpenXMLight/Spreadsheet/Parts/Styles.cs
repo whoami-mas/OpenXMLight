@@ -82,7 +82,7 @@ namespace OpenXMLight.Spreadsheet.Parts
 
             OpenXmlSpreadsheet.CellFormat format = new()
             {
-                NumberFormatId = GetNumberungFormatte(typeFormatte),
+                NumberFormatId = (uint)typeFormatte.Value,
                 FontId = GetDefaultFontId(),
                 FillId = GetDefaultFillId(),
                 BorderId = GetDefaultBorderId(),
@@ -376,28 +376,28 @@ namespace OpenXMLight.Spreadsheet.Parts
 
             return result;
         }
-        private uint GetNumberungFormatte(TypeValue typeCell)
-        {
-            PartXml.Stylesheet.NumberingFormats ??= new OpenXmlSpreadsheet.NumberingFormats();
+        //private uint GetNumberungFormatte(TypeValue typeCell)
+        //{
+        //    PartXml.Stylesheet.NumberingFormats ??= new OpenXmlSpreadsheet.NumberingFormats();
 
-            switch (typeCell)
-            {
-                case var type when type == TypeValue.Date:
-                    OpenXmlSpreadsheet.NumberingFormat? nmbFormat = PartXml.Stylesheet.NumberingFormats.Elements<OpenXmlSpreadsheet.NumberingFormat>().FirstOrDefault(f => f.NumberFormatId == typeCell.Value);
-                    if(nmbFormat == null)
-                    {
-                        nmbFormat = new OpenXmlSpreadsheet.NumberingFormat()
-                        {
-                            NumberFormatId = Convert.ToUInt32(typeCell.Value),
-                            FormatCode = "dd.mm.yyyy"
-                        };
+        //    switch (typeCell)
+        //    {
+        //        case var type when type == TypeValue.Date:
+        //            OpenXmlSpreadsheet.NumberingFormat? nmbFormat = PartXml.Stylesheet.NumberingFormats.Elements<OpenXmlSpreadsheet.NumberingFormat>().FirstOrDefault(f => f.NumberFormatId == typeCell.Value);
+        //            if(nmbFormat == null)
+        //            {
+        //                nmbFormat = new OpenXmlSpreadsheet.NumberingFormat()
+        //                {
+        //                    NumberFormatId = Convert.ToUInt32(typeCell.Value),
+        //                    FormatCode = "dd.mm.yyyy"
+        //                };
 
-                        PartXml.Stylesheet.NumberingFormats.AppendChild(nmbFormat);
-                    }
-                    break;
-            }
+        //                PartXml.Stylesheet.NumberingFormats.AppendChild(nmbFormat);
+        //            }
+        //            break;
+        //    }
 
-            return Convert.ToUInt32(typeCell.Value);
-        }
+        //    return Convert.ToUInt32(typeCell.Value);
+        //}
     }
 }

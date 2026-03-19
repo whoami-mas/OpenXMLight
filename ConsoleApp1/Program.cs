@@ -1,17 +1,19 @@
 ﻿using ConsoleApp1;
 using OpenXMLight;
 using OpenXMLight.Configurations.Elements;
+using OpenXMLight.Configurations.Elements.TableElements.Models;
+using OpenXMLight.Configurations.Formatting;
 
 
 try
 { 
-    string pathexc = @"F:\тестовые проекты\ConsoleApp1\тест\test.docx";
+    string pathexc = @"F:\тестовые проекты\ConsoleApp1\тест\test.xlsx";
 
-    using (WordDocument word = new WordDocument(pathexc, true))
+    using (ExcelDocument excel = new ExcelDocument(pathexc, true))
     {
-        Endnote endnote = word.AddEndnote("testing");
+        var activeSheet = excel.Sheets[0];
 
-        word.AddParagraph().SetRun(new RunBuilder().SetText("Hello World!").SetEndnote(endnote));
+        activeSheet.Cells[1, 1].Value = DateTime.Now;
     }
 
 }
