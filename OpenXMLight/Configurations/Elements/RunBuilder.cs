@@ -73,7 +73,7 @@ namespace OpenXMLight.Configurations.Elements
                 _runEndnote.RunProperties ??= new OpenXml.RunProperties();
 
                 _runEndnote.RunProperties.AppendChild(
-                    new OpenXml.RunStyle() { Val = Context.GetInstance().Styles.CreateGetEndnoteRef() }
+                    new OpenXml.RunStyle() { Val = endnote.Context.Styles.CreateGetEndnoteRef() }
                     );
                 _runEndnote.AppendChild(
                     new OpenXml.EndnoteReference() { Id = endnote.ElementXml.Id }

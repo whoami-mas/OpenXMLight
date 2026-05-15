@@ -1,19 +1,25 @@
 ﻿using ConsoleApp1;
+using DocumentFormat.OpenXml;
 using OpenXMLight;
 using OpenXMLight.Configurations.Elements;
+using OpenXMLight.Configurations.Elements.TableElements;
 using OpenXMLight.Configurations.Elements.TableElements.Models;
 using OpenXMLight.Configurations.Formatting;
+using System.Reflection;
 
+
+string path = @"F:\тестовые проекты\ConsoleApp1\тест\template.docx";
+FileInfo file = new FileInfo(path);
 
 try
-{ 
-    string pathexc = @"F:\тестовые проекты\ConsoleApp1\тест\test.xlsx";
-
-    using (ExcelDocument excel = new ExcelDocument(pathexc, true))
+{
+    using (var document = new WordDocument(path, false))
     {
-        var activeSheet = excel.Sheets[0];
+        if (true)
+            new Node().CreateNewDocument(document);
 
-        activeSheet.Cells[1, 1].Value = DateTime.Now;
+        Table table = document.Tables[0];
+
     }
 
 }

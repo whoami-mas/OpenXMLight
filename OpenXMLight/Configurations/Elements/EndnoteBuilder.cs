@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenXMLight.Configurations.WordContext;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace OpenXMLight.Configurations.Elements
         Endnote endnote;
 
 
-        internal EndnoteBuilder(OpenXml.Endnote endnote) => this.endnote = new(endnote);
+        internal EndnoteBuilder(OpenXml.Endnote endnote, Context context) => this.endnote = new(endnote, context);
 
         public EndnoteBuilder AddParagraph(Action<ParagraphBuilder>? configuration = null)
         {

@@ -1,4 +1,5 @@
 ﻿using OpenXMLight.Configurations.Elements.Interfaces;
+using OpenXMLight.Configurations.WordContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,15 +28,18 @@ namespace OpenXMLight.Configurations.Elements
                 return _elementProperties;
             }
         }
+        internal Context Context;
 
 
         internal Endnote(OpenXml.Run r)
         {
             long id_endnote = r.Elements<OpenXml.EndnoteReference>().First().Id;
-
-
         }
-        internal Endnote(OpenXml.Endnote e) => ElementXml = e;
+        internal Endnote(OpenXml.Endnote e, Context context)
+        {
+            this.ElementXml = e;
+            this.Context = context;
+        }
 
 
         #region Private properties

@@ -15,10 +15,12 @@ namespace OpenXMLight.Configurations.Parts
     internal class Endnotes : IElementPart<OpenXmlPackaging.EndnotesPart>
     {
         public OpenXmlPackaging.EndnotesPart PartXml { get; set; }
+        public Context Context { get; }
 
-        internal Endnotes(OpenXmlPackaging.EndnotesPart endnotesPart)
+        internal Endnotes(OpenXmlPackaging.EndnotesPart endnotesPart, Context context)
         {
             PartXml = endnotesPart;
+            this.Context = context;
 
             CheckedExists();
         }
@@ -39,11 +41,11 @@ namespace OpenXMLight.Configurations.Parts
             OpenXml.Endnote endnote = new OpenXml.Endnote(
                 new OpenXml.Paragraph(
                     new OpenXml.ParagraphProperties(
-                        new OpenXml.ParagraphStyleId() { Val = Context.GetInstance().Styles.CreateGetEndnoteText() }
+                        new OpenXml.ParagraphStyleId() { Val = this.Context.Styles.CreateGetEndnoteText() }
                         ),
                     new OpenXml.Run(
                         new OpenXml.RunProperties(
-                            new OpenXml.RunStyle() { Val = Context.GetInstance().Styles.CreateGetEndnoteRef() }
+                            new OpenXml.RunStyle() { Val = this.Context.Styles.CreateGetEndnoteRef() }
                             ),
                         new OpenXml.EndnoteReferenceMark()
                         ),

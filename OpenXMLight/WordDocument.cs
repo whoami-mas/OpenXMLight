@@ -66,7 +66,7 @@ namespace OpenXMLight
 
             Doc = WordProc.MainDocumentPart?.Document;
 
-            Context = Context.GetInstance(WordProc.MainDocumentPart); ///TODO Testing
+            Context = new Context(WordProc.MainDocumentPart); ///TODO Testing
 
             SettingsDocument = new();
             
@@ -154,6 +154,6 @@ namespace OpenXMLight
         /// </summary>
         /// <param name="content">text for endnote reference</param>
         /// <returns></returns>
-        public EndnoteBuilder AddEndnote(string content) => new EndnoteBuilder(Context.Endnotes.AddEndnote(content));
+        public EndnoteBuilder AddEndnote(string content) => new EndnoteBuilder(Context.Endnotes.AddEndnote(content), Context);
     }
 }
